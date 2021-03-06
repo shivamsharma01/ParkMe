@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="login_fill">#515252</color>
+    <color name="login_head">#515252</color>
     <color name="field_hover">#4B84F1</color>
     <color name="login_text">#8F9090</color>
     <color name="login_button">#56CCF2</color>
