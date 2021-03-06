@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".LoginActivity">
 
     <TextView
         android:id="@+id/login_header"
@@ -44,19 +44,21 @@
             android:inputType="textPassword"/>
     </com.google.android.material.textfield.TextInputLayout>
     <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/login_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
         android:text="@string/login_button_text"
         android:background="@drawable/background"
-        android:backgroundTint="@color/login_button"
+        android:backgroundTint="@color/blue"
         />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="or"
+        android:text="@string/login_or"
         android:layout_gravity="center"/>
     <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/login_sign_in_with_the_phone_number"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
@@ -64,5 +66,12 @@
         android:text="@string/login_sign_in_with_the_phone_number"
         android:background="@drawable/background"
         />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/login_forgot_password"
+        android:textColor="@color/blue"
+        android:textStyle="bold"
+        android:layout_gravity="center"/>
 
 </LinearLayout>
