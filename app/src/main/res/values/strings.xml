@@ -8,4 +8,27 @@
     <string name="login_or">or</string>
     <string name="login_forgot_password">Forgot password?</string>
     <string name="home_notification">You have 2 open Queries!!!</string>
+    <string name="title_activity_raise_query">RaiseQueryActivity</string>
+
+    <string name="raise_query_heading"><u>Raise Query</u></string>
+    <string name="query_type_heading">Query</string>
+    <string name="query_type_hint">Select Query Type</string>
+    <string name="message_heading">Message</string>
+    <string name="message_hint">Enter your message</string>
+    <string name="date_heading">Date</string>
+    <string name="add_image_heading">Add an Image</string>
+    <string name="vehicle_number_heading">Vehicle Number</string>
+    <string name="query_send_button">Send</string>
+    <string name="query_reset_button">Reset</string>
+
+    <!--
+    This string is used for square devices and overridden by hello_world in
+    values-round/strings.xml for round devices.
+    -->
+    <string-array name="query_types_array">
+        <item>--Select Query Type--</item>
+        <item>Parked in Wrong Slot</item>
+        <item>No Parking Area</item>
+        <item>Others</item>
+    </string-array>
 </resources>
