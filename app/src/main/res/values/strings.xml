@@ -10,6 +10,7 @@
     <string name="home_notification">You have 2 open Queries!!!</string>
     <string name="title_activity_raise_query">RaiseQueryActivity</string>
 
+    <!-- Strings for Raise Query Page -->
     <string name="raise_query_heading"><u>Raise Query</u></string>
     <string name="query_type_heading">Query</string>
     <string name="query_type_hint">Select Query Type</string>
@@ -21,14 +22,24 @@
     <string name="query_send_button">Send</string>
     <string name="query_reset_button">Reset</string>
 
-    <!--
-    This string is used for square devices and overridden by hello_world in
-    values-round/strings.xml for round devices.
-    -->
+    <!-- String Array for Query Types -->
     <string-array name="query_types_array">
         <item>--Select Query Type--</item>
         <item>Parked in Wrong Slot</item>
         <item>No Parking Area</item>
         <item>Others</item>
     </string-array>
+
+    <!-- String for View Profile Page -->
+    <string name="full_name">Full Name</string>
+    <string name="email_id">abcd@xyz.com</string>
+    <string name="phone_number">+91 987654321</string>
+    <string name="personal_information">Personal Information</string>
+    <string name="full_name_details">Full Name</string>
+    <string name="password">Password</string>
+    <string name="id_card">ID Card</string>
+    <string name="additional_details">Additional Details</string>
+    <string name="contact_number">+91 987654321</string>
+    <string name="address">Address</string>
+    <string name="exit">Exit</string>
 </resources>
