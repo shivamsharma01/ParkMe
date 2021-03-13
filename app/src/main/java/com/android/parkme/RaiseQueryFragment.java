@@ -41,8 +41,8 @@ public class RaiseQueryFragment extends Fragment {
         queryTypeDropdown.setAdapter(queryTypeAdaptor);
 
         dateText = getActivity().findViewById(R.id.date_value);
-        SimpleDateFormat sdf = new SimpleDateFormat( "dd/MM/yyyy" );
-        dateText.setText(sdf.format( new Date()));
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        dateText.setText(sdf.format(new Date()));
 
         clickedImage = getActivity().findViewById(R.id.clicked_image);
     }

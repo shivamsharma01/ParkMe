@@ -1,20 +1,16 @@
 package com.android.parkme;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -22,13 +18,18 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class PersonalDetailsFragment extends Fragment {
-    ImageView profilePic;
     final String TAG = "PersonalDetailsFragment";
+    ImageView profilePic;
     RequestQueue queue = null;
-    String url ="http://192.168.43.17:8081/parkme/getDetails?id=%1$s&sid=%2$s";
+    String url = "http://192.168.43.17:8081/parkme/getDetails?id=%1$s&sid=%2$s";
     StringRequest stringRequest;
     TextView full_name, email_id, phone_number, personal_information, full_name_details, contact_number, address;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,48 +48,58 @@ public class PersonalDetailsFragment extends Fragment {
         contact_number = view.findViewById(R.id.contact_number);
         address = view.findViewById(R.id.address);
 
-        url = String.format(url, 1, 1);
-        stringRequest = new StringRequest(Request.Method.GET, url,
+        url = String.format(url, -1, 1);
+        JsonObjectRequest request = new JsonObjectRequest(url, null,
                 response -> {
-                    setFields(response);
+                    if (null != response) {
+                        try {
+                            setFields(response);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }, error -> {
-            Log.i(TAG, error.getLocalizedMessage());
+            handleError(error);
         });
-        new GetDetails().execute();
+        queue.add(request);
         return view;
     }
 
-    private void setFields(String response) {
-        Log.i(TAG, "CAlled set");
-        full_name.setText("YOYOYOYO");
-        JSONObject obj = null;
+    private void handleError(VolleyError error) {
+        String responseBody = null;
         try {
-            // , personal_information, full_name_details, ,
-            obj = new JSONObject(response);
-            full_name.setText(obj.get("fullname").toString());
-            full_name_details.setText(obj.get("fullname").toString());
-            email_id.setText(obj.get("email").toString());
-            phone_number.setText(obj.get("number").toString());
-            address.setText(obj.get("address").toString());
-            contact_number.setText(obj.get("number").toString());
-        } catch (JSONException e) {
+            responseBody = new String(error.networkResponse.data, "utf-8");
+            JSONObject data = new JSONObject(responseBody);
+            String trace = data.getString("trace");
+            Pattern pattern = Pattern.compile("##.*##");
+            Matcher matcher = pattern.matcher(trace);
+            if (matcher.find())
+                setError(matcher.group());
+        } catch (UnsupportedEncodingException | JSONException e) {
             e.printStackTrace();
         }
+
+
     }
 
-    private class GetDetails extends AsyncTask<Void, Void, Void> {
+    private void setError(String group) {
+        String[] response = group.substring(2, group.length()-2).split(",");
+        Integer errorCode = Integer.parseInt(response[0].split(":")[1]);
+        switch (errorCode) {
+            case 101:
+                break;
 
-        @Override
-        protected Void doInBackground(Void... voids) {
-            queue.add(stringRequest);
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            Toast.makeText(getContext(),"Saved",Toast.LENGTH_SHORT);
         }
     }
+
+    private void setFields(JSONObject response) throws JSONException {
+        full_name.setText(response.get("fullname").toString());
+        full_name_details.setText(response.get("fullname").toString());
+        email_id.setText(response.get("email").toString());
+        phone_number.setText(response.get("number").toString());
+        address.setText(response.get("address").toString());
+        contact_number.setText(response.get("number").toString());
+    }
+
 }
 
