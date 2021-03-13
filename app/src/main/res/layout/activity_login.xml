@@ -67,6 +67,7 @@
         android:background="@drawable/background"
         />
     <TextView
+        android:id="@+id/fpasword_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/login_forgot_password"

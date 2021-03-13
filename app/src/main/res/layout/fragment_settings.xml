@@ -114,7 +114,7 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="346dp"
         android:gravity="center"
-        android:text="About App"
+        android:text="About"
         android:textColor="@color/login_head"
         android:textSize="24sp"
         android:textStyle="bold"

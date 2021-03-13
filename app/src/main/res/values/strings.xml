@@ -2,6 +2,8 @@
     <string name="app_name">ParkMe</string>
     <string name="login_head"><u>Login</u></string>
     <string name="settings_head"><u>Account Settings</u></string>
+    <string name="fpassword_head"><u>Forgot Password</u></string>
+    <string name="contributors"><u>Contributors</u></string>
     <string name="login_email">Enter Email</string>
     <string name="login_password">Enter Password</string>
     <string name="login_button_text">Login</string>
