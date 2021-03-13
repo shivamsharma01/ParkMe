@@ -24,9 +24,9 @@
             android:layout_gravity="center"
             app:cardCornerRadius="50dp">
             <ImageView
+                android:id="@+id/profile_pic"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:id="@+id/imageView"
                 android:src="@drawable/shivam" />
         </androidx.cardview.widget.CardView>
         <TextView
@@ -57,6 +57,7 @@
                 android:layout_weight="0.5"
                 android:src="@drawable/ic_chat" />
             <ImageView
+                android:id="@+id/raise_query_option"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:layout_weight="0.5"
