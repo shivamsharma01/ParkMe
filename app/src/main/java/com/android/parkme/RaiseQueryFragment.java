@@ -72,7 +72,9 @@ public class RaiseQueryFragment extends Fragment {
         resetBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                queryTypeDropdown.setSelection(0);
+                String compareValue = "--Select Query Type--";
+                int spinnerPosition = queryTypeAdaptor.getPosition(compareValue);
+                queryTypeDropdown.setSelection(spinnerPosition);
                 messageText.setText("");
                 vehicleNumber.setText("");
                 clickedImage.setVisibility(View.GONE);
