@@ -1,9 +1,11 @@
 package com.android.parkme;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.TextureView;
 import android.view.View;
@@ -70,9 +72,10 @@ public class RaiseQueryFragment extends Fragment {
         resetBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                queryTypeDropdown.setSelection(0);
                 messageText.setText("");
                 vehicleNumber.setText("");
-                clickedImage.setVisibility(View.INVISIBLE);
+                clickedImage.setVisibility(View.GONE);
             }
         });
     }
@@ -82,7 +85,8 @@ public class RaiseQueryFragment extends Fragment {
     }
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==CAMERA_REQUEST){
+        Log.i("test", "value of result code: "+resultCode);
+        if(requestCode==CAMERA_REQUEST && resultCode == Activity.RESULT_OK && data != null){
             Bitmap bitmap = (Bitmap) data.getExtras().get("data");
             Bitmap resizedBitmap = Bitmap.createScaledBitmap(
                     bitmap, 420, 60, false);
