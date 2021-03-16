@@ -254,7 +254,7 @@
             android:background="#000000"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/exit" />
+            app:layout_constraintTop_toBottomOf="@+id/exit"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

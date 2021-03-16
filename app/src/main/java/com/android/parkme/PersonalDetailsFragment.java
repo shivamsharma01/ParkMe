@@ -1,5 +1,8 @@
 package com.android.parkme;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,11 +27,14 @@ import java.util.regex.Pattern;
 
 public class PersonalDetailsFragment extends Fragment {
     final String TAG = "PersonalDetailsFragment";
+    private SharedPreferences sharedpreferences;
+    private static final String MyPREFERENCES = "ParkMe" ;
+    private static final String sessionKey = "sessionKey";
     ImageView profilePic;
     RequestQueue queue = null;
     String url = "http://192.168.43.17:8081/parkme/getDetails?id=%1$s&sid=%2$s";
     StringRequest stringRequest;
-    TextView full_name, email_id, phone_number, personal_information, full_name_details, contact_number, address;
+    TextView full_name, email_id, phone_number, personal_information, full_name_details, contact_number, address, exit;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,6 +46,8 @@ public class PersonalDetailsFragment extends Fragment {
                              Bundle savedInstanceState) {
         queue = Volley.newRequestQueue(getActivity());
         View view = inflater.inflate(R.layout.fragment_personal_details, container, false);
+        sharedpreferences = getActivity().getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+
         full_name = view.findViewById(R.id.full_name);
         email_id = view.findViewById(R.id.email_id);
         phone_number = view.findViewById(R.id.phone_number);
@@ -47,6 +55,14 @@ public class PersonalDetailsFragment extends Fragment {
         full_name_details = view.findViewById(R.id.full_name_details);
         contact_number = view.findViewById(R.id.contact_number);
         address = view.findViewById(R.id.address);
+        exit = view.findViewById(R.id.exit);
+        exit.setOnClickListener(v -> {
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+            editor.clear();
+            editor.apply();
+            startActivity(new Intent(getActivity(), LoginActivity.class));
+            getActivity().finish();
+        });
 
         url = String.format(url, -1, 1);
         JsonObjectRequest request = new JsonObjectRequest(url, null,
