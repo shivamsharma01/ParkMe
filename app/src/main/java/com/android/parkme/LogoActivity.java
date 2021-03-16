@@ -37,9 +37,6 @@ public class LogoActivity extends AppCompatActivity {
             i = new Intent(this, LoginActivity.class);
         else
             i = new Intent(this, MainActivity.class);
-        SharedPreferences.Editor editor = sharedpreferences.edit();
-        editor.clear();
-        editor.apply();
         startActivity(i);
         finish();
     }

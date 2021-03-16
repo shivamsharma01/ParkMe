@@ -30,9 +30,11 @@ public class PersonalDetailsFragment extends Fragment {
     private SharedPreferences sharedpreferences;
     private static final String MyPREFERENCES = "ParkMe" ;
     private static final String sessionKey = "sessionKey";
+    private static final String id = "id";
+    private static final String sid = "sid";
     ImageView profilePic;
     RequestQueue queue = null;
-    String url = "http://192.168.43.17:8081/parkme/getDetails?id=%1$s&sid=%2$s";
+    final String getDetails = "getDetails?id=%1$s&sid=%2$s";
     StringRequest stringRequest;
     TextView full_name, email_id, phone_number, personal_information, full_name_details, contact_number, address, exit;
 
@@ -64,7 +66,7 @@ public class PersonalDetailsFragment extends Fragment {
             getActivity().finish();
         });
 
-        url = String.format(url, -1, 1);
+        String url = String.format(getActivity().getResources().getString(R.string.url).toString().concat(getDetails), sharedpreferences.getString(id, ""), sharedpreferences.getString(sid, ""));
         JsonObjectRequest request = new JsonObjectRequest(url, null,
                 response -> {
                     if (null != response) {
@@ -92,8 +94,6 @@ public class PersonalDetailsFragment extends Fragment {
         } catch (UnsupportedEncodingException | JSONException e) {
             e.printStackTrace();
         }
-
-
     }
 
     private void setError(String group) {
