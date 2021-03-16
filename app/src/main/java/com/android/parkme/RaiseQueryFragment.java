@@ -56,8 +56,8 @@ public class RaiseQueryFragment extends Fragment {
         vehicleNumber = getActivity().findViewById(R.id.number_value);
 
         dateText = getActivity().findViewById(R.id.date_value);
-        SimpleDateFormat sdf = new SimpleDateFormat( "dd/MM/yyyy" );
-        dateText.setText(sdf.format( new Date()));
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        dateText.setText(sdf.format(new Date()));
 
         addImage = getActivity().findViewById(R.id.add_image_button);
         addImage.setOnClickListener(new View.OnClickListener() {
