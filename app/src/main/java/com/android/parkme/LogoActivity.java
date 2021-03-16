@@ -23,7 +23,6 @@ public class LogoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_logo);
 
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
-
         getSupportActionBar().hide();
 
         final Runnable r = () -> changeActivity();
