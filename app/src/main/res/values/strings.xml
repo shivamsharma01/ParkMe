@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">ParkMe</string>
 
-    <string name="url">http://192.168.43.240:8081/parkme/</string>
+    <string name="url">http://10.0.2.2:8083/parkme/</string>
     <string name="login_head"><u>Login</u></string>
     <string name="settings_head"><u>Account Settings</u></string>
     <string name="fpassword_head"><u>Forgot Password</u></string>
