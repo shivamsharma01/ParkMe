@@ -3,6 +3,7 @@ package com.android.parkme;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -16,12 +17,21 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.mlkit.vision.common.InputImage;
+import com.google.mlkit.vision.text.Text;
+import com.google.mlkit.vision.text.TextRecognition;
+import com.google.mlkit.vision.text.TextRecognizer;
 
+import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 public class RaiseQueryFragment extends Fragment {
     private Spinner queryTypeDropdown;
@@ -30,6 +40,7 @@ public class RaiseQueryFragment extends Fragment {
     private FloatingActionButton addImage;
     public static final int CAMERA_REQUEST=9999;
     private Button resetBtn;
+    MyTask asyc_Obj;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -90,10 +101,122 @@ public class RaiseQueryFragment extends Fragment {
         Log.i("test", "value of result code: "+resultCode);
         if(requestCode==CAMERA_REQUEST && resultCode == Activity.RESULT_OK && data != null){
             Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+
+            System.out.println("---------------------------------------------------------------------------------");
+            System.out.println("RUN");
+
+            int width = bitmap.getWidth();
+            int height = bitmap.getHeight();
+
+            int size = bitmap.getRowBytes() * bitmap.getHeight();
+            ByteBuffer byteBuffer = ByteBuffer.allocate(size);
+            bitmap.copyPixelsToBuffer(byteBuffer);
+            byte[] byteArray = byteBuffer.array();
+            String conf = bitmap.getConfig().name();
+
+            asyc_Obj = new MyTask(byteArray, width, height,conf);
+            asyc_Obj.execute();
+
             Bitmap resizedBitmap = Bitmap.createScaledBitmap(
                     bitmap, 420, 60, false);
             clickedImage.setImageBitmap(resizedBitmap);
             clickedImage.setVisibility(View.VISIBLE);
         }
     }
+
+
+    private void runTextRecognition(Bitmap x) {
+        InputImage image = InputImage.fromBitmap(x, 0);
+
+        TextRecognizer recognizer = TextRecognition.getClient();
+
+        recognizer.process(image)
+                .addOnSuccessListener(
+                        new OnSuccessListener<Text>() {
+                            @Override
+                            public void onSuccess(Text texts) {
+
+                                processTextRecognitionResult(texts);
+                                System.out.println("---------------------------------------------------------------------------------");
+                                System.out.println("SUCCESS");
+
+                            }
+                        })
+                .addOnFailureListener(
+                        new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                // Task failed with an exception
+                                System.out.println("---------------------------------------------------------------------------------");
+                                System.out.println("FAILURE");
+
+                                e.printStackTrace();
+                            }
+                        });
+    }
+
+    private void processTextRecognitionResult(Text texts) {
+        List<Text.TextBlock> blocks = texts.getTextBlocks();
+        if (blocks.size() == 0) {
+
+            return;
+        }
+
+        for (int i = 0; i < blocks.size(); i++) {
+            List<Text.Line> lines = blocks.get(i).getLines();
+            for (int j = 0; j < lines.size(); j++) {
+                List<Text.Element> elements = lines.get(j).getElements();
+                for (int k = 0; k < elements.size(); k++) {
+
+//                     elements.get(k);
+                    System.out.println("---------------------------------------------------------------------------------");
+                    System.out.println(elements.get(k).getText());
+
+
+                }
+
+            }
+        }
+    }
+
+    // Async Task to execute the machine learning operations
+    private class MyTask extends AsyncTask<Void,String,String>
+    {
+
+        private final Bitmap bitmap_tmp;
+
+        public MyTask(byte[] byteArray, int width, int height, String conf) {
+
+            Bitmap.Config configBmp = Bitmap.Config.valueOf(conf);
+            Bitmap bitmap_tmp = Bitmap.createBitmap(width, height, configBmp);
+            ByteBuffer buffer = ByteBuffer.wrap(byteArray);
+            bitmap_tmp.copyPixelsFromBuffer(buffer);
+            this.bitmap_tmp = bitmap_tmp; 
+            
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            System.out.println("---------------------------------------------------------------------------------");
+            System.out.println("Pre Execute");
+        }
+
+
+        @Override
+        protected String doInBackground(Void... params) {
+            runTextRecognition(this.bitmap_tmp);
+            System.out.println("---------------------------------------------------------------------------------");
+            System.out.println("Do In Back");
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+
+            super.onPostExecute(s);
+        }
+    }
+
 }
+
