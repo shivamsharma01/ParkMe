@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -17,6 +18,8 @@ import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
 
 public class LoginPhoneActivity extends AppCompatActivity {
 
@@ -69,8 +72,44 @@ public class LoginPhoneActivity extends AppCompatActivity {
         queue.add(request);
     }
 
-    private void handleError(VolleyError volleyError) {
-        Log.i(TAG, "Authentication Failure");
+
+    private void handleError(VolleyError error) {
+        try {
+            String responseBody = new String(error.networkResponse.data, "utf-8");
+            System.out.println(responseBody);
+            JSONObject data = new JSONObject(responseBody);
+            int status = data.getInt("status");
+            String errorString = data.getString("trace");
+            if (status == 409) {
+                int indexStart = errorString.indexOf('^'), indexEnd = errorString.indexOf('$');
+                phoneInput.setError(errorString.substring(indexStart + 1, indexEnd));
+            } else {
+                int indexStart = errorString.indexOf('^'), indexEnd = errorString.indexOf('$');
+                if (indexStart != -1 && indexEnd != -1) {
+                    String[] split = errorString.substring(indexStart + 1, indexEnd).split(":");
+                    status = Integer.parseInt(split[0]);
+                    switch (status) {
+                        case 410:
+                        case 411:
+                        case 412:
+                        case 413:
+                            passwordInput.setError(split[1]);
+                            break;
+                        case 500:
+                            Toast.makeText(this, split[1], Toast.LENGTH_SHORT).show();
+                            break;
+                        default:
+                            Toast.makeText(this, errorString.substring(indexStart + 1, indexEnd), Toast.LENGTH_SHORT).show();
+                            break;
+                    }
+                } else {
+                    Toast.makeText(this, "An error occurred", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        } catch (UnsupportedEncodingException | JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void storeFields(JSONObject response) {
