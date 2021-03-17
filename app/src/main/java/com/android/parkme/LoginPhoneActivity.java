@@ -89,7 +89,6 @@ public class LoginPhoneActivity extends AppCompatActivity {
     private void handleError(VolleyError error) {
         try {
             String responseBody = new String(error.networkResponse.data, "utf-8");
-            System.out.println(responseBody);
             JSONObject data = new JSONObject(responseBody);
             int status = data.getInt("status");
             String errorString = data.getString("trace");
