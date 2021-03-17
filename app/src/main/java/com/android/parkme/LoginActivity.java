@@ -3,8 +3,6 @@ package com.android.parkme;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -68,37 +66,25 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void loginRequest() {
-        if (network_check()) {
-            Log.i(TAG, "Authenticating login at " + getResources().getString(R.string.url).toString().concat(doLogin));
-            JSONObject loginObject = new JSONObject();
-            try {
-                loginObject.put("email", emailInput.getText().toString());
-                loginObject.put("password", passwordInput.getText().toString());
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            JsonObjectRequest request = new JsonObjectRequest(
-                    getResources().getString(R.string.url).toString().concat(doLogin),
-                    loginObject,
-                    response -> {
-                        Log.i(TAG, "Authentication Success");
-                        if (null != response) {
-                            storeFields(response);
-                            onSuccess();
-                        }
-                    }, this::handleError);
-            queue.add(request);
-        } else {
-            Toast.makeText(getApplicationContext(), "Please connect to Internet", Toast.LENGTH_SHORT).show();
+        Log.i(TAG, "Authenticating login at " + getResources().getString(R.string.url).toString().concat(doLogin));
+        JSONObject loginObject = new JSONObject();
+        try {
+            loginObject.put("email", emailInput.getText().toString());
+            loginObject.put("password", passwordInput.getText().toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-    }
-
-    private boolean network_check()
-    {
-        ConnectivityManager connMgr = (ConnectivityManager)
-                getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        return (networkInfo != null && networkInfo.isConnected());
+        JsonObjectRequest request = new JsonObjectRequest(
+                getResources().getString(R.string.url).toString().concat(doLogin),
+                loginObject,
+                response -> {
+                    Log.i(TAG, "Authentication Success");
+                    if (null != response) {
+                        storeFields(response);
+                        onSuccess();
+                    }
+                }, this::handleError);
+        queue.add(request);
     }
 
     private void handleError(VolleyError error) {
