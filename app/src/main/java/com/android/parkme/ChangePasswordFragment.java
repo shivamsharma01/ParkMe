@@ -34,7 +34,7 @@ import java.util.Map;
 public class ChangePasswordFragment extends Fragment {
     private static final String MyPREFERENCES = "ParkMe";
     private static final String sessionKey = "sessionKey";
-    private static final String email = "emailId";
+    private static final String email = "email";
     final String TAG = "ChangePasswordFragment";
     final String changePassword = "confirm-password";
     RequestQueue queue = null;
@@ -148,6 +148,7 @@ public class ChangePasswordFragment extends Fragment {
                                 new_p_c.setError(split[1]);
                                 break;
                             case 412:
+                            case 4132:
                                 new_p.setError(split[1]);
                                 break;
                             default:
