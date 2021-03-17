@@ -1,7 +1,15 @@
+//package com.android.parkme;
+//
+//public class temp {
+//}
+
+
 package com.android.parkme;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.graphics.Rect;
@@ -13,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,6 +30,8 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -37,6 +48,7 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -47,10 +59,11 @@ public class RaiseQueryFragment extends Fragment {
     private FloatingActionButton addImage;
     public static final int CAMERA_REQUEST = 9999;
     private Button resetBtn;
+    public static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 1;
     MyTask asyc_Obj;
-    CropImageView cropImageView;
     Uri mImageuri;
-
+    public String current_value;
+    public ArrayAdapter<String> queryTypeAdaptor;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,7 +80,7 @@ public class RaiseQueryFragment extends Fragment {
     public void onStart() {
         super.onStart();
         queryTypeDropdown = getActivity().findViewById(R.id.dropdown_query_types);
-        ArrayAdapter<String> queryTypeAdaptor = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1,
+        queryTypeAdaptor = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1,
                 getResources().getStringArray(R.array.query_types_array));
         queryTypeAdaptor.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         queryTypeDropdown.setAdapter(queryTypeAdaptor);
@@ -80,10 +93,12 @@ public class RaiseQueryFragment extends Fragment {
         dateText.setText(sdf.format(new Date()));
 
         addImage = getActivity().findViewById(R.id.add_image_button);
-        cropImageView = (CropImageView) getActivity().findViewById(R.id.cropImageView);
         addImage.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                CropImage.activity().start(getContext(),RaiseQueryFragment.this);
+                if(checkAndRequestPermissions())
+                {
+                    CropImage.activity().start(getContext(), RaiseQueryFragment.this);
+                }
             }
         });
 
@@ -102,32 +117,49 @@ public class RaiseQueryFragment extends Fragment {
             }
         });
     }
-
+    private  boolean checkAndRequestPermissions() {
+        int permissionCamera = ContextCompat.checkSelfPermission(getContext(),
+                Manifest.permission.CAMERA);
+        int ext_storage = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE);
+        List<String> listPermissionsNeeded = new ArrayList<>();
+        if (ext_storage != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+        }
+        if (permissionCamera != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.CAMERA);
+        }
+        if (!listPermissionsNeeded.isEmpty()) {
+            ActivityCompat.requestPermissions(getActivity(), listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]),REQUEST_ID_MULTIPLE_PERMISSIONS);
+            return false;
+        }
+        return true;
+    }
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        current_value = queryTypeDropdown.getSelectedItem().toString();
         Log.i("test", "value of result code: "+resultCode);
         if(requestCode==CAMERA_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
-            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+//            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+//
+//            System.out.println("---------------------------------------------------------------------------------");
+//            System.out.println("RUN");
+//
+//            int width = bitmap.getWidth();
+//            int height = bitmap.getHeight();
+//
+//            int size = bitmap.getRowBytes() * bitmap.getHeight();
+//            ByteBuffer byteBuffer = ByteBuffer.allocate(size);
+//            bitmap.copyPixelsToBuffer(byteBuffer);
+//            byte[] byteArray = byteBuffer.array();
+//            String conf = bitmap.getConfig().name();
+//
+//            asyc_Obj = new MyTask(byteArray, width, height, conf);
+//            asyc_Obj.execute();
 
-            System.out.println("---------------------------------------------------------------------------------");
-            System.out.println("RUN");
-
-            int width = bitmap.getWidth();
-            int height = bitmap.getHeight();
-
-            int size = bitmap.getRowBytes() * bitmap.getHeight();
-            ByteBuffer byteBuffer = ByteBuffer.allocate(size);
-            bitmap.copyPixelsToBuffer(byteBuffer);
-            byte[] byteArray = byteBuffer.array();
-            String conf = bitmap.getConfig().name();
-
-            asyc_Obj = new MyTask(byteArray, width, height, conf);
-            asyc_Obj.execute();
-
-            Bitmap resizedBitmap = Bitmap.createScaledBitmap(
-                    bitmap, 420, 60, false);
-            clickedImage.setImageBitmap(resizedBitmap);
-            clickedImage.setVisibility(View.VISIBLE);
+//            Bitmap resizedBitmap = Bitmap.createScaledBitmap(
+//                    bitmap, 420, 60, false);
+//            clickedImage.setImageBitmap(resizedBitmap);
+//            clickedImage.setVisibility(View.VISIBLE);
         }
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
@@ -137,23 +169,33 @@ public class RaiseQueryFragment extends Fragment {
                 clickedImage.setVisibility(View.VISIBLE);
                 try {
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), mImageuri);
-                    clickedImage.setImageURI(mImageuri);
+
+//                    System.out.println("---------------------------------------------------------------------------------");
+//                    System.out.println("RUN");
+
+                    int width = bitmap.getWidth();
+                    int height = bitmap.getHeight();
+
+                    int size = bitmap.getRowBytes() * bitmap.getHeight();
+                    ByteBuffer byteBuffer = ByteBuffer.allocate(size);
+                    bitmap.copyPixelsToBuffer(byteBuffer);
+                    byte[] byteArray = byteBuffer.array();
+                    String conf = bitmap.getConfig().name();
+
+                    asyc_Obj = new MyTask(byteArray, width, height, conf);
+                    asyc_Obj.execute();
+                    clickedImage.setImageBitmap(bitmap);
+
                 } catch (IOException e) {
                     e.printStackTrace();
+                    showToast("Click image again");
+
                 }
             }
             else if(resultCode==CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE)
             {
                 Toast.makeText(getContext(), "No App available for Cropping",Toast.LENGTH_SHORT).show();
             }
-
-//            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-//            cropImageView.setImageBitmap(bitmap);
-//            Bitmap cropped = cropImageView.getCroppedImage();
-////            Bitmap resizedBitmap = Bitmap.createScaledBitmap(
-////                    cropped, 420, 60, false);
-//            clickedImage.setImageBitmap(resizedBitmap);
-//            clickedImage.setVisibility(View.VISIBLE);
         }
     }
 
@@ -170,8 +212,8 @@ public class RaiseQueryFragment extends Fragment {
                             public void onSuccess(Text texts) {
 
                                 processTextRecognitionResult(texts);
-                                System.out.println("---------------------------------------------------------------------------------");
-                                System.out.println("SUCCESS");
+//                                System.out.println("---------------------------------------------------------------------------------");
+//                                System.out.println("SUCCESS");
 
                             }
                         })
@@ -180,18 +222,26 @@ public class RaiseQueryFragment extends Fragment {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 // Task failed with an exception
-                                System.out.println("---------------------------------------------------------------------------------");
-                                System.out.println("FAILURE");
-
+//                                System.out.println("---------------------------------------------------------------------------------");
+//                                System.out.println("FAILURE");
+                                showToast("Please enter manually");
                                 e.printStackTrace();
                             }
                         });
     }
 
+
+    private void showToast(String message) {
+        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+    }
+
     private void processTextRecognitionResult(Text texts) {
         List<Text.TextBlock> blocks = texts.getTextBlocks();
-        if (blocks.size() == 0) {
+        StringBuilder str = new StringBuilder();
 
+        if (blocks.size() == 0) {
+            showToast("Please enter manually");
+            // No text found display toast
             return;
         }
 
@@ -200,18 +250,20 @@ public class RaiseQueryFragment extends Fragment {
             for (int j = 0; j < lines.size(); j++) {
                 List<Text.Element> elements = lines.get(j).getElements();
                 for (int k = 0; k < elements.size(); k++) {
-
-//                     elements.get(k);
-                    System.out.println("---------------------------------------------------------------------------------");
-                    System.out.println(elements.get(k).getText());
-
+//                    System.out.println("-------------");
+//                    System.out.println(elements.get(k).getText());
+                    str.append(elements.get(k).getText());
 
                 }
-
             }
         }
-    }
+//        System.out.println("-------------");
+//        System.out.println(str);
+        int spinnerPosition1 = queryTypeAdaptor.getPosition(current_value);
+        queryTypeDropdown.setSelection(spinnerPosition1);
+        vehicleNumber.setText(str);
 
+    }
     // Async Task to execute the machine learning operations
     private class MyTask extends AsyncTask<Void,String,String>
     {
@@ -224,23 +276,23 @@ public class RaiseQueryFragment extends Fragment {
             Bitmap bitmap_tmp = Bitmap.createBitmap(width, height, configBmp);
             ByteBuffer buffer = ByteBuffer.wrap(byteArray);
             bitmap_tmp.copyPixelsFromBuffer(buffer);
-            this.bitmap_tmp = bitmap_tmp; 
-            
+            this.bitmap_tmp = bitmap_tmp;
+
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            System.out.println("---------------------------------------------------------------------------------");
-            System.out.println("Pre Execute");
+//            System.out.println("---------------------------------------------------------------------------------");
+//            System.out.println("Pre Execute");
         }
 
 
         @Override
         protected String doInBackground(Void... params) {
             runTextRecognition(this.bitmap_tmp);
-            System.out.println("---------------------------------------------------------------------------------");
-            System.out.println("Do In Back");
+//            System.out.println("---------------------------------------------------------------------------------");
+//            System.out.println("Do In Back");
             return null;
         }
 
@@ -252,4 +304,3 @@ public class RaiseQueryFragment extends Fragment {
     }
 
 }
-

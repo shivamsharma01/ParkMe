@@ -133,41 +133,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/full_name_details" />
 
-        <TextView
-            android:id="@+id/password"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="7dp"
-            android:layout_marginTop="15dp"
-            android:text="@string/password"
-            android:textSize="16sp"
-            app:drawableEndCompat="@drawable/ic_password"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/separator2" />
-
-        <View
-            android:id="@+id/separator3"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#000000"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/password" />
-
-        <TextView
-            android:id="@+id/id_card"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="7dp"
-            android:layout_marginTop="15dp"
-            android:text="@string/id_card"
-            android:textSize="16sp"
-            app:drawableEndCompat="@drawable/ic_identity_card"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/separator3" />
-
         <View
             android:id="@+id/separator4"
             android:layout_width="match_parent"
@@ -175,20 +140,7 @@
             android:background="#000000"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/id_card" />
-
-        <TextView
-            android:id="@+id/additional_details"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="70dp"
-            android:text="@string/additional_details"
-            android:textColor="@color/black"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/separator4" />
+            app:layout_constraintTop_toBottomOf="@+id/separator2" />
 
         <TextView
             android:id="@+id/contact_number"
@@ -196,12 +148,12 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="7dp"
             android:layout_marginTop="15dp"
-            android:text="@string/contact_number"
+            android:text="@string/contact_number1"
             android:textSize="16sp"
             app:drawableEndCompat="@drawable/ic_contact_info"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/additional_details" />
+            app:layout_constraintTop_toBottomOf="@+id/separator4" />
 
         <View
             android:id="@+id/separator5"
