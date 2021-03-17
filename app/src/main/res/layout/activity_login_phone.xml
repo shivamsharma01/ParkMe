@@ -4,29 +4,31 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".LoginActivity">
+    tools:context=".LoginPhoneActivity">
 
     <TextView
         android:id="@+id/login_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="@string/login_head"
+        android:text="@string/login_using_phone"
         android:textColor="@color/login_head"
         android:textSize="36dp"
         android:textStyle="bold" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/login_email"
+        android:id="@+id/login_phone"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
-        android:hint="@string/login_email">
+        android:hint="@string/enter_phone_number">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/login_email_value"
+            android:id="@+id/login_phone_value"
             android:layout_width="match_parent"
+            android:inputType="number"
+            android:maxLength="10"
             android:layout_height="wrap_content" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -53,29 +55,5 @@
         android:background="@drawable/background"
         android:backgroundTint="@color/blue"
         android:text="@string/login_button_text" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="@string/login_or" />
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/login_sign_in_with_the_phone_number"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:background="@drawable/background"
-        android:fontFamily="sans-serif-light"
-        android:text="@string/login_sign_in_with_the_phone_number" />
-
-    <TextView
-        android:id="@+id/fpasword_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="@string/login_forgot_password"
-        android:textColor="@color/blue"
-        android:textStyle="bold" />
 
 </LinearLayout>

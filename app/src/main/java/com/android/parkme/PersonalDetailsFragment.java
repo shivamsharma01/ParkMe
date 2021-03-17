@@ -103,22 +103,8 @@ public class PersonalDetailsFragment extends Fragment {
             int status = data.getInt("status");
             if (status == 403)
                 exit();
-            String trace = data.getString("trace");
-            Pattern pattern = Pattern.compile("##.*##");
-            Matcher matcher = pattern.matcher(trace);
-            if (matcher.find())
-                setError(matcher.group());
         } catch (UnsupportedEncodingException | JSONException e) {
             e.printStackTrace();
-        }
-    }
-
-    private void setError(String group) {
-        String[] response = group.substring(2, group.length()-2).split(",");
-        Integer errorCode = Integer.parseInt(response[0].split(":")[1]);
-        switch (errorCode) {
-            case 101:
-                break;
         }
     }
 
