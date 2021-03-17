@@ -96,7 +96,6 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
     private void handleError(VolleyError error) {
         try {
-            System.out.println(error);
             String responseBody = new String(error.networkResponse.data, "utf-8");
             JSONObject data = new JSONObject(responseBody);
             int status = data.getInt("status");

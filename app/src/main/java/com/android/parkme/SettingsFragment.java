@@ -38,10 +38,9 @@ public class SettingsFragment extends Fragment {
                     intent.setData(Uri.parse(temp));
                     startActivity(intent);
         });
-        logout_button.setOnClickListener(v -> {
-        });
+        logout_button.setOnClickListener(v -> exit());
         about.setOnClickListener(v -> openFragment(new AboutFragment()));
-        change_password.setOnClickListener(v -> openFragment(new ChangePassword()));
+        change_password.setOnClickListener(v -> openFragment(new ChangePasswordFragment()));
         return view;
     }
 
@@ -51,5 +50,13 @@ public class SettingsFragment extends Fragment {
         fragmentTransaction.replace(R.id.flFragment, fragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
+    }
+
+    private void exit() {
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.clear();
+        editor.apply();
+        startActivity(new Intent(getActivity(), LoginActivity.class));
+        getActivity().finish();
     }
 }

@@ -26,7 +26,8 @@ public class LoginActivity extends AppCompatActivity {
     private static final String sessionKey = "sessionKey";
     private static final String id = "id";
     private static final String sid = "sid";
-    private TextInputLayout email, password;
+    private static final String email = "emailId";
+    private TextInputLayout emailInput, passwordInput;
     Button login, loginUsingPhone;
     RequestQueue queue = null;
     final String doLogin = "login";
@@ -42,8 +43,8 @@ public class LoginActivity extends AppCompatActivity {
         loginUsingPhone = findViewById(R.id.login_sign_in_with_the_phone_number);
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
 
-        email = findViewById(R.id.login_email);
-        password = findViewById(R.id.login_password);
+        emailInput = findViewById(R.id.login_email);
+        passwordInput = findViewById(R.id.login_password);
 
         login.setOnClickListener(v -> {
             loginRequest();
@@ -62,8 +63,8 @@ public class LoginActivity extends AppCompatActivity {
         Log.i(TAG, "Authenticating login at "+getResources().getString(R.string.url).toString().concat(doLogin));
         JSONObject loginObject = new JSONObject();
         try {
-            loginObject.put("email", email.getEditText().getText().toString());
-            loginObject.put("password", password.getEditText().getText().toString());
+            loginObject.put("email", emailInput.getEditText().getText().toString());
+            loginObject.put("password", passwordInput.getEditText().getText().toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -89,6 +90,7 @@ public class LoginActivity extends AppCompatActivity {
             editor.putString(sessionKey, response.getString(sessionKey));
             editor.putString(id, response.getString(id));
             editor.putString(sid, response.getString(sid));
+            editor.putString(email, emailInput.getEditText().getText().toString());
             editor.commit();
         } catch (JSONException e) {
             e.printStackTrace();
