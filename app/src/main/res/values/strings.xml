@@ -18,6 +18,7 @@
     <string name="login_forgot_password">Forgot password?</string>
     <string name="home_notification">You have 2 open Queries!!!</string>
     <string name="title_activity_raise_query">RaiseQueryActivity</string>
+    <string name="greet">Hello, %1$s</string>
 
     <!-- Strings for Raise Query Page -->
     <string name="raise_query_heading"><u>Raise Query</u></string>
