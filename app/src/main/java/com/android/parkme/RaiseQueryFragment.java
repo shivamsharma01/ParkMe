@@ -6,8 +6,10 @@
 
 package com.android.parkme;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.graphics.Rect;
@@ -28,6 +30,8 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -44,6 +48,7 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -54,6 +59,7 @@ public class RaiseQueryFragment extends Fragment {
     private FloatingActionButton addImage;
     public static final int CAMERA_REQUEST = 9999;
     private Button resetBtn;
+    public static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 1;
     MyTask asyc_Obj;
     Uri mImageuri;
     public String current_value;
@@ -89,7 +95,10 @@ public class RaiseQueryFragment extends Fragment {
         addImage = getActivity().findViewById(R.id.add_image_button);
         addImage.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                CropImage.activity().start(getContext(),RaiseQueryFragment.this);
+                if(checkAndRequestPermissions())
+                {
+                    CropImage.activity().start(getContext(), RaiseQueryFragment.this);
+                }
             }
         });
 
@@ -107,6 +116,23 @@ public class RaiseQueryFragment extends Fragment {
                 clickedImage.setVisibility(View.GONE);
             }
         });
+    }
+    private  boolean checkAndRequestPermissions() {
+        int permissionCamera = ContextCompat.checkSelfPermission(getContext(),
+                Manifest.permission.CAMERA);
+        int ext_storage = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE);
+        List<String> listPermissionsNeeded = new ArrayList<>();
+        if (ext_storage != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+        }
+        if (permissionCamera != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.CAMERA);
+        }
+        if (!listPermissionsNeeded.isEmpty()) {
+            ActivityCompat.requestPermissions(getActivity(), listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]),REQUEST_ID_MULTIPLE_PERMISSIONS);
+            return false;
+        }
+        return true;
     }
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
