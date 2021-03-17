@@ -16,7 +16,7 @@
         app:layout_constraintBottom_toTopOf="@id/options">
 
         <androidx.cardview.widget.CardView
-            android:id="@id/image_holder"
+            android:id="@+id/image_card"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_gravity="center"
@@ -25,7 +25,7 @@
             app:cardElevation="10dp">
 
             <ImageView
-                android:id="@+id/profile_pic"
+                android:id="@+id/imageView"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:src="@drawable/shivam" />
@@ -46,9 +46,12 @@
         android:id="@+id/options"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="42dp"
         android:gravity="center"
         android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@id/home_notification">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -82,20 +85,20 @@
 
             <ImageView
                 android:id="@+id/settings_button"
-                android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_weight="0.5"
                 android:src="@drawable/ic_setting" />
         </LinearLayout>
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/home_notification"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/home_notification"
-        android:textColor="@color/red"
-        android:textSize="32dp"
-        app:layout_constraintBottom_toBottomOf="parent" />
+<!--    <TextView-->
+<!--        android:id="@+id/home_notification"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="@string/home_notification"-->
+<!--        android:textColor="@color/red"-->
+<!--        android:textSize="32dp"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

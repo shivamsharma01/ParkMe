@@ -19,9 +19,6 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 public class LoginActivity extends AppCompatActivity {
     private SharedPreferences sharedpreferences;
     private static final String TAG = "LoginActivity" ;
@@ -33,6 +30,7 @@ public class LoginActivity extends AppCompatActivity {
     Button login, loginUsingPhone;
     RequestQueue queue = null;
     final String doLogin = "login";
+    TextView fpassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +38,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         queue = Volley.newRequestQueue(this);
         login = findViewById(R.id.login_button);
+        fpassword = findViewById(R.id.fpasword_text);
         loginUsingPhone = findViewById(R.id.login_sign_in_with_the_phone_number);
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
 
@@ -49,6 +48,14 @@ public class LoginActivity extends AppCompatActivity {
         login.setOnClickListener(v -> {
             loginRequest();
         });
+        fpassword.setOnClickListener(v->{
+            goto_fpassword();
+        });
+    }
+    private void goto_fpassword()
+    {
+        Intent intent = new Intent(getApplicationContext(), ForgotPasswordActivity.class);
+        startActivity(intent);
     }
 
     private void loginRequest() {

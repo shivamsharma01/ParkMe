@@ -24,7 +24,7 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         raiseQueryOptions = view.findViewById(R.id.raise_query_option);
         raiseQueryOptions.setOnClickListener(v -> openFragment(new RaiseQueryFragment()));
-        profilePic = view.findViewById(R.id.profile_pic);
+        profilePic = view.findViewById(R.id.imageView);
         profilePic.setOnClickListener(v -> openFragment(new PersonalDetailsFragment()));
         settings = view.findViewById(R.id.settings_button);
         settings.setOnClickListener(v -> openFragment(new SettingsFragment()));
