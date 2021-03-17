@@ -3,6 +3,8 @@ package com.android.parkme;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -65,45 +67,55 @@ public class ChangePasswordFragment extends Fragment {
     }
 
     private void onSubmit() {
-        if (old_p.getText().toString().equals("") || new_p.getText().toString().equals("") || new_p_c.getText().toString().equals("")) {
-            Toast.makeText(getContext(), "All Fields are mandatory", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (!new_p.getText().toString().equals(new_p_c.getText().toString())) {
-            Toast.makeText(getContext(), "Passwords Should Match", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        String url = getActivity().getResources().getString(R.string.url).concat(changePassword);
-        JsonRequest request = new JsonObjectRequest(Request.Method.POST, url, getJsonObject(), response -> {
-            Toast.makeText(getContext(), "Password updated successfully", Toast.LENGTH_SHORT).show();
-        }, error -> this.handleError(error)) {
-            @Override
-            public Map<String, String> getHeaders() {
-                Map<String, String> params = new HashMap<>();
-                params.put("session-id", sharedpreferences.getString(sessionKey, ""));
-                return params;
+        if (network_check()) {
+            if (old_p.getText().toString().equals("") || new_p.getText().toString().equals("") || new_p_c.getText().toString().equals("")) {
+                Toast.makeText(getContext(), "All Fields are mandatory", Toast.LENGTH_SHORT).show();
+                return;
             }
-
-            @Override
-            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
-                try {
-                    String jsonString = new String(response.data,
-                            HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
-                    JSONObject result = null;
-                    if (jsonString != null && jsonString.length() > 0)
-                        result = new JSONObject(jsonString);
-                    return Response.success(result,
-                            HttpHeaderParser.parseCacheHeaders(response));
-                } catch (UnsupportedEncodingException e) {
-                    return Response.error(new ParseError(e));
-                } catch (JSONException je) {
-                    return Response.error(new ParseError(je));
+            if (!new_p.getText().toString().equals(new_p_c.getText().toString())) {
+                Toast.makeText(getContext(), "Passwords Should Match", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            String url = getActivity().getResources().getString(R.string.url).concat(changePassword);
+            JsonRequest request = new JsonObjectRequest(Request.Method.POST, url, getJsonObject(), response -> {
+                Toast.makeText(getContext(), "Password updated successfully", Toast.LENGTH_SHORT).show();
+            }, error -> this.handleError(error)) {
+                @Override
+                public Map<String, String> getHeaders() {
+                    Map<String, String> params = new HashMap<>();
+                    params.put("session-id", sharedpreferences.getString(sessionKey, ""));
+                    return params;
                 }
-            }
-        };
-        queue.add(request);
-    }
 
+                @Override
+                protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+                    try {
+                        String jsonString = new String(response.data,
+                                HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
+                        JSONObject result = null;
+                        if (jsonString != null && jsonString.length() > 0)
+                            result = new JSONObject(jsonString);
+                        return Response.success(result,
+                                HttpHeaderParser.parseCacheHeaders(response));
+                    } catch (UnsupportedEncodingException e) {
+                        return Response.error(new ParseError(e));
+                    } catch (JSONException je) {
+                        return Response.error(new ParseError(je));
+                    }
+                }
+            };
+            queue.add(request);
+        } else {
+            Toast.makeText(getContext(), "Please connect to Internet", Toast.LENGTH_SHORT).show();
+        }
+    }
+    private boolean network_check()
+    {
+        ConnectivityManager connMgr = (ConnectivityManager)
+                getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        return (networkInfo != null && networkInfo.isConnected());
+    }
     private JSONObject getJsonObject() {
         JSONObject jsonObject = new JSONObject();
         try {

@@ -3,6 +3,8 @@ package com.android.parkme;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -45,38 +47,49 @@ public class ForgotPasswordActivity extends AppCompatActivity {
     }
 
     private void fpassword_module() {
-        if (email.getText().toString().equals("")) {
-            email.setError("This is a mandatory field.");
-            return;
-        }
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("email", email.getText().toString());
-            String url = getResources().getString(R.string.url).concat(forgotPassword);
-            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, obj, response -> login(), (VolleyError error) -> {
-                handleError(error);
-            }) {
-                @Override
-                protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
-                    try {
-                        String jsonString = new String(response.data,
-                                HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
-                        JSONObject result = null;
-                        if (jsonString != null && jsonString.length() > 0)
-                            result = new JSONObject(jsonString);
-                        return Response.success(result,
-                                HttpHeaderParser.parseCacheHeaders(response));
-                    } catch (UnsupportedEncodingException e) {
-                        return Response.error(new ParseError(e));
-                    } catch (JSONException je) {
-                        return Response.error(new ParseError(je));
+        if (network_check()) {
+            if (email.getText().toString().equals("")) {
+                email.setError("This is a mandatory field.");
+                return;
+            }
+            JSONObject obj = new JSONObject();
+            try {
+                obj.put("email", email.getText().toString());
+                String url = getResources().getString(R.string.url).concat(forgotPassword);
+                JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, obj, response -> login(), (VolleyError error) -> {
+                    handleError(error);
+                }) {
+                    @Override
+                    protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+                        try {
+                            String jsonString = new String(response.data,
+                                    HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
+                            JSONObject result = null;
+                            if (jsonString != null && jsonString.length() > 0)
+                                result = new JSONObject(jsonString);
+                            return Response.success(result,
+                                    HttpHeaderParser.parseCacheHeaders(response));
+                        } catch (UnsupportedEncodingException e) {
+                            return Response.error(new ParseError(e));
+                        } catch (JSONException je) {
+                            return Response.error(new ParseError(je));
+                        }
                     }
-                }
-            };
-            queue.add(request);
-        } catch (JSONException e) {
-            e.printStackTrace();
+                };
+                queue.add(request);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else {
+            Toast.makeText(getApplicationContext(), "Please connect to Internet", Toast.LENGTH_SHORT).show();
         }
+    }
+    private boolean network_check()
+    {
+        ConnectivityManager connMgr = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        return (networkInfo != null && networkInfo.isConnected());
     }
 
     private void login() {
