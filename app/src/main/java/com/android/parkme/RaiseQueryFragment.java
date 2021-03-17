@@ -107,27 +107,27 @@ public class RaiseQueryFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         Log.i("test", "value of result code: "+resultCode);
         if(requestCode==CAMERA_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
-            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+//            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+//
+//            System.out.println("---------------------------------------------------------------------------------");
+//            System.out.println("RUN");
+//
+//            int width = bitmap.getWidth();
+//            int height = bitmap.getHeight();
+//
+//            int size = bitmap.getRowBytes() * bitmap.getHeight();
+//            ByteBuffer byteBuffer = ByteBuffer.allocate(size);
+//            bitmap.copyPixelsToBuffer(byteBuffer);
+//            byte[] byteArray = byteBuffer.array();
+//            String conf = bitmap.getConfig().name();
+//
+//            asyc_Obj = new MyTask(byteArray, width, height, conf);
+//            asyc_Obj.execute();
 
-            System.out.println("---------------------------------------------------------------------------------");
-            System.out.println("RUN");
-
-            int width = bitmap.getWidth();
-            int height = bitmap.getHeight();
-
-            int size = bitmap.getRowBytes() * bitmap.getHeight();
-            ByteBuffer byteBuffer = ByteBuffer.allocate(size);
-            bitmap.copyPixelsToBuffer(byteBuffer);
-            byte[] byteArray = byteBuffer.array();
-            String conf = bitmap.getConfig().name();
-
-            asyc_Obj = new MyTask(byteArray, width, height, conf);
-            asyc_Obj.execute();
-
-            Bitmap resizedBitmap = Bitmap.createScaledBitmap(
-                    bitmap, 420, 60, false);
-            clickedImage.setImageBitmap(resizedBitmap);
-            clickedImage.setVisibility(View.VISIBLE);
+//            Bitmap resizedBitmap = Bitmap.createScaledBitmap(
+//                    bitmap, 420, 60, false);
+//            clickedImage.setImageBitmap(resizedBitmap);
+//            clickedImage.setVisibility(View.VISIBLE);
         }
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
@@ -137,7 +137,23 @@ public class RaiseQueryFragment extends Fragment {
                 clickedImage.setVisibility(View.VISIBLE);
                 try {
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), mImageuri);
-                    clickedImage.setImageURI(mImageuri);
+
+                    System.out.println("---------------------------------------------------------------------------------");
+                    System.out.println("RUN");
+
+                    int width = bitmap.getWidth();
+                    int height = bitmap.getHeight();
+
+                    int size = bitmap.getRowBytes() * bitmap.getHeight();
+                    ByteBuffer byteBuffer = ByteBuffer.allocate(size);
+                    bitmap.copyPixelsToBuffer(byteBuffer);
+                    byte[] byteArray = byteBuffer.array();
+                    String conf = bitmap.getConfig().name();
+
+                    asyc_Obj = new MyTask(byteArray, width, height, conf);
+                    asyc_Obj.execute();
+                    clickedImage.setImageBitmap(bitmap);
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -146,14 +162,6 @@ public class RaiseQueryFragment extends Fragment {
             {
                 Toast.makeText(getContext(), "No App available for Cropping",Toast.LENGTH_SHORT).show();
             }
-
-//            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-//            cropImageView.setImageBitmap(bitmap);
-//            Bitmap cropped = cropImageView.getCroppedImage();
-////            Bitmap resizedBitmap = Bitmap.createScaledBitmap(
-////                    cropped, 420, 60, false);
-//            clickedImage.setImageBitmap(resizedBitmap);
-//            clickedImage.setVisibility(View.VISIBLE);
         }
     }
 
@@ -189,29 +197,11 @@ public class RaiseQueryFragment extends Fragment {
     }
 
     private void processTextRecognitionResult(Text texts) {
-        List<Text.TextBlock> blocks = texts.getTextBlocks();
-        if (blocks.size() == 0) {
+        System.out.println("---------------------------------------------------------------------------------");
+        System.out.println(texts.getText());
+        vehicleNumber.setText(texts.getText());
 
-            return;
-        }
-
-        for (int i = 0; i < blocks.size(); i++) {
-            List<Text.Line> lines = blocks.get(i).getLines();
-            for (int j = 0; j < lines.size(); j++) {
-                List<Text.Element> elements = lines.get(j).getElements();
-                for (int k = 0; k < elements.size(); k++) {
-
-//                     elements.get(k);
-                    System.out.println("---------------------------------------------------------------------------------");
-                    System.out.println(elements.get(k).getText());
-
-
-                }
-
-            }
-        }
     }
-
     // Async Task to execute the machine learning operations
     private class MyTask extends AsyncTask<Void,String,String>
     {
