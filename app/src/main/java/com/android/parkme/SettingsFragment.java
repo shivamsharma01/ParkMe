@@ -1,12 +1,5 @@
 package com.android.parkme;
 
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -20,11 +13,18 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
 public class SettingsFragment extends Fragment {
-    private SharedPreferences sharedpreferences;
-    private static final String MyPREFERENCES = "ParkMe" ;
+    private static final String MyPREFERENCES = "ParkMe";
     Button logout_button;
     TextView contact_authority, about, change_password;
+    private SharedPreferences sharedpreferences;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -40,7 +40,7 @@ public class SettingsFragment extends Fragment {
         contact_authority.setOnClickListener(v -> {
             if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CALL_PHONE)
                     == PackageManager.PERMISSION_DENIED) {
-                ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.CALL_PHONE}, 5);
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CALL_PHONE}, 5);
             } else {
                 Intent intent = new Intent(Intent.ACTION_DIAL);
                 String temp = "tel:+919567485768";

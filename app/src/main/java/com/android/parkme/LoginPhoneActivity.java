@@ -1,7 +1,5 @@
 package com.android.parkme;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,30 +8,31 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class LoginPhoneActivity extends AppCompatActivity {
 
-    private SharedPreferences sharedpreferences;
-    private static final String TAG = "LoginActivity" ;
-    private static final String MyPREFERENCES = "ParkMe" ;
+    private static final String TAG = "LoginActivity";
+    private static final String MyPREFERENCES = "ParkMe";
     private static final String sessionKey = "sessionKey";
     private static final String id = "id";
     private static final String sid = "sid";
     private static final String email = "email";
     private static final String name = "fullname";
     private static final String number = "number";
-    private TextView phoneInput, passwordInput;
+    final String doLogin = "login-phone";
     Button login;
     RequestQueue queue = null;
-    final String doLogin = "login-phone";
+    private SharedPreferences sharedpreferences;
+    private TextView phoneInput, passwordInput;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,11 +44,11 @@ public class LoginPhoneActivity extends AppCompatActivity {
         phoneInput = findViewById(R.id.login_phone_value);
         passwordInput = findViewById(R.id.login_password_value);
 
-        login.setOnClickListener(v ->loginRequest());
+        login.setOnClickListener(v -> loginRequest());
     }
 
     private void loginRequest() {
-        Log.i(TAG, "Authenticating login at "+getResources().getString(R.string.url).concat(doLogin));
+        Log.i(TAG, "Authenticating login at " + getResources().getString(R.string.url).concat(doLogin));
         JSONObject loginObject = new JSONObject();
         try {
             loginObject.put("number", phoneInput.getText().toString());
@@ -73,6 +72,7 @@ public class LoginPhoneActivity extends AppCompatActivity {
     private void handleError(VolleyError volleyError) {
         Log.i(TAG, "Authentication Failure");
     }
+
     private void storeFields(JSONObject response) {
         SharedPreferences.Editor editor = sharedpreferences.edit();
         try {

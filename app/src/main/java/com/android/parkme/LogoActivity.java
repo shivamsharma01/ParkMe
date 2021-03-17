@@ -1,21 +1,17 @@
 package com.android.parkme;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.StringRequest;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class LogoActivity extends AppCompatActivity {
-    private SharedPreferences sharedpreferences;
-    private static final String MyPREFERENCES = "ParkMe" ;
+    private static final String MyPREFERENCES = "ParkMe";
     private static final String sessionKey = "sessionKey";
+    private SharedPreferences sharedpreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -23,20 +23,20 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 
 public class LoginActivity extends AppCompatActivity {
-    private SharedPreferences sharedpreferences;
-    private static final String TAG = "LoginActivity" ;
-    private static final String MyPREFERENCES = "ParkMe" ;
+    private static final String TAG = "LoginActivity";
+    private static final String MyPREFERENCES = "ParkMe";
     private static final String sessionKey = "sessionKey";
     private static final String id = "id";
     private static final String sid = "sid";
     private static final String email = "email";
     private static final String name = "fullname";
     private static final String number = "number";
+    final String doLogin = "login";
     Button login, loginUsingPhone;
     RequestQueue queue = null;
-    final String doLogin = "login";
     TextView forgotPassword;
     TextInputEditText emailInput, passwordInput;
+    private SharedPreferences sharedpreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,25 +50,23 @@ public class LoginActivity extends AppCompatActivity {
         emailInput = findViewById(R.id.login_email_value);
         passwordInput = findViewById(R.id.login_password_value);
 
-        login.setOnClickListener(v ->loginRequest());
-        forgotPassword.setOnClickListener(v->goto_fpassword());
-        loginUsingPhone.setOnClickListener(v->goto_phonelogin());
+        login.setOnClickListener(v -> loginRequest());
+        forgotPassword.setOnClickListener(v -> goto_fpassword());
+        loginUsingPhone.setOnClickListener(v -> goto_phonelogin());
     }
 
-    private void goto_fpassword()
-    {
+    private void goto_fpassword() {
         Intent intent = new Intent(getApplicationContext(), ForgotPasswordActivity.class);
         startActivity(intent);
     }
 
-    private void goto_phonelogin()
-    {
+    private void goto_phonelogin() {
         Intent intent = new Intent(getApplicationContext(), LoginPhoneActivity.class);
         startActivity(intent);
     }
 
     private void loginRequest() {
-        Log.i(TAG, "Authenticating login at "+getResources().getString(R.string.url).toString().concat(doLogin));
+        Log.i(TAG, "Authenticating login at " + getResources().getString(R.string.url).toString().concat(doLogin));
         JSONObject loginObject = new JSONObject();
         try {
             loginObject.put("email", emailInput.getText().toString());
@@ -97,7 +95,7 @@ public class LoginActivity extends AppCompatActivity {
             String errorString = data.getString("trace");
             if (status == 409) {
                 int indexStart = errorString.indexOf('^'), indexEnd = errorString.indexOf('$');
-                emailInput.setError(errorString.substring(indexStart+1, indexEnd));
+                emailInput.setError(errorString.substring(indexStart + 1, indexEnd));
             } else {
                 int indexStart = errorString.indexOf('^'), indexEnd = errorString.indexOf('$');
                 if (indexStart != -1 && indexEnd != -1) {
@@ -111,7 +109,7 @@ public class LoginActivity extends AppCompatActivity {
                             passwordInput.setError(split[1]);
                             break;
                         default:
-                            Toast.makeText(this, errorString.substring(indexStart+1, indexEnd), Toast.LENGTH_SHORT);
+                            Toast.makeText(this, errorString.substring(indexStart + 1, indexEnd), Toast.LENGTH_SHORT);
                             break;
                     }
                 } else {

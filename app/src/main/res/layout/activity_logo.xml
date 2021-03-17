@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@drawable/ic_main_background"
     android:gravity="center"
+    android:orientation="vertical"
     tools:context=".LogoActivity">
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="ParkMe"
-            android:textColor="@color/white"
-            android:textStyle="italic"
-            android:textAlignment="center"
-            android:fontFamily="@font/saira_semi_condensed"
-            android:textSize="64dp" />
-    <LinearLayout android:layout_width="300dp"
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/saira_semi_condensed"
+        android:text="ParkMe"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="64dp"
+        android:textStyle="italic" />
+
+    <LinearLayout
+        android:layout_width="300dp"
         android:layout_height="300dp"
-        android:background="@drawable/ic_parked_car">
-    </LinearLayout>
+        android:background="@drawable/ic_parked_car"></LinearLayout>
 </LinearLayout>

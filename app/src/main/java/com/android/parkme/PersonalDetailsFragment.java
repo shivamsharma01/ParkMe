@@ -4,16 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
@@ -22,30 +19,26 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class PersonalDetailsFragment extends Fragment {
 
-    final String TAG = "PersonalDetailsFragment";
-    private SharedPreferences sharedpreferences;
-    private static final String MyPREFERENCES = "ParkMe" ;
+    private static final String MyPREFERENCES = "ParkMe";
     private static final String sessionKey = "sessionKey";
     private static final String id = "id";
     private static final String sid = "sid";
-    RequestQueue queue = null;
+    final String TAG = "PersonalDetailsFragment";
     final String getDetails = "getDetails?id=%1$s&sid=%2$s";
+    RequestQueue queue = null;
     TextView full_name, email_id, phone_number, personal_information, full_name_details, contact_number, address, exit;
+    private SharedPreferences sharedpreferences;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -131,7 +124,7 @@ public class PersonalDetailsFragment extends Fragment {
 
         @Override
         public Map<String, String> getHeaders() {
-            Map<String, String>  params = new HashMap<>();
+            Map<String, String> params = new HashMap<>();
             params.put("session-id", sharedpreferences.getString(sessionKey, ""));
             return params;
         }

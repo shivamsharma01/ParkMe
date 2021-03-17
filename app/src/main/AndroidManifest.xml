@@ -4,8 +4,9 @@
 
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
+
     <uses-feature
         android:name="android.hardware.camera2.full"
         android:required="false" />
@@ -21,9 +22,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
         <activity android:name=".LoginPhoneActivity"></activity>
-        <activity android:name=".ForgotPasswordActivity"/>
-        <activity android:name=".MainActivity"/>
-        <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"/>
+        <activity android:name=".ForgotPasswordActivity" />
+        <activity android:name=".MainActivity" />
+        <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity" />
         <activity android:name=".LogoActivity">
             android:theme="@style/Base.Theme.AppCompat"/>
             <intent-filter>
@@ -32,6 +33,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".LoginActivity" />
+
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />

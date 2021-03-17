@@ -30,19 +30,18 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class ChangePasswordFragment extends Fragment {
-    final String TAG = "ChangePasswordFragment";
-    private SharedPreferences sharedpreferences;
-    private static final String MyPREFERENCES = "ParkMe" ;
+    private static final String MyPREFERENCES = "ParkMe";
     private static final String sessionKey = "sessionKey";
     private static final String email = "emailId";
-    RequestQueue queue = null;
+    final String TAG = "ChangePasswordFragment";
     final String changePassword = "confirm-password";
+    RequestQueue queue = null;
     Button csubmit;
-    EditText emailText,old_p,new_p, new_p_c;
+    EditText emailText, old_p, new_p, new_p_c;
+    private SharedPreferences sharedpreferences;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +55,7 @@ public class ChangePasswordFragment extends Fragment {
         queue = Volley.newRequestQueue(getActivity());
         csubmit = view.findViewById(R.id.cpassword_button);
         emailText = view.findViewById(R.id.cpassword_email_value);
-        emailText.setText(sharedpreferences.getString(email,""));
+        emailText.setText(sharedpreferences.getString(email, ""));
         emailText.setEnabled(false);
         old_p = view.findViewById(R.id.cpassword_old_value);
         new_p = view.findViewById(R.id.cpassword_new_value);
@@ -80,7 +79,7 @@ public class ChangePasswordFragment extends Fragment {
         }, error -> this.handleError(error)) {
             @Override
             public Map<String, String> getHeaders() {
-                Map<String, String>  params = new HashMap<>();
+                Map<String, String> params = new HashMap<>();
                 params.put("session-id", sharedpreferences.getString(sessionKey, ""));
                 return params;
             }
@@ -108,10 +107,10 @@ public class ChangePasswordFragment extends Fragment {
     private JSONObject getJsonObject() {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("email",emailText.getText().toString());
-            jsonObject.put("oldPassword",old_p.getText().toString());
-            jsonObject.put("newPassword",new_p.getText().toString());
-            jsonObject.put("newConfirmPassword",new_p_c.getText().toString());
+            jsonObject.put("email", emailText.getText().toString());
+            jsonObject.put("oldPassword", old_p.getText().toString());
+            jsonObject.put("newPassword", new_p.getText().toString());
+            jsonObject.put("newConfirmPassword", new_p_c.getText().toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -136,7 +135,7 @@ public class ChangePasswordFragment extends Fragment {
                     exit();
                     break;
                 case 409:
-                    emailText.setError(trace.substring(trace.indexOf("^")+1, trace.indexOf("$")));
+                    emailText.setError(trace.substring(trace.indexOf("^") + 1, trace.indexOf("$")));
                     break;
                 default:
                     int start = trace.indexOf("^"), end = trace.indexOf("$");

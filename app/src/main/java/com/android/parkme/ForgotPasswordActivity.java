@@ -1,15 +1,14 @@
 package com.android.parkme;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.Editable;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
@@ -19,23 +18,20 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class ForgotPasswordActivity extends AppCompatActivity {
+    private static final String MyPREFERENCES = "ParkMe";
+    final String forgotPassword = "forgot-password";
     Button submit;
     EditText email;
     RequestQueue queue = null;
-    final String forgotPassword = "forgot-password";
     private SharedPreferences sharedpreferences;
-    private static final String MyPREFERENCES = "ParkMe" ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,20 +39,19 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         setContentView(R.layout.activity_forgot_password);
         submit = findViewById(R.id.submit_button);
         email = findViewById(R.id.fpassword_email_value);
-        submit.setOnClickListener(v->fpassword_module());
+        submit.setOnClickListener(v -> fpassword_module());
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
         queue = Volley.newRequestQueue(this);
     }
 
-    private void fpassword_module()
-    {
+    private void fpassword_module() {
         if (email.getText().toString().equals("")) {
             email.setError("This is a mandatory field.");
             return;
         }
         JSONObject obj = new JSONObject();
         try {
-            obj.put("email",  email.getText().toString());
+            obj.put("email", email.getText().toString());
             String url = getResources().getString(R.string.url).concat(forgotPassword);
             JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, obj, response -> login(), (VolleyError error) -> {
                 handleError(error);
@@ -85,7 +80,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
     }
 
     private void login() {
-        Toast.makeText(this, "Password sent to "+email.getText().toString()+". Please login again.", Toast.LENGTH_SHORT);
+        Toast.makeText(this, "Password sent to " + email.getText().toString() + ". Please login again.", Toast.LENGTH_SHORT);
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.clear();
         editor.apply();
@@ -102,11 +97,11 @@ public class ForgotPasswordActivity extends AppCompatActivity {
             if (status == 409) {
                 String errorString = data.getString("trace");
                 int indexStart = errorString.indexOf('^'), indexEnd = errorString.indexOf('$');
-                email.setError(errorString.substring(indexStart+1, indexEnd));
+                email.setError(errorString.substring(indexStart + 1, indexEnd));
             } else if (status == 404) {
                 String errorString = data.getString("trace");
                 int indexStart = errorString.indexOf('^'), indexEnd = errorString.indexOf('$');
-                email.setError(errorString.substring(indexStart+1, indexEnd));
+                email.setError(errorString.substring(indexStart + 1, indexEnd));
             } else
                 Toast.makeText(this, "An error Occurred", Toast.LENGTH_SHORT);
         } catch (UnsupportedEncodingException | JSONException e) {
