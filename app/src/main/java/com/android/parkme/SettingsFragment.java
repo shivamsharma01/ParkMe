@@ -38,11 +38,18 @@ public class SettingsFragment extends Fragment {
                     intent.setData(Uri.parse(temp));
                     startActivity(intent);
         });
-        logout_button.setOnClickListener(v -> {
-        });
+        logout_button.setOnClickListener(v ->exit());
         about.setOnClickListener(v -> openFragment(new AboutFragment()));
         change_password.setOnClickListener(v -> openFragment(new ChangePassword()));
         return view;
+    }
+
+    private void exit() {
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.clear();
+        editor.apply();
+        startActivity(new Intent(getActivity(), LoginActivity.class));
+        getActivity().finish();
     }
 
     private void openFragment(Fragment fragment) {

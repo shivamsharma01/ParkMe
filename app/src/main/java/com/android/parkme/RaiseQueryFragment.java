@@ -1,3 +1,9 @@
+//package com.android.parkme;
+//
+//public class temp {
+//}
+
+
 package com.android.parkme;
 
 import android.app.Activity;
@@ -13,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -48,9 +55,9 @@ public class RaiseQueryFragment extends Fragment {
     public static final int CAMERA_REQUEST = 9999;
     private Button resetBtn;
     MyTask asyc_Obj;
-    CropImageView cropImageView;
     Uri mImageuri;
-
+    public String current_value;
+    public ArrayAdapter<String> queryTypeAdaptor;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,7 +74,7 @@ public class RaiseQueryFragment extends Fragment {
     public void onStart() {
         super.onStart();
         queryTypeDropdown = getActivity().findViewById(R.id.dropdown_query_types);
-        ArrayAdapter<String> queryTypeAdaptor = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1,
+        queryTypeAdaptor = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1,
                 getResources().getStringArray(R.array.query_types_array));
         queryTypeAdaptor.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         queryTypeDropdown.setAdapter(queryTypeAdaptor);
@@ -80,7 +87,6 @@ public class RaiseQueryFragment extends Fragment {
         dateText.setText(sdf.format(new Date()));
 
         addImage = getActivity().findViewById(R.id.add_image_button);
-        cropImageView = (CropImageView) getActivity().findViewById(R.id.cropImageView);
         addImage.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 CropImage.activity().start(getContext(),RaiseQueryFragment.this);
@@ -102,9 +108,9 @@ public class RaiseQueryFragment extends Fragment {
             }
         });
     }
-
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        current_value = queryTypeDropdown.getSelectedItem().toString();
         Log.i("test", "value of result code: "+resultCode);
         if(requestCode==CAMERA_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
 //            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
@@ -138,8 +144,8 @@ public class RaiseQueryFragment extends Fragment {
                 try {
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), mImageuri);
 
-                    System.out.println("---------------------------------------------------------------------------------");
-                    System.out.println("RUN");
+//                    System.out.println("---------------------------------------------------------------------------------");
+//                    System.out.println("RUN");
 
                     int width = bitmap.getWidth();
                     int height = bitmap.getHeight();
@@ -156,6 +162,8 @@ public class RaiseQueryFragment extends Fragment {
 
                 } catch (IOException e) {
                     e.printStackTrace();
+                    showToast("Click image again");
+
                 }
             }
             else if(resultCode==CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE)
@@ -178,8 +186,8 @@ public class RaiseQueryFragment extends Fragment {
                             public void onSuccess(Text texts) {
 
                                 processTextRecognitionResult(texts);
-                                System.out.println("---------------------------------------------------------------------------------");
-                                System.out.println("SUCCESS");
+//                                System.out.println("---------------------------------------------------------------------------------");
+//                                System.out.println("SUCCESS");
 
                             }
                         })
@@ -188,18 +196,46 @@ public class RaiseQueryFragment extends Fragment {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 // Task failed with an exception
-                                System.out.println("---------------------------------------------------------------------------------");
-                                System.out.println("FAILURE");
-
+//                                System.out.println("---------------------------------------------------------------------------------");
+//                                System.out.println("FAILURE");
+                                showToast("Please enter manually");
                                 e.printStackTrace();
                             }
                         });
     }
 
+
+    private void showToast(String message) {
+        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+    }
+
     private void processTextRecognitionResult(Text texts) {
-        System.out.println("---------------------------------------------------------------------------------");
-        System.out.println(texts.getText());
-        vehicleNumber.setText(texts.getText());
+        List<Text.TextBlock> blocks = texts.getTextBlocks();
+        StringBuilder str = new StringBuilder();
+
+        if (blocks.size() == 0) {
+            showToast("Please enter manually");
+            // No text found display toast
+            return;
+        }
+
+        for (int i = 0; i < blocks.size(); i++) {
+            List<Text.Line> lines = blocks.get(i).getLines();
+            for (int j = 0; j < lines.size(); j++) {
+                List<Text.Element> elements = lines.get(j).getElements();
+                for (int k = 0; k < elements.size(); k++) {
+//                    System.out.println("-------------");
+//                    System.out.println(elements.get(k).getText());
+                    str.append(elements.get(k).getText());
+
+                }
+            }
+        }
+//        System.out.println("-------------");
+//        System.out.println(str);
+        int spinnerPosition1 = queryTypeAdaptor.getPosition(current_value);
+        queryTypeDropdown.setSelection(spinnerPosition1);
+        vehicleNumber.setText(str);
 
     }
     // Async Task to execute the machine learning operations
@@ -214,23 +250,23 @@ public class RaiseQueryFragment extends Fragment {
             Bitmap bitmap_tmp = Bitmap.createBitmap(width, height, configBmp);
             ByteBuffer buffer = ByteBuffer.wrap(byteArray);
             bitmap_tmp.copyPixelsFromBuffer(buffer);
-            this.bitmap_tmp = bitmap_tmp; 
-            
+            this.bitmap_tmp = bitmap_tmp;
+
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            System.out.println("---------------------------------------------------------------------------------");
-            System.out.println("Pre Execute");
+//            System.out.println("---------------------------------------------------------------------------------");
+//            System.out.println("Pre Execute");
         }
 
 
         @Override
         protected String doInBackground(Void... params) {
             runTextRecognition(this.bitmap_tmp);
-            System.out.println("---------------------------------------------------------------------------------");
-            System.out.println("Do In Back");
+//            System.out.println("---------------------------------------------------------------------------------");
+//            System.out.println("Do In Back");
             return null;
         }
 
@@ -242,4 +278,3 @@ public class RaiseQueryFragment extends Fragment {
     }
 
 }
-
