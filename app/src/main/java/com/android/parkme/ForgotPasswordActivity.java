@@ -66,12 +66,9 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                     try {
                         String jsonString = new String(response.data,
                                 HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
-
                         JSONObject result = null;
-
                         if (jsonString != null && jsonString.length() > 0)
                             result = new JSONObject(jsonString);
-
                         return Response.success(result,
                                 HttpHeaderParser.parseCacheHeaders(response));
                     } catch (UnsupportedEncodingException e) {
@@ -111,9 +108,8 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                 String errorString = data.getString("trace");
                 int indexStart = errorString.indexOf('^'), indexEnd = errorString.indexOf('$');
                 email.setError(errorString.substring(indexStart+1, indexEnd));
-            } else {
+            } else
                 Toast.makeText(this, "An error Occurred", Toast.LENGTH_SHORT);
-            }
         } catch (UnsupportedEncodingException | JSONException e) {
             e.printStackTrace();
         }

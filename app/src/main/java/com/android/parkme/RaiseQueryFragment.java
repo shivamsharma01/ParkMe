@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -16,6 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -29,6 +32,10 @@ import com.google.mlkit.vision.text.TextRecognition;
 import com.google.mlkit.vision.text.TextRecognizer;
 
 import java.nio.ByteBuffer;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
+
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -38,9 +45,11 @@ public class RaiseQueryFragment extends Fragment {
     private EditText dateText, messageText, vehicleNumber;
     private ImageView clickedImage;
     private FloatingActionButton addImage;
-    public static final int CAMERA_REQUEST=9999;
+    public static final int CAMERA_REQUEST = 9999;
     private Button resetBtn;
     MyTask asyc_Obj;
+    CropImageView cropImageView;
+    Uri mImageuri;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -71,9 +80,10 @@ public class RaiseQueryFragment extends Fragment {
         dateText.setText(sdf.format(new Date()));
 
         addImage = getActivity().findViewById(R.id.add_image_button);
+        cropImageView = (CropImageView) getActivity().findViewById(R.id.cropImageView);
         addImage.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                OpenCamera(v);
+                CropImage.activity().start(getContext(),RaiseQueryFragment.this);
             }
         });
 
@@ -92,14 +102,11 @@ public class RaiseQueryFragment extends Fragment {
             }
         });
     }
-    public void OpenCamera(View view) {
-        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(cameraIntent, CAMERA_REQUEST);
-    }
-    public void onActivityResult(int requestCode, int resultCode, Intent data){
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Log.i("test", "value of result code: "+resultCode);
-        if(requestCode==CAMERA_REQUEST && resultCode == Activity.RESULT_OK && data != null){
+        if(requestCode==CAMERA_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
             Bitmap bitmap = (Bitmap) data.getExtras().get("data");
 
             System.out.println("---------------------------------------------------------------------------------");
@@ -114,13 +121,39 @@ public class RaiseQueryFragment extends Fragment {
             byte[] byteArray = byteBuffer.array();
             String conf = bitmap.getConfig().name();
 
-            asyc_Obj = new MyTask(byteArray, width, height,conf);
+            asyc_Obj = new MyTask(byteArray, width, height, conf);
             asyc_Obj.execute();
 
             Bitmap resizedBitmap = Bitmap.createScaledBitmap(
                     bitmap, 420, 60, false);
             clickedImage.setImageBitmap(resizedBitmap);
             clickedImage.setVisibility(View.VISIBLE);
+        }
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode==Activity.RESULT_OK){
+                mImageuri = result.getUri();
+//                clickedImage.setImageURI(mImageuri);
+                clickedImage.setVisibility(View.VISIBLE);
+                try {
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), mImageuri);
+                    clickedImage.setImageURI(mImageuri);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            else if(resultCode==CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE)
+            {
+                Toast.makeText(getContext(), "No App available for Cropping",Toast.LENGTH_SHORT).show();
+            }
+
+//            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+//            cropImageView.setImageBitmap(bitmap);
+//            Bitmap cropped = cropImageView.getCroppedImage();
+////            Bitmap resizedBitmap = Bitmap.createScaledBitmap(
+////                    cropped, 420, 60, false);
+//            clickedImage.setImageBitmap(resizedBitmap);
+//            clickedImage.setVisibility(View.VISIBLE);
         }
     }
 
