@@ -93,7 +93,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
     }
 
     private void login() {
-        Toast.makeText(this, "Password sent to " + email.getText().toString() + ". Please login again.", Toast.LENGTH_SHORT);
+        Toast.makeText(this, "Password sent to " + email.getText().toString() + ". Please login again.", Toast.LENGTH_SHORT).show();
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.clear();
         editor.apply();
@@ -116,7 +116,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                 int indexStart = errorString.indexOf('^'), indexEnd = errorString.indexOf('$');
                 email.setError(errorString.substring(indexStart + 1, indexEnd));
             } else
-                Toast.makeText(this, "An error Occurred", Toast.LENGTH_SHORT);
+                Toast.makeText(this, "An error Occurred", Toast.LENGTH_SHORT).show();
         } catch (UnsupportedEncodingException | JSONException e) {
             e.printStackTrace();
         }

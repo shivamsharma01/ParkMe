@@ -102,6 +102,10 @@ public class LoginActivity extends AppCompatActivity {
 
     private void handleError(VolleyError error) {
         try {
+            if (error == null || error.networkResponse == null) {
+                Toast.makeText(this, "An error occurred", Toast.LENGTH_SHORT).show();
+                return;
+            }
             String responseBody = new String(error.networkResponse.data, "utf-8");
             JSONObject data = new JSONObject(responseBody);
             int status = data.getInt("status");
@@ -129,7 +133,7 @@ public class LoginActivity extends AppCompatActivity {
                             break;
                     }
                 } else {
-                    Toast.makeText(this, "An error occurred", Toast.LENGTH_SHORT);
+                    Toast.makeText(this, "An error occurred", Toast.LENGTH_SHORT).show();
                 }
 
             }
