@@ -116,7 +116,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                 int indexStart = errorString.indexOf('^'), indexEnd = errorString.indexOf('$');
                 email.setError(errorString.substring(indexStart + 1, indexEnd));
             } else
-                Toast.makeText(this, "An error Occurred", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getResources().getString(R.string.gen_error), Toast.LENGTH_SHORT).show();
         } catch (UnsupportedEncodingException | JSONException e) {
             e.printStackTrace();
         }
