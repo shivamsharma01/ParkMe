@@ -2,22 +2,22 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/home"
-        android:title="Home"
-        android:icon="@drawable/ic_home_foreground"/>
+        android:icon="@drawable/ic_home_foreground"
+        android:title="Home" />
     <item
         android:id="@+id/history"
-        android:title="History"
-        android:icon="@drawable/ic_history_foreground"/>
+        android:icon="@drawable/ic_history_foreground"
+        android:title="History" />
     <item
         android:id="@+id/query"
-        android:title="Query"
-        android:icon="@drawable/ic_query_foreground"/>
+        android:icon="@drawable/ic_query_foreground"
+        android:title="Query" />
     <item
         android:id="@+id/chat"
-        android:title="Chat"
-        android:icon="@drawable/ic_chat_foreground"/>
+        android:icon="@drawable/ic_chat_foreground"
+        android:title="Chat" />
     <item
         android:id="@+id/profile"
-        android:title="Profile"
-        android:icon="@drawable/ic_profile_foreground"/>
+        android:icon="@drawable/ic_profile_foreground"
+        android:title="Profile" />
 </menu>
