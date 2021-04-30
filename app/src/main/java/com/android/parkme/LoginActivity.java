@@ -48,7 +48,7 @@ public class LoginActivity extends AppCompatActivity {
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
         login = findViewById(R.id.login_button);
         loginUsingPhone = findViewById(R.id.login_sign_in_with_the_phone_number);
-        forgotPassword = findViewById(R.id.fpasword_text);
+        forgotPassword = findViewById(R.id.f_password_text);
         emailInput = findViewById(R.id.login_email_value);
         passwordInput = findViewById(R.id.login_password_value);
 
@@ -92,8 +92,8 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Please connect to Internet", Toast.LENGTH_SHORT).show();
         }
     }
-    private boolean network_check()
-    {
+
+    private boolean network_check() {
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();

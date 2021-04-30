@@ -77,8 +77,8 @@ public class LoginPhoneActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Please connect to Internet", Toast.LENGTH_SHORT).show();
         }
     }
-    private boolean network_check()
-    {
+
+    private boolean network_check() {
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();

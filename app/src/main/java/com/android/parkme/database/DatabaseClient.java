@@ -6,9 +6,8 @@ import androidx.room.Room;
 
 public class DatabaseClient {
 
-    private Context mCtx;
     private static DatabaseClient mInstance;
-
+    private Context mCtx;
     private ParkMeRoomDatabase appDatabase;
 
     private DatabaseClient(Context mCtx) {

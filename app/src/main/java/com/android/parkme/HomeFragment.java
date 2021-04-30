@@ -13,13 +13,14 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.android.parkme.chat.ChatFragment;
+
 public class HomeFragment extends Fragment {
-    ImageView raiseQueryOptions, profilePic, settings;
-    private SharedPreferences sharedpreferences;
     private static final String MyPREFERENCES = "ParkMe";
-    private static final String sessionKey = "sessionKey";
     private static final String name = "fullname";
+    ImageView chat, raiseQueryOptions, profilePic, settings;
     TextView textView;
+    private SharedPreferences sharedpreferences;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -31,7 +32,9 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         sharedpreferences = getActivity().getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        chat = view.findViewById(R.id.chat_option);
         raiseQueryOptions = view.findViewById(R.id.raise_query_option);
+        chat.setOnClickListener(v -> openFragment(new ChatFragment()));
         raiseQueryOptions.setOnClickListener(v -> openFragment(new RaiseQueryFragment()));
         profilePic = view.findViewById(R.id.imageView);
         textView = view.findViewById(R.id.textView);

@@ -13,12 +13,10 @@ import java.util.concurrent.Executors;
 @Database(entities = {Chat.class}, version = 1, exportSchema = false)
 public abstract class ParkMeRoomDatabase extends RoomDatabase {
 
-    public abstract ParkMeDAO parkMeDAODao();
-
-    private static volatile ParkMeRoomDatabase INSTANCE;
     private static final int NUMBER_OF_THREADS = 4;
     static final ExecutorService databaseWriteExecutor =
             Executors.newFixedThreadPool(NUMBER_OF_THREADS);
+    private static volatile ParkMeRoomDatabase INSTANCE;
 
     static ParkMeRoomDatabase getDatabase(final Context context) {
         if (INSTANCE == null) {
@@ -32,4 +30,6 @@ public abstract class ParkMeRoomDatabase extends RoomDatabase {
         }
         return INSTANCE;
     }
+
+    public abstract ParkMeDAO parkMeDao();
 }

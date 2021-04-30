@@ -109,13 +109,14 @@ public class ChangePasswordFragment extends Fragment {
             Toast.makeText(getContext(), "Please connect to Internet", Toast.LENGTH_SHORT).show();
         }
     }
-    private boolean network_check()
-    {
+
+    private boolean network_check() {
         ConnectivityManager connMgr = (ConnectivityManager)
                 getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         return (networkInfo != null && networkInfo.isConnected());
     }
+
     private JSONObject getJsonObject() {
         JSONObject jsonObject = new JSONObject();
         try {
