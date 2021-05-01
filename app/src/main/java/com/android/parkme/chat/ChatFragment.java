@@ -7,8 +7,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -43,7 +46,7 @@ public class ChatFragment extends Fragment {
         List<Chat> chats = new ArrayList<>();
         user = sharedpreferences.getString(name, "");
         String to = "stranger";
-        chats.add(new Chat("hello 1", user, to));
+        chats.add(new Chat("hello0000000000000000000000000 1", user, to));
         chats.add(new Chat("hello 2", to, user));
 
         chats.add(new Chat("hello 1", user, to));
@@ -73,6 +76,7 @@ public class ChatFragment extends Fragment {
             mChats = chats;
         }
 
+
         @Override
         public ChatHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(getActivity()).inflate(R.layout.list_item_chat, parent, false);
@@ -96,23 +100,34 @@ public class ChatFragment extends Fragment {
 
         private Chat mChat;
         private View v;
-        private TextView mNameTextView;
-        private TextView mRollNo;
+        private TextView mTitleTextView, mMessage;
 
         public ChatHolder(View itemView) {
             super(itemView);
             v = itemView;
-            mNameTextView = itemView.findViewById(R.id.student_name);
-            mRollNo = itemView.findViewById(R.id.student_rollno);
+//            mTitleTextView = itemView.findViewById(R.id.box_title);
+            mMessage = itemView.findViewById(R.id.box_message);
         }
 
         public void bind(Chat chat) {
             mChat = chat;
-            mNameTextView.setText(chat.getFrom()+" ("+ simple.format(System.currentTimeMillis())+")");
-            if (chat.getFrom().equals(user))
-                v.setBackgroundColor(Color.CYAN);
-            else
-                v.setBackgroundColor(Color.MAGENTA);
+            //mTitleTextView.setText(chat.getFrom()+" ("+ simple.format(System.currentTimeMillis())+")");
+            mMessage.setText(chat.getMsg());
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+            RelativeLayout rl = v.findViewById(R.id.rl_holder);
+            CardView cv = rl.findViewById(R.id.cardView);
+            LinearLayout ll = cv.findViewById(R.id.holder);
+            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) cv.getLayoutParams();
+            if (chat.getFrom().equals(user)) {
+                lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.ALIGN_PARENT_RIGHT);
+                cv.setLayoutParams(lp);
+                ll.setBackgroundColor(Color.CYAN);
+            } else {
+                lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.ALIGN_LEFT);
+                cv.setLayoutParams(lp);
+                ll.setBackgroundColor(Color.MAGENTA);
+            }
+
         }
 
     }
