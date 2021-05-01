@@ -37,10 +37,9 @@ public class ChangePasswordFragment extends Fragment {
     private static final String MyPREFERENCES = "ParkMe";
     private static final String sessionKey = "sessionKey";
     private static final String email = "email";
-    final String TAG = "ChangePasswordFragment";
     final String changePassword = "confirm-password";
     RequestQueue queue = null;
-    Button csubmit;
+    Button cSubmit;
     EditText emailText, old_p, new_p, new_p_c;
     private SharedPreferences sharedpreferences;
 
@@ -55,14 +54,14 @@ public class ChangePasswordFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_change_password, container, false);
         sharedpreferences = getActivity().getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
         queue = Volley.newRequestQueue(getActivity());
-        csubmit = view.findViewById(R.id.cpassword_button);
+        cSubmit = view.findViewById(R.id.cpassword_button);
         emailText = view.findViewById(R.id.cpassword_email_value);
         emailText.setText(sharedpreferences.getString(email, ""));
         emailText.setEnabled(false);
         old_p = view.findViewById(R.id.cpassword_old_value);
         new_p = view.findViewById(R.id.cpassword_new_value);
         new_p_c = view.findViewById(R.id.cpassword_new_confirm_value);
-        csubmit.setOnClickListener(v -> onSubmit());
+        cSubmit.setOnClickListener(v -> onSubmit());
         return view;
     }
 
@@ -77,9 +76,7 @@ public class ChangePasswordFragment extends Fragment {
                 return;
             }
             String url = getActivity().getResources().getString(R.string.url).concat(changePassword);
-            JsonRequest request = new JsonObjectRequest(Request.Method.POST, url, getJsonObject(), response -> {
-                Toast.makeText(getContext(), "Password updated successfully", Toast.LENGTH_SHORT).show();
-            }, error -> this.handleError(error)) {
+            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, getJsonObject(), response -> Toast.makeText(getContext(), "Password updated successfully", Toast.LENGTH_SHORT).show(), this::handleError) {
                 @Override
                 public Map<String, String> getHeaders() {
                     Map<String, String> params = new HashMap<>();
@@ -97,10 +94,8 @@ public class ChangePasswordFragment extends Fragment {
                             result = new JSONObject(jsonString);
                         return Response.success(result,
                                 HttpHeaderParser.parseCacheHeaders(response));
-                    } catch (UnsupportedEncodingException e) {
+                    } catch (UnsupportedEncodingException | JSONException e) {
                         return Response.error(new ParseError(e));
-                    } catch (JSONException je) {
-                        return Response.error(new ParseError(je));
                     }
                 }
             };
