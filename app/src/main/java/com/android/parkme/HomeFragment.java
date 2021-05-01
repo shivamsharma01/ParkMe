@@ -13,7 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.android.parkme.chat.ChatFragment;
+import com.android.parkme.chat.ChatRoomFragment;
 
 public class HomeFragment extends Fragment {
     private static final String MyPREFERENCES = "ParkMe";
@@ -34,7 +34,7 @@ public class HomeFragment extends Fragment {
         sharedpreferences = getActivity().getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
         chat = view.findViewById(R.id.chat_option);
         raiseQueryOptions = view.findViewById(R.id.raise_query_option);
-        chat.setOnClickListener(v -> openFragment(new ChatFragment()));
+        chat.setOnClickListener(v -> openFragment(new ChatRoomFragment()));
         raiseQueryOptions.setOnClickListener(v -> openFragment(new RaiseQueryFragment()));
         profilePic = view.findViewById(R.id.imageView);
         textView = view.findViewById(R.id.textView);

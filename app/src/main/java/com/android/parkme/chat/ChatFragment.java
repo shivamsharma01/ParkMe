@@ -25,8 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChatFragment extends Fragment {
-    private static final String MyPREFERENCES = "ParkMe";
-    private static final String name = "fullname";
+    private static final String MyPREFERENCES = "ParkMe", name = "fullname";
     private String user;
     private RecyclerView mcChatRecyclerView;
     private ChatAdapter mAdapter;
@@ -36,7 +35,7 @@ public class ChatFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_chat, container, false);
+        View view = inflater.inflate(R.layout.fragment_recycler, container, false);
 
         mcChatRecyclerView = view.findViewById(R.id.chats_recycler_view);
         sharedpreferences = getActivity().getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);

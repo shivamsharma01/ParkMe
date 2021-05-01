@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.android.parkme.chat.ChatRoomFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -22,6 +23,9 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case R.id.home:
                     setCurrentFragment(new HomeFragment());
+                    break;
+                case R.id.chat:
+                    setCurrentFragment(new ChatRoomFragment());
                     break;
             }
             return true;
