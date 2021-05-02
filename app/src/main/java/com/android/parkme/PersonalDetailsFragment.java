@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
+import com.android.parkme.util.APIs;
+import com.android.parkme.util.Globals;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
@@ -29,13 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PersonalDetailsFragment extends Fragment {
-
-    private static final String MyPREFERENCES = "ParkMe";
-    private static final String sessionKey = "sessionKey";
-    private static final String id = "id";
-    private static final String sid = "sid";
     final String TAG = "PersonalDetailsFragment";
-    final String getDetails = "getDetails?id=%1$s&sid=%2$s";
     RequestQueue queue = null;
     TextView full_name, email_id, phone_number, personal_information, full_name_details, contact_number, address, exit;
     private SharedPreferences sharedpreferences;
@@ -49,7 +45,7 @@ public class PersonalDetailsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         queue = Volley.newRequestQueue(getActivity());
         View view = inflater.inflate(R.layout.fragment_personal_details, container, false);
-        sharedpreferences = getActivity().getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        sharedpreferences = getActivity().getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
 
         full_name = view.findViewById(R.id.full_name);
         email_id = view.findViewById(R.id.email_id);
@@ -61,7 +57,7 @@ public class PersonalDetailsFragment extends Fragment {
         exit = view.findViewById(R.id.exit);
         exit.setOnClickListener(v -> exit());
 
-        String url = String.format(getActivity().getResources().getString(R.string.url).toString().concat(getDetails), sharedpreferences.getString(id, ""), sharedpreferences.getString(sid, ""));
+        String url = String.format(getActivity().getResources().getString(R.string.url).toString().concat(APIs.getDetails), sharedpreferences.getString(Globals.ID, ""));
         JsonRequest request = new JsonRequest(Request.Method.GET, url, null, response -> setFields(response), error -> this.handleError(error));
         queue.add(request);
         return view;
@@ -125,7 +121,7 @@ public class PersonalDetailsFragment extends Fragment {
         @Override
         public Map<String, String> getHeaders() {
             Map<String, String> params = new HashMap<>();
-            params.put("session-id", sharedpreferences.getString(sessionKey, ""));
+            params.put("session-id", sharedpreferences.getString(Globals.SESSION_KEY, ""));
             return params;
         }
     }

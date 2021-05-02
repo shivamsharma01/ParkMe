@@ -15,6 +15,8 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
+import com.android.parkme.util.APIs;
+import com.android.parkme.util.Globals;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
@@ -23,7 +25,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
@@ -34,10 +35,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ChangePasswordFragment extends Fragment {
-    private static final String MyPREFERENCES = "ParkMe";
-    private static final String sessionKey = "sessionKey";
-    private static final String email = "email";
-    final String changePassword = "confirm-password";
     RequestQueue queue = null;
     Button cSubmit;
     EditText emailText, old_p, new_p, new_p_c;
@@ -52,11 +49,11 @@ public class ChangePasswordFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_change_password, container, false);
-        sharedpreferences = getActivity().getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        sharedpreferences = getActivity().getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
         queue = Volley.newRequestQueue(getActivity());
         cSubmit = view.findViewById(R.id.cpassword_button);
         emailText = view.findViewById(R.id.cpassword_email_value);
-        emailText.setText(sharedpreferences.getString(email, ""));
+        emailText.setText(sharedpreferences.getString(Globals.EMAIL, ""));
         emailText.setEnabled(false);
         old_p = view.findViewById(R.id.cpassword_old_value);
         new_p = view.findViewById(R.id.cpassword_new_value);
@@ -75,12 +72,12 @@ public class ChangePasswordFragment extends Fragment {
                 Toast.makeText(getContext(), "Passwords Should Match", Toast.LENGTH_SHORT).show();
                 return;
             }
-            String url = getActivity().getResources().getString(R.string.url).concat(changePassword);
+            String url = getActivity().getResources().getString(R.string.url).concat(APIs.changePassword);
             JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, getJsonObject(), response -> Toast.makeText(getContext(), "Password updated successfully", Toast.LENGTH_SHORT).show(), this::handleError) {
                 @Override
                 public Map<String, String> getHeaders() {
                     Map<String, String> params = new HashMap<>();
-                    params.put("session-id", sharedpreferences.getString(sessionKey, ""));
+                    params.put("session-id", sharedpreferences.getString(Globals.SESSION_KEY, ""));
                     return params;
                 }
 

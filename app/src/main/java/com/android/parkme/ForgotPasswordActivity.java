@@ -12,6 +12,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.parkme.util.APIs;
+import com.android.parkme.util.Globals;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
@@ -28,8 +30,6 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 
 public class ForgotPasswordActivity extends AppCompatActivity {
-    private static final String MyPREFERENCES = "ParkMe";
-    final String forgotPassword = "forgot-password";
     Button submit;
     EditText email;
     RequestQueue queue = null;
@@ -42,7 +42,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         submit = findViewById(R.id.submit_button);
         email = findViewById(R.id.fpassword_email_value);
         submit.setOnClickListener(v -> fpassword_module());
-        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        sharedpreferences = getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
         queue = Volley.newRequestQueue(this);
     }
 
@@ -55,7 +55,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
             JSONObject obj = new JSONObject();
             try {
                 obj.put("email", email.getText().toString());
-                String url = getResources().getString(R.string.url).concat(forgotPassword);
+                String url = getResources().getString(R.string.url).concat(APIs.forgotPassword);
                 JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, obj, response -> login(), (VolleyError error) -> {
                     handleError(error);
                 }) {

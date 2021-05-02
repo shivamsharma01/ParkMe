@@ -13,6 +13,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.parkme.util.APIs;
+import com.android.parkme.util.Globals;
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -26,14 +28,6 @@ import java.io.UnsupportedEncodingException;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
-    private static final String MyPREFERENCES = "ParkMe";
-    private static final String sessionKey = "sessionKey";
-    private static final String id = "id";
-    private static final String sid = "sid";
-    private static final String email = "email";
-    private static final String name = "fullname";
-    private static final String number = "number";
-    final String doLogin = "login";
     Button login, loginUsingPhone;
     RequestQueue queue = null;
     TextView forgotPassword;
@@ -45,7 +39,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         queue = Volley.newRequestQueue(this);
-        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        sharedpreferences = getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
         login = findViewById(R.id.login_button);
         loginUsingPhone = findViewById(R.id.login_sign_in_with_the_phone_number);
         forgotPassword = findViewById(R.id.f_password_text);
@@ -69,16 +63,17 @@ public class LoginActivity extends AppCompatActivity {
 
     private void loginRequest() {
         if (network_check()) {
-            Log.i(TAG, "Authenticating login at " + getResources().getString(R.string.url).toString().concat(doLogin));
+            Log.i(TAG, "Authenticating login at " + getResources().getString(R.string.url).toString().concat(APIs.doLogin));
             JSONObject loginObject = new JSONObject();
             try {
                 loginObject.put("email", emailInput.getText().toString());
                 loginObject.put("password", passwordInput.getText().toString());
+                loginObject.put("token", sharedpreferences.getString(Globals.TOKEN, null));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
             JsonObjectRequest request = new JsonObjectRequest(
-                    getResources().getString(R.string.url).toString().concat(doLogin),
+                    getResources().getString(R.string.url).toString().concat(APIs.doLogin),
                     loginObject,
                     response -> {
                         Log.i(TAG, "Authentication Success");
@@ -145,12 +140,11 @@ public class LoginActivity extends AppCompatActivity {
     private void storeFields(JSONObject response) {
         SharedPreferences.Editor editor = sharedpreferences.edit();
         try {
-            editor.putString(sessionKey, response.getString(sessionKey));
-            editor.putString(id, response.getString(id));
-            editor.putString(sid, response.getString(sid));
-            editor.putString(name, response.getString(name));
-            editor.putString(email, response.getString(email));
-            editor.putString(number, response.getString(number));
+            editor.putString(Globals.SESSION_KEY, response.getString(Globals.SESSION_KEY));
+            editor.putString(Globals.ID, response.getString(Globals.ID));
+            editor.putString(Globals.NAME, response.getString(Globals.NAME));
+            editor.putString(Globals.EMAIL, response.getString(Globals.EMAIL));
+            editor.putString(Globals.NUMBER, response.getString(Globals.NUMBER));
             editor.commit();
         } catch (JSONException e) {
             e.printStackTrace();

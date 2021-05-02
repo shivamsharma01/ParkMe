@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.parkme.R;
 import com.android.parkme.database.Query;
+import com.android.parkme.util.Globals;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -26,13 +27,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ReceivedFragment extends Fragment {
-    private static final String MyPREFERENCES = "ParkMe", name = "fullname";
+    private final DateFormat simple = new SimpleDateFormat("MMM dd");
     private String user;
     private RecyclerView mcQueryRecyclerView;
     private QueryAdapter mAdapter;
     private SharedPreferences sharedpreferences;
-    private final DateFormat simple = new SimpleDateFormat("MMM dd");
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -40,15 +39,15 @@ public class ReceivedFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_recycler, container, false);
 
         mcQueryRecyclerView = view.findViewById(R.id.chats_recycler_view);
-        sharedpreferences = getActivity().getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        sharedpreferences = getActivity().getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
 
         mcQueryRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         List<Query> queries = new ArrayList<>();
-        user = sharedpreferences.getString(name, "");
+        user = sharedpreferences.getString(Globals.NAME, "");
         String to = "stranger";
-        queries.add(new Query("Resolved", to, user, System.currentTimeMillis()-20*24*60*60*1000));
-        queries.add(new Query("Unresolved", to, user, System.currentTimeMillis()-40*24*60*60*1000));
+        queries.add(new Query("Resolved", to, user, System.currentTimeMillis() - 20 * 24 * 60 * 60 * 1000));
+        queries.add(new Query("Unresolved", to, user, System.currentTimeMillis() - 40 * 24 * 60 * 60 * 1000));
 
 
         mAdapter = new QueryAdapter(queries);
@@ -74,8 +73,8 @@ public class ReceivedFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull QueryHolder holder, int position) {
-            if(position == 0) {
-                holder.v.setPadding(0,200,0,0);
+            if (position == 0) {
+                holder.v.setPadding(0, 200, 0, 0);
             }
             Query query = mQueries.get(position);
             holder.bind(query);
@@ -105,7 +104,7 @@ public class ReceivedFragment extends Fragment {
         public void bind(Query query) {
             mQuery = query;
             mNameTextView.setText(query.getFrom());
-            mNameTextView.setPaintFlags(mNameTextView.getPaintFlags() |   Paint.UNDERLINE_TEXT_FLAG);
+            mNameTextView.setPaintFlags(mNameTextView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             mDateTextView.setText(simple.format(query.getTime()));
             mStatusTextView.setText(query.getStatus());
             if ("resolved".equals(query.getStatus().toLowerCase()))

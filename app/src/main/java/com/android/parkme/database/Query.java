@@ -29,7 +29,8 @@ public class Query {
     @ColumnInfo(name = "time")
     private long time;
 
-    public Query() {}
+    public Query() {
+    }
 
     public Query(String status, String from, String to, long time) {
         this.status = status;

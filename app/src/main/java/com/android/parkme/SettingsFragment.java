@@ -20,8 +20,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.android.parkme.util.Globals;
+
 public class SettingsFragment extends Fragment {
-    private static final String MyPREFERENCES = "ParkMe";
     Button logout_button;
     TextView contact_authority, about, change_password;
     private SharedPreferences sharedpreferences;
@@ -30,7 +31,7 @@ public class SettingsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
-        sharedpreferences = getActivity().getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        sharedpreferences = getActivity().getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
 
         contact_authority = view.findViewById(R.id.textView4);
         about = view.findViewById(R.id.textView6);

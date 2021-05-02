@@ -31,7 +31,8 @@ public class Chat implements Serializable {
     @ColumnInfo(name = "time")
     private long time;
 
-    public Chat() {}
+    public Chat() {
+    }
 
     public Chat(String msg, String from, String to) {
         this.msg = msg;

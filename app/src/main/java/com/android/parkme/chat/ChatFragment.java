@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.parkme.R;
 import com.android.parkme.database.Chat;
+import com.android.parkme.util.Globals;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -25,12 +26,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChatFragment extends Fragment {
-    private static final String MyPREFERENCES = "ParkMe", name = "fullname";
+    private final DateFormat simple = new SimpleDateFormat("dd-MMM HH:mm");
     private String user;
     private RecyclerView mcChatRecyclerView;
     private ChatAdapter mAdapter;
     private SharedPreferences sharedpreferences;
-    private final DateFormat simple = new SimpleDateFormat("dd-MMM HH:mm");
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -38,12 +38,12 @@ public class ChatFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_recycler, container, false);
 
         mcChatRecyclerView = view.findViewById(R.id.chats_recycler_view);
-        sharedpreferences = getActivity().getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        sharedpreferences = getActivity().getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
 
         mcChatRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         List<Chat> chats = new ArrayList<>();
-        user = sharedpreferences.getString(name, "");
+        user = sharedpreferences.getString(Globals.NAME, "");
         String to = "stranger";
         chats.add(new Chat("hello0000000000000000000000000 1", user, to));
         chats.add(new Chat("hello 2", to, user));
