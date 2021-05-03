@@ -2,7 +2,7 @@
     <string name="app_name">ParkMe</string>
     <!-- Use 192.168.x.x when using device, 10.0.2.2 when using default emulator, 10.0.3.2 when using genymotion-->
 <!--    <string name="url">http://10.0.2.2:8083/parkme/</string>-->
-    <string name="url">http://192.168.29.87:8083/parkme/</string>
+    <string name="url">http://192.168.1.37:8083/parkme/</string>
     <string name="login_head"><u>Login</u></string>
     <string name="settings_head"><u>Account Settings</u></string>
     <string name="fpassword_head"><u>Forgot Password</u></string>
@@ -22,6 +22,7 @@
     <string name="title_activity_raise_query">RaiseQueryActivity</string>
     <string name="greet">Hello, %1$s</string>
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
+    
     <!-- Strings for Raise Query Page -->
     <string name="raise_query_heading"><u>Raise Query</u></string>
     <string name="query_type_heading">Query</string>
@@ -41,6 +42,11 @@
         <item>No Parking Area</item>
         <item>Others</item>
     </string-array>
+
+    <!-- Strings for Query Details Page -->
+    <string name="query_details_heading"><u>Query Details</u></string>
+    <string name="query_number_heading">Query Number</string>
+    <string name="number_plate_image_heading">Number Plate Image</string>
 
     <!-- String for View Profile Page -->
     <string name="full_name">Full Name</string>
