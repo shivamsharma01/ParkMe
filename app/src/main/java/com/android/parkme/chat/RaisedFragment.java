@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.parkme.R;
+import com.android.parkme.database.DatabaseClient;
 import com.android.parkme.database.Query;
 import com.android.parkme.util.Functions;
 import com.android.parkme.util.Globals;
@@ -31,7 +33,6 @@ import java.util.List;
 public class RaisedFragment extends Fragment {
     private static final String TAG = "RaisedFragment";
     private final DateFormat simple = new SimpleDateFormat("MMM dd");
-    private String user;
     private RecyclerView mcQueryRecyclerView;
     private QueryAdapter mAdapter;
     private SharedPreferences sharedpreferences;
@@ -39,19 +40,15 @@ public class RaisedFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_recycler, container, false);
+        View view = inflater.inflate(R.layout.fragment_query_recycler, container, false);
 
-        mcQueryRecyclerView = view.findViewById(R.id.chats_recycler_view);
+        mcQueryRecyclerView = view.findViewById(R.id.query_recycler_view);
         sharedpreferences = getActivity().getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
 
         mcQueryRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        List<Query> queries = new ArrayList<>();
-        user = sharedpreferences.getString(Globals.NAME, "");
-        // queries.add(new Query("Resolved", to, user, System.currentTimeMillis() - 20 * 24 * 60 * 60 * 1000, 1));
-
-        mAdapter = new QueryAdapter(queries);
-        mcQueryRecyclerView.setAdapter(mAdapter);
+        int id = sharedpreferences.getInt(Globals.ID, 0);
+        new RetrieveQuery().execute(id);
         return view;
     }
 
@@ -145,6 +142,21 @@ public class RaisedFragment extends Fragment {
             fragmentTransaction.commit();
         }
 
+    }
+
+    private class RetrieveQuery extends AsyncTask<Integer, Void, List<Query>> {
+
+        @Override
+        protected List<Query> doInBackground(Integer... params) {
+            return DatabaseClient.getInstance(getContext()).getAppDatabase().parkMeDao().raisedByMe(params[0]);
+        }
+
+        @Override
+        protected void onPostExecute(List<Query> queries) {
+            super.onPostExecute(queries);
+            mAdapter = new QueryAdapter(queries);
+            mcQueryRecyclerView.setAdapter(mAdapter);
+        }
     }
 
 }
