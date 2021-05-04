@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -26,12 +28,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChatFragment extends Fragment {
+
     private static final String TAG = "ChatFragment";
     private final DateFormat simple = new SimpleDateFormat("dd-MMM HH:mm");
     private String user;
     private RecyclerView mcChatRecyclerView;
     private ChatAdapter mAdapter;
     private SharedPreferences sharedpreferences;
+    private Button sendMessage_button;
+    private EditText mMessage;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -39,6 +44,10 @@ public class ChatFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_recycler, container, false);
 
         mcChatRecyclerView = view.findViewById(R.id.chats_recycler_view);
+
+        sendMessage_button = view.findViewById(R.id.button_gchat_send);
+        mMessage = view.findViewById(R.id.edit_gchat_message);
+
         sharedpreferences = getActivity().getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
 
         mcChatRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -53,6 +62,17 @@ public class ChatFragment extends Fragment {
         chats.add(new Chat("hello 1", user, to));
         chats.add(new Chat("hello 2", to, user));
 
+        sendMessage_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view)
+            {
+                if (!mMessage.getText().toString().isEmpty()) {
+                    chats.add(new Chat(mMessage.getText().toString().trim(), user, to));
+                    mAdapter.notifyDataSetChanged();
+                }
+
+            }
+        });
         mAdapter = new ChatAdapter(chats);
         mcChatRecyclerView.setAdapter(mAdapter);
         return view;
