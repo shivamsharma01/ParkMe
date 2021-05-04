@@ -3,7 +3,9 @@ package com.android.parkme.service;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
@@ -11,6 +13,7 @@ import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
+import com.android.parkme.MainActivity;
 import com.android.parkme.R;
 import com.android.parkme.util.Globals;
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -42,6 +45,15 @@ public class MessagingService extends FirebaseMessagingService {
                 notificationManager.createNotificationChannel(notificationChannel);
             }
 
+            String click_action = m.get("click_action");
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("msg", m.get("msg"));
+            intent.putExtra("date",  m.get("date"));
+            intent.putExtra("qid", m.get("qid"));
+
+            PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent,
+                    PendingIntent.FLAG_ONE_SHOT);
+
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
 
             notificationBuilder.setAutoCancel(true)
@@ -50,7 +62,8 @@ public class MessagingService extends FirebaseMessagingService {
                     .setSmallIcon(R.drawable.ic_identity_card)
                     .setTicker("Hearty365")
                     .setContentTitle(m.get("title"))
-                    .setContentText(m.get("msg"));
+                    .setContentText(m.get("msg"))
+                    .setContentIntent(pendingIntent);
 
             notificationManager.notify(/*notification id*/1, notificationBuilder.build());
         } else if("chat".equals(m.get("type"))) {
