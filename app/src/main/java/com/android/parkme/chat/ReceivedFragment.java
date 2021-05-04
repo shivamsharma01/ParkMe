@@ -48,8 +48,8 @@ public class ReceivedFragment extends Fragment {
         List<Query> queries = new ArrayList<>();
         user = sharedpreferences.getString(Globals.NAME, "");
         String to = "stranger";
-        queries.add(new Query("Resolved", to, user, System.currentTimeMillis() - 20 * 24 * 60 * 60 * 1000, 1));
-        queries.add(new Query("Unresolved", to, user, System.currentTimeMillis() - 40 * 24 * 60 * 60 * 1000, 36));
+//        queries.add(new Query("Resolved", to, user, System.currentTimeMillis() - 20 * 24 * 60 * 60 * 1000, 1));
+//        queries.add(new Query("Unresolved", to, user, System.currentTimeMillis() - 40 * 24 * 60 * 60 * 1000, 36));
 
         mAdapter = new QueryAdapter(queries);
         mcQueryRecyclerView.setAdapter(mAdapter);

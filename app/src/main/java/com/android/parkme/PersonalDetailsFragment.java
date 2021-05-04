@@ -52,7 +52,7 @@ public class PersonalDetailsFragment extends Fragment {
         exit = view.findViewById(R.id.exit);
         exit.setOnClickListener(v -> exit());
 
-        String url = String.format(getActivity().getResources().getString(R.string.url).toString().concat(APIs.getDetails), sharedpreferences.getString(Globals.ID, ""));
+        String url = String.format(getActivity().getResources().getString(R.string.url).toString().concat(APIs.getDetails), sharedpreferences.getInt(Globals.ID, 0));
         JsonRequest request = new JsonRequest(Request.Method.GET, url, null, response -> setFields(response), error -> this.handleError(error));
         queue.add(request);
         return view;

@@ -10,8 +10,9 @@ import androidx.room.RoomDatabase;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {Chat.class}, version = 1, exportSchema = false)
+@Database(entities = {Chat.class, Query.class}, version = 1, exportSchema = false)
 public abstract class ParkMeRoomDatabase extends RoomDatabase {
+    public abstract ParkMeDAO parkMeDao();
 
     private static final int NUMBER_OF_THREADS = 4;
     static final ExecutorService databaseWriteExecutor =
@@ -23,7 +24,7 @@ public abstract class ParkMeRoomDatabase extends RoomDatabase {
             synchronized (ParkMeRoomDatabase.class) {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                            ParkMeRoomDatabase.class, "parkme_database")
+                            ParkMeRoomDatabase.class, "parkMe_database")
                             .build();
                 }
             }
@@ -31,5 +32,4 @@ public abstract class ParkMeRoomDatabase extends RoomDatabase {
         return INSTANCE;
     }
 
-    public abstract ParkMeDAO parkMeDao();
 }

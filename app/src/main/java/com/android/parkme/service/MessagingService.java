@@ -32,7 +32,6 @@ public class MessagingService extends FirebaseMessagingService {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "My Notifications",
                         NotificationManager.IMPORTANCE_HIGH);
-                notificationChannel.setDescription("Channel description");
                 notificationChannel.enableLights(true);
                 notificationChannel.setLightColor(Color.RED);
                 notificationChannel.setVibrationPattern(new long[]{0, 1000, 500, 1000});

@@ -13,22 +13,17 @@ import androidx.fragment.app.Fragment;
 
 import com.android.parkme.util.Globals;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class QueryDetailsFragment extends Fragment {
     private static final String TAG = "QueryDetailsFragment";
     private TextView queryNumber, dateText, messageText, vehicleNumber;
     private ImageView vehicleNumberImage;
-    private String queryNumberVal, statusVal, messageVal, dateTime, vehicleNumberVal;
-    private byte[] vehicleNumberImageBArray;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        queryNumberVal = String.valueOf(getArguments().getInt(Globals.QUERY_NUMBER));
-        statusVal = getArguments().getString(Globals.STATUS);
-        messageVal = getArguments().getString(Globals.MESSAGE);
-        dateTime = getArguments().getString(Globals.QUERY_CREATE_DATE);
-        vehicleNumberImageBArray = getArguments().getByteArray(Globals.VEHICLE_IMAGE_NUMBER);
-        vehicleNumberVal = getArguments().getString(Globals.VEHICLE_REGISTRATION_NUMBER);
         return inflater.inflate(R.layout.fragment_query_details, container, false);
     }
 
@@ -41,11 +36,14 @@ public class QueryDetailsFragment extends Fragment {
         vehicleNumberImage = getActivity().findViewById(R.id.clicked_image_qd);
         vehicleNumber = getActivity().findViewById(R.id.vehicle_number_qd);
 
-        queryNumber.setText(queryNumberVal);
-        messageText.setText(messageVal);
-        dateText.setText(dateTime);
+        queryNumber.setText(String.valueOf(getArguments().getInt(Globals.QUERY_NUMBER)));
+        messageText.setText(getArguments().getString(Globals.MESSAGE));
+        dateText.setText(new SimpleDateFormat("YYYY-MM-dd HH:mm").format(new Date(getArguments().getLong(Globals.QUERY_CREATE_DATE))));
+
+        byte[] vehicleNumberImageBArray = getArguments().getByteArray(Globals.VEHICLE_IMAGE_NUMBER);
         Bitmap vehicleNumberImageBitmap = BitmapFactory.decodeByteArray(vehicleNumberImageBArray, 0, vehicleNumberImageBArray.length);
+
         vehicleNumberImage.setImageBitmap(vehicleNumberImageBitmap);
-        vehicleNumber.setText(vehicleNumberVal);
+        vehicleNumber.setText(getArguments().getString(Globals.VEHICLE_REGISTRATION_NUMBER));
     }
 }

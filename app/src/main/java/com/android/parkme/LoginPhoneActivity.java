@@ -111,10 +111,10 @@ public class LoginPhoneActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedpreferences.edit();
         try {
             editor.putString(Globals.SESSION_KEY, response.getString(Globals.SESSION_KEY));
-            editor.putString(Globals.ID, response.getString(Globals.ID));
+            editor.putInt(Globals.ID, Integer.parseInt(response.getString(Globals.ID)));
             editor.putString(Globals.NAME, response.getString(Globals.NAME));
             editor.putString(Globals.EMAIL, response.getString(Globals.EMAIL));
-            editor.putString(Globals.NUMBER, response.getString(Globals.NUMBER));
+            editor.putLong(Globals.NUMBER, Long.parseLong(response.getString(Globals.NUMBER)));
             editor.commit();
         } catch (JSONException e) {
             e.printStackTrace();

@@ -15,7 +15,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,6 +25,8 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.android.parkme.database.DatabaseClient;
@@ -49,6 +53,7 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -65,9 +70,23 @@ public class RaiseQueryFragment extends Fragment {
     private Button resetBtn, sendBtn;
     private Bitmap bitmap;
     private byte[] bArray;
-    private String queryTypeVal, current_value, messageVal, vehicleNumberVal, dateTime, responseBody;
+    private String queryTypeVal, current_value;
     private RequestQueue queue = null;
     private SharedPreferences sharedpreferences;
+    private View view;
+    private JSONObject requestObject,  responseObject;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.fragment_raise_query, container, false);
+        return view;
+    }
 
     @Override
     public void onStart() {
@@ -77,17 +96,17 @@ public class RaiseQueryFragment extends Fragment {
         queryTypeAdaptor = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1,
                 getResources().getStringArray(R.array.query_types_array));
         queryTypeAdaptor.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        queryTypeDropdown = (Spinner) view.findViewById(R.id.dropdown_query_types);
+        messageText = view.findViewById(R.id.message_text);
+        vehicleNumber = view.findViewById(R.id.number_value);
+        clickedImage = view.findViewById(R.id.clicked_image);
+        sendBtn = view.findViewById(R.id.send_button);
+        addImage = view.findViewById(R.id.add_image_button);
+        dateText = view.findViewById(R.id.date_value);
+        resetBtn = view.findViewById(R.id.reset_button);
+
         queryTypeDropdown.setAdapter(queryTypeAdaptor);
-
-        queryTypeDropdown = getActivity().findViewById(R.id.dropdown_query_types);
-        messageText = getActivity().findViewById(R.id.message_text);
-        vehicleNumber = getActivity().findViewById(R.id.number_value);
-        clickedImage = getActivity().findViewById(R.id.clicked_image);
-        sendBtn = getActivity().findViewById(R.id.send_button);
-        addImage = getActivity().findViewById(R.id.add_image_button);
-        dateText = getActivity().findViewById(R.id.date_value);
-        resetBtn = getActivity().findViewById(R.id.reset_button);
-
         dateText.setText(new SimpleDateFormat("YYYY-MM-dd HH:mm").format(new Date()));
 
         addImage.setOnClickListener(v -> {
@@ -114,24 +133,23 @@ public class RaiseQueryFragment extends Fragment {
         if (Functions.networkCheck(getContext())) {
             String url = getResources().getString(R.string.url).concat(APIs.raiseQuery);
             Log.i(TAG, "Raising Query " + url);
-            JSONObject raiseQueryObject = new JSONObject();
+            requestObject = new JSONObject();
             try {
                 queryTypeVal = queryTypeDropdown.getSelectedItem().toString();
-                messageVal = messageText.getText().toString();
-                vehicleNumberVal = vehicleNumber.getText().toString();
-                raiseQueryObject.put(Globals.QUERY_TYPE, queryTypeVal);
-                raiseQueryObject.put(Globals.STATUS, Globals.QUERY_DEFAULT_STATUS);
-                raiseQueryObject.put(Globals.MESSAGE, messageVal);
-                raiseQueryObject.put(Globals.QUERY_CREATE_DATE, new Date());
-                raiseQueryObject.put(Globals.VEHICLE_REGISTRATION_NUMBER, vehicleNumberVal);
+                requestObject.put(Globals.QUERY_TYPE, queryTypeVal);
+                requestObject.put(Globals.STATUS, Globals.QUERY_DEFAULT_STATUS);
+                requestObject.put(Globals.MESSAGE, messageText.getText().toString());
+                requestObject.put(Globals.QUERY_CREATE_DATE, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(new Date()));
+                requestObject.put(Globals.VEHICLE_REGISTRATION_NUMBER, vehicleNumber.getText().toString());
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
-            JsonRequest request = new JsonObjectRequest(Request.Method.POST, url, raiseQueryObject, response -> {
+            JsonRequest request = new JsonObjectRequest(Request.Method.POST, url, requestObject, response -> {
+                responseObject = response;
                 Log.i(TAG, "Query Raised Successfully");
                 if (null != response)
-                    onSuccess(raiseQueryObject, response);
+                    onSuccess();
             }, error -> this.handleError(error)) {
                 @Override
                 public Map<String, String> getHeaders() {
@@ -150,30 +168,20 @@ public class RaiseQueryFragment extends Fragment {
         Toast.makeText(getActivity(), "An error occurred", Toast.LENGTH_SHORT).show();
     }
 
-    private void onSuccess(JSONObject requestObject, JSONObject responseObject) {
-        int qid = 0;
-        Bundle bundle = new Bundle();
+    private void onSuccess() {
         try {
-            qid = Integer.parseInt(responseObject.getString(Globals.QID));
-            Query query = new Query(qid,
-                    Globals.STATUS,
+            Query query = new Query(Integer.parseInt(responseObject.getString(Globals.QID)),
+                    Globals.QUERY_DEFAULT_STATUS,
                     sharedpreferences.getString(Globals.NAME, ""),
                     sharedpreferences.getInt(Globals.ID, 0),
                     responseObject.getString(Globals.TO_USER_NAME),
                     responseObject.getInt(Globals.TO_USER_ID),
-                    ((Date)requestObject.get(Globals.QUERY_CREATE_DATE)).getTime(),
-                    (float)responseObject.getDouble(Globals.RATING));
+                    new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(requestObject.getString(Globals.QUERY_CREATE_DATE)).getTime(),
+                    (float) responseObject.getDouble(Globals.RATING));
             new QuerySave().execute(query);
-            bundle.putInt(Globals.QUERY_NUMBER, qid);
-            bundle.putString(Globals.STATUS, Globals.QUERY_DEFAULT_STATUS);
-            bundle.putString(Globals.MESSAGE, messageVal);
-            bundle.putLong(Globals.QUERY_CREATE_DATE, ((Date)requestObject.get(Globals.QUERY_CREATE_DATE)).getTime());
-            bundle.putByteArray(Globals.VEHICLE_IMAGE_NUMBER, bArray);
-            bundle.putString(Globals.VEHICLE_REGISTRATION_NUMBER, requestObject.getString(Globals.VEHICLE_NUMBER));
-            QueryDetailsFragment querydetailsFragment = new QueryDetailsFragment();
-            querydetailsFragment.setArguments(bundle);
-            Functions.openFragment(querydetailsFragment, getActivity());
         } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
             e.printStackTrace();
         }
     }
@@ -262,9 +270,28 @@ public class RaiseQueryFragment extends Fragment {
 
         @Override
         protected Void doInBackground(Query... params) {
-            DatabaseClient.getInstance(getActivity()).getAppDatabase().parkMeDao().insert(params[0]);
+            DatabaseClient.getInstance(getContext()).getAppDatabase().parkMeDao().insert(params[0]);
+            finishTask();
             return null;
         }
 
+    }
+    private void finishTask() {
+        try {
+            Bundle bundle = new Bundle();
+            bundle.putInt(Globals.QUERY_NUMBER, Integer.parseInt(responseObject.getString(Globals.QID)));
+            bundle.putString(Globals.STATUS, Globals.QUERY_DEFAULT_STATUS);
+            bundle.putString(Globals.MESSAGE, requestObject.getString(Globals.MESSAGE));
+            bundle.putLong(Globals.QUERY_CREATE_DATE, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(requestObject.getString(Globals.QUERY_CREATE_DATE)).getTime());
+            bundle.putByteArray(Globals.VEHICLE_IMAGE_NUMBER, bArray);
+            bundle.putString(Globals.VEHICLE_REGISTRATION_NUMBER, requestObject.getString(Globals.VEHICLE_REGISTRATION_NUMBER));
+            QueryDetailsFragment querydetailsFragment = new QueryDetailsFragment();
+            querydetailsFragment.setArguments(bundle);
+            Functions.openFragment(querydetailsFragment, getActivity());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 }
