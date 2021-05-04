@@ -45,7 +45,7 @@ public class MessagingService extends FirebaseMessagingService {
                 notificationManager.createNotificationChannel(notificationChannel);
             }
 
-            String click_action = m.get("click_action");
+//            String click_action = m.get("click_action");
             Intent intent = new Intent(this, MainActivity.class);
             intent.putExtra("msg", m.get("msg"));
             intent.putExtra("date",  m.get("date"));
