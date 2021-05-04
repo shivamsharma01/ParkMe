@@ -31,4 +31,10 @@ public class Globals {
     public static final String DATA = "data";
     public static final String TRACE = "trace";
     public static final String HEADERS = "headers";
+
+    public static final String QUERY_DEFAULT_STATUS = "Unresolved";
+    public static final String TO_USER_ID = "toId";
+    public static final String TO_USER_NAME = "toUser";
+    public static final String VEHICLE_NUMBER = "vehicleNumberTo";
+    public static final String RATING = "rating";
 }

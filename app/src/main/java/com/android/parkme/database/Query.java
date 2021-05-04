@@ -14,12 +14,20 @@ public class Query {
     private int qid;
 
     @NonNull
+    @ColumnInfo(name = "from_name")
+    private String fromName;
+
+    @NonNull
     @ColumnInfo(name = "from_id")
-    private String from;
+    private int fromId;
+
+    @NonNull
+    @ColumnInfo(name = "to_name")
+    private String toName;
 
     @NonNull
     @ColumnInfo(name = "to_id")
-    private String to;
+    private int toId;
 
     @NonNull
     @ColumnInfo(name = "status")
@@ -36,10 +44,13 @@ public class Query {
     public Query() {
     }
 
-    public Query(String status, String from, String to, long time, float rating) {
+    public Query(int qid, String status, String fromName, int fromId, String toName, int toId, long time, float rating) {
+        this.qid = qid;
         this.status = status;
-        this.from = from;
-        this.to = to;
+        this.fromName = fromName;
+        this.fromId = fromId;
+        this.toName = toName;
+        this.toId = toId;
         this.time = time;
         this.rating = rating;
     }
@@ -53,21 +64,21 @@ public class Query {
     }
 
     @NonNull
-    public String getFrom() {
-        return from;
+    public String getFromName() {
+        return fromName;
     }
 
-    public void setFrom(@NonNull String from) {
-        this.from = from;
+    public void setFromName(@NonNull String fromName) {
+        this.fromName = fromName;
     }
 
     @NonNull
-    public String getTo() {
-        return to;
+    public String getToName() {
+        return toName;
     }
 
-    public void setTo(@NonNull String to) {
-        this.to = to;
+    public void setToName(@NonNull String toName) {
+        this.toName = toName;
     }
 
     @NonNull
@@ -93,5 +104,22 @@ public class Query {
 
     public void setRating(float rating) {
         this.rating = rating;
+    }
+
+    public int getFromId() {
+        return fromId;
+    }
+
+    public void setFromId(int fromId) {
+        this.fromId = fromId;
+    }
+
+    @NonNull
+    public int getToId() {
+        return toId;
+    }
+
+    public void setToId(@NonNull int toId) {
+        this.toId = toId;
     }
 }

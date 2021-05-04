@@ -48,13 +48,8 @@ public class RaisedFragment extends Fragment {
 
         List<Query> queries = new ArrayList<>();
         user = sharedpreferences.getString(Globals.NAME, "");
-        String to = "stranger";
-        queries.add(new Query("Resolved", to, user, System.currentTimeMillis() - 20 * 24 * 60 * 60 * 1000, 1));
-        queries.add(new Query("Unresolved", to, user, System.currentTimeMillis() - 17 * 24 * 60 * 60 * 1000, 0));
-        queries.add(new Query("Resolved", to, user, System.currentTimeMillis() - 12 * 24 * 60 * 60 * 1000, -1));
-        queries.add(new Query("Unresolved", to, user, System.currentTimeMillis() - 8 * 24 * 60 * 60 * 1000, 3.3f));
-        queries.add(new Query("Unresolved", to, user, System.currentTimeMillis() - 2 * 24 * 60 * 60 * 1000, 4.7f));
-        queries.add(new Query("Unresolved", to, user, System.currentTimeMillis() - 2 * 24 * 60 * 60 * 1000, 5f));
+        // queries.add(new Query("Resolved", to, user, System.currentTimeMillis() - 20 * 24 * 60 * 60 * 1000, 1));
+
         mAdapter = new QueryAdapter(queries);
         mcQueryRecyclerView.setAdapter(mAdapter);
         return view;
@@ -110,7 +105,7 @@ public class RaisedFragment extends Fragment {
 
         public void bind(Query query) {
             mQuery = query;
-            mNameTextView.setText(query.getTo());
+            mNameTextView.setText(query.getToName());
             mNameTextView.setPaintFlags(mNameTextView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             mDateTextView.setText(Functions.parseDateText(simple.format(query.getTime())));
             mStatusTextView.setText(query.getStatus());

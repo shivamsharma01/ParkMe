@@ -104,7 +104,7 @@ public class ReceivedFragment extends Fragment {
 
         public void bind(Query query) {
             mQuery = query;
-            mNameTextView.setText(query.getFrom());
+            mNameTextView.setText(query.getFromName());
             mNameTextView.setPaintFlags(mNameTextView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             mDateTextView.setText(Functions.parseDateText(simple.format(query.getTime())));
             mStatusTextView.setText(query.getStatus());

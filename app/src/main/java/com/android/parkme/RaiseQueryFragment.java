@@ -25,6 +25,8 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
+import com.android.parkme.database.DatabaseClient;
+import com.android.parkme.database.Query;
 import com.android.parkme.util.APIs;
 import com.android.parkme.util.Functions;
 import com.android.parkme.util.Globals;
@@ -63,7 +65,7 @@ public class RaiseQueryFragment extends Fragment {
     private Button resetBtn, sendBtn;
     private Bitmap bitmap;
     private byte[] bArray;
-    private String queryTypeVal, current_value, statusVal, messageVal, vehicleNumberVal, dateTime, responseBody;
+    private String queryTypeVal, current_value, messageVal, vehicleNumberVal, dateTime, responseBody;
     private RequestQueue queue = null;
     private SharedPreferences sharedpreferences;
 
@@ -86,7 +88,7 @@ public class RaiseQueryFragment extends Fragment {
         dateText = getActivity().findViewById(R.id.date_value);
         resetBtn = getActivity().findViewById(R.id.reset_button);
 
-        dateText.setText(new SimpleDateFormat("YYYY-MM-dd HH:mm:ss").format(new Date()));
+        dateText.setText(new SimpleDateFormat("YYYY-MM-dd HH:mm").format(new Date()));
 
         addImage.setOnClickListener(v -> {
             if (Functions.checkAndRequestPermissions(getActivity())) {
@@ -117,15 +119,10 @@ public class RaiseQueryFragment extends Fragment {
                 queryTypeVal = queryTypeDropdown.getSelectedItem().toString();
                 messageVal = messageText.getText().toString();
                 vehicleNumberVal = vehicleNumber.getText().toString();
-                dateTime = dateText.getText().toString();
-                String date = dateTime.split(" ")[0];
-                String timestamp = dateTime.split(" ")[1];
-                String dateTimeWithT = date.concat("T").concat(timestamp);
-                Log.i(TAG, dateTimeWithT.toString());
                 raiseQueryObject.put(Globals.QUERY_TYPE, queryTypeVal);
-                raiseQueryObject.put(Globals.STATUS, "Open");
+                raiseQueryObject.put(Globals.STATUS, Globals.QUERY_DEFAULT_STATUS);
                 raiseQueryObject.put(Globals.MESSAGE, messageVal);
-                raiseQueryObject.put(Globals.QUERY_CREATE_DATE, dateTimeWithT);
+                raiseQueryObject.put(Globals.QUERY_CREATE_DATE, new Date());
                 raiseQueryObject.put(Globals.VEHICLE_REGISTRATION_NUMBER, vehicleNumberVal);
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -133,15 +130,8 @@ public class RaiseQueryFragment extends Fragment {
 
             JsonRequest request = new JsonObjectRequest(Request.Method.POST, url, raiseQueryObject, response -> {
                 Log.i(TAG, "Query Raised Successfully");
-                if (null != response) {
-                    int qid = 0;
-                    try {
-                        qid = Integer.parseInt(response.getString(Globals.QID));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    onSuccess(qid);
-                }
+                if (null != response)
+                    onSuccess(raiseQueryObject, response);
             }, error -> this.handleError(error)) {
                 @Override
                 public Map<String, String> getHeaders() {
@@ -152,7 +142,7 @@ public class RaiseQueryFragment extends Fragment {
             };
             queue.add(request);
         } else {
-            Toast.makeText(getActivity(), "Please connect to Internet", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Please connect to the Internet", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -160,17 +150,32 @@ public class RaiseQueryFragment extends Fragment {
         Toast.makeText(getActivity(), "An error occurred", Toast.LENGTH_SHORT).show();
     }
 
-    private void onSuccess(int qid) {
+    private void onSuccess(JSONObject requestObject, JSONObject responseObject) {
+        int qid = 0;
         Bundle bundle = new Bundle();
-        bundle.putInt(Globals.QUERY_NUMBER, qid);
-        bundle.putString(Globals.STATUS, statusVal);
-        bundle.putString(Globals.MESSAGE, messageVal);
-        bundle.putString(Globals.QUERY_CREATE_DATE, dateTime);
-        bundle.putByteArray(Globals.VEHICLE_IMAGE_NUMBER, bArray);
-        bundle.putString(Globals.VEHICLE_REGISTRATION_NUMBER, vehicleNumberVal);
-        QueryDetailsFragment querydetailsFragment = new QueryDetailsFragment();
-        querydetailsFragment.setArguments(bundle);
-        Functions.openFragment(querydetailsFragment, getActivity());
+        try {
+            qid = Integer.parseInt(responseObject.getString(Globals.QID));
+            Query query = new Query(qid,
+                    Globals.STATUS,
+                    sharedpreferences.getString(Globals.NAME, ""),
+                    sharedpreferences.getInt(Globals.ID, 0),
+                    responseObject.getString(Globals.TO_USER_NAME),
+                    responseObject.getInt(Globals.TO_USER_ID),
+                    ((Date)requestObject.get(Globals.QUERY_CREATE_DATE)).getTime(),
+                    (float)responseObject.getDouble(Globals.RATING));
+            new QuerySave().execute(query);
+            bundle.putInt(Globals.QUERY_NUMBER, qid);
+            bundle.putString(Globals.STATUS, Globals.QUERY_DEFAULT_STATUS);
+            bundle.putString(Globals.MESSAGE, messageVal);
+            bundle.putLong(Globals.QUERY_CREATE_DATE, ((Date)requestObject.get(Globals.QUERY_CREATE_DATE)).getTime());
+            bundle.putByteArray(Globals.VEHICLE_IMAGE_NUMBER, bArray);
+            bundle.putString(Globals.VEHICLE_REGISTRATION_NUMBER, requestObject.getString(Globals.VEHICLE_NUMBER));
+            QueryDetailsFragment querydetailsFragment = new QueryDetailsFragment();
+            querydetailsFragment.setArguments(bundle);
+            Functions.openFragment(querydetailsFragment, getActivity());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -187,7 +192,7 @@ public class RaiseQueryFragment extends Fragment {
                     ByteBuffer byteBuffer = ByteBuffer.allocate(size);
                     bitmap.copyPixelsToBuffer(byteBuffer);
                     byte[] byteArray = byteBuffer.array();
-                    new MyTask(byteArray, width, height, bitmap.getConfig().name()).execute();
+                    new BitmapTask(byteArray, width, height, bitmap.getConfig().name()).execute();
                     clickedImage.setImageBitmap(bitmap);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -234,10 +239,10 @@ public class RaiseQueryFragment extends Fragment {
         vehicleNumber.setText(str);
     }
 
-    private class MyTask extends AsyncTask<Void, String, String> {
+    private class BitmapTask extends AsyncTask<Void, Void, Void> {
         private final Bitmap bitmap_tmp;
 
-        public MyTask(byte[] byteArray, int width, int height, String conf) {
+        public BitmapTask(byte[] byteArray, int width, int height, String conf) {
             Bitmap.Config configBmp = Bitmap.Config.valueOf(conf);
             Bitmap bitmap_tmp = Bitmap.createBitmap(width, height, configBmp);
             ByteBuffer buffer = ByteBuffer.wrap(byteArray);
@@ -246,11 +251,20 @@ public class RaiseQueryFragment extends Fragment {
         }
 
         @Override
-        protected String doInBackground(Void... params) {
+        protected Void doInBackground(Void... params) {
             runTextRecognition(this.bitmap_tmp);
             return null;
         }
 
     }
 
+    private class QuerySave extends AsyncTask<Query, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Query... params) {
+            DatabaseClient.getInstance(getActivity()).getAppDatabase().parkMeDao().insert(params[0]);
+            return null;
+        }
+
+    }
 }
