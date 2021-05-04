@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChatFragment extends Fragment {
+    private static final String TAG = "ChatFragment";
     private final DateFormat simple = new SimpleDateFormat("dd-MMM HH:mm");
     private String user;
     private RecyclerView mcChatRecyclerView;

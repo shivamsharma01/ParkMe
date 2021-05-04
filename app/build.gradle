@@ -37,6 +37,7 @@ dependencies {
     implementation 'androidx.wear:wear:1.1.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     def room_version = "2.3.0"
+    implementation 'com.iarcuschin:simpleratingbar:0.1.5'
 
     implementation "androidx.room:room-runtime:$room_version"
     testImplementation 'junit:junit:4.+'

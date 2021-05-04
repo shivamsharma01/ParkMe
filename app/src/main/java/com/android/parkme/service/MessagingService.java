@@ -16,13 +16,11 @@ import com.android.parkme.util.Globals;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import org.json.JSONObject;
-
 import java.util.Map;
 
 public class MessagingService extends FirebaseMessagingService {
-    private SharedPreferences sharedpreferences;
     private static final String TAG = "MessagingService";
+    private SharedPreferences sharedpreferences;
 
     public void onMessageReceived(RemoteMessage message) {
         System.out.println(message.getFrom());
@@ -53,8 +51,8 @@ public class MessagingService extends FirebaseMessagingService {
                     .setContentText(m.get("msg"));
 
             notificationManager.notify(/*notification id*/1, notificationBuilder.build());
-        } else if("chat".equals(m.get("type"))) {
-            for(Map.Entry<String,String> kv: m.entrySet()) {
+        } else if ("chat".equals(m.get("type"))) {
+            for (Map.Entry<String, String> kv : m.entrySet()) {
                 System.out.println(kv.getKey());
                 System.out.println(kv.getValue());
             }

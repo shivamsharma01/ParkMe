@@ -3,8 +3,6 @@ package com.android.parkme;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +14,7 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 
 import com.android.parkme.util.APIs;
+import com.android.parkme.util.Functions;
 import com.android.parkme.util.Globals;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
@@ -35,40 +34,36 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ChangePasswordFragment extends Fragment {
-    RequestQueue queue = null;
-    Button cSubmit;
-    EditText emailText, old_p, new_p, new_p_c;
+    private static final String TAG = "ChangePasswordFragment";
+    private RequestQueue queue = null;
+    private Button cSubmit;
+    private EditText emailText, oldPassword, newPassword, newConfirmPassword;
     private SharedPreferences sharedpreferences;
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_change_password, container, false);
-        sharedpreferences = getActivity().getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
         queue = Volley.newRequestQueue(getActivity());
         cSubmit = view.findViewById(R.id.cpassword_button);
         emailText = view.findViewById(R.id.cpassword_email_value);
-        emailText.setText(sharedpreferences.getString(Globals.EMAIL, ""));
+        oldPassword = view.findViewById(R.id.cpassword_old_value);
+        newPassword = view.findViewById(R.id.cpassword_new_value);
+        newConfirmPassword = view.findViewById(R.id.cpassword_new_confirm_value);
         emailText.setEnabled(false);
-        old_p = view.findViewById(R.id.cpassword_old_value);
-        new_p = view.findViewById(R.id.cpassword_new_value);
-        new_p_c = view.findViewById(R.id.cpassword_new_confirm_value);
+        sharedpreferences = getActivity().getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
+        emailText.setText(sharedpreferences.getString(Globals.EMAIL, ""));
         cSubmit.setOnClickListener(v -> onSubmit());
         return view;
     }
 
     private void onSubmit() {
-        if (network_check()) {
-            if (old_p.getText().toString().equals("") || new_p.getText().toString().equals("") || new_p_c.getText().toString().equals("")) {
+        if (Functions.networkCheck(getContext())) {
+            if (oldPassword.getText().toString().equals("") || newPassword.getText().toString().equals("") || newConfirmPassword.getText().toString().equals("")) {
                 Toast.makeText(getContext(), "All Fields are mandatory", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (!new_p.getText().toString().equals(new_p_c.getText().toString())) {
+            if (!newPassword.getText().toString().equals(newConfirmPassword.getText().toString())) {
                 Toast.makeText(getContext(), "Passwords Should Match", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -77,7 +72,7 @@ public class ChangePasswordFragment extends Fragment {
                 @Override
                 public Map<String, String> getHeaders() {
                     Map<String, String> params = new HashMap<>();
-                    params.put("session-id", sharedpreferences.getString(Globals.SESSION_KEY, ""));
+                    params.put(Globals.SESSION_ID, sharedpreferences.getString(Globals.SESSION_KEY, ""));
                     return params;
                 }
 
@@ -102,20 +97,13 @@ public class ChangePasswordFragment extends Fragment {
         }
     }
 
-    private boolean network_check() {
-        ConnectivityManager connMgr = (ConnectivityManager)
-                getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        return (networkInfo != null && networkInfo.isConnected());
-    }
-
     private JSONObject getJsonObject() {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("email", emailText.getText().toString());
-            jsonObject.put("oldPassword", old_p.getText().toString());
-            jsonObject.put("newPassword", new_p.getText().toString());
-            jsonObject.put("newConfirmPassword", new_p_c.getText().toString());
+            jsonObject.put(Globals.EMAIL, emailText.getText().toString());
+            jsonObject.put(Globals.OLD_PASSWORD, oldPassword.getText().toString());
+            jsonObject.put(Globals.NEW_PASSWORD, newPassword.getText().toString());
+            jsonObject.put(Globals.NEW_CONFIRM_PASSWORD, newConfirmPassword.getText().toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -133,8 +121,8 @@ public class ChangePasswordFragment extends Fragment {
 
     private void setError(JSONObject data) {
         try {
-            int status = data.getInt("status");
-            String trace = data.get("trace").toString();
+            int status = data.getInt(Globals.DATA);
+            String trace = data.get(Globals.TRACE).toString();
             switch (status) {
                 case 403:
                     exit();
@@ -149,15 +137,15 @@ public class ChangePasswordFragment extends Fragment {
                         status = Integer.parseInt(split[0]);
                         switch (status) {
                             case 411:
-                                new_p.setError(split[1]);
-                                new_p_c.setError(split[1]);
+                                newPassword.setError(split[1]);
+                                newConfirmPassword.setError(split[1]);
                                 break;
                             case 412:
                             case 4132:
-                                new_p.setError(split[1]);
+                                newPassword.setError(split[1]);
                                 break;
                             default:
-                                old_p.setError(split[1]);
+                                oldPassword.setError(split[1]);
                                 break;
                         }
                     } else

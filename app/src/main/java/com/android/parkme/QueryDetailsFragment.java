@@ -10,34 +10,26 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
-import androidx.room.Room;
+
+import com.android.parkme.util.Globals;
 
 public class QueryDetailsFragment extends Fragment {
-
+    private static final String TAG = "QueryDetailsFragment";
     private TextView queryNumber, dateText, messageText, vehicleNumber;
     private ImageView vehicleNumberImage;
-    private String queryNumberVal;
-    private String statusVal, messageVal, dateTime, vehicleNumberVal;
-    byte[] vehicleNumberImageBArray;
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
+    private String queryNumberVal, statusVal, messageVal, dateTime, vehicleNumberVal;
+    private byte[] vehicleNumberImageBArray;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_query_details, container, false);
-        int queryNumberInt = (getArguments().getInt("queryNumber"));
-        queryNumberVal = String.valueOf(queryNumberInt);
-        statusVal = getArguments().getString("status");
-        messageVal = getArguments().getString("message");
-        dateTime = getArguments().getString("queryCreateDate");
-        vehicleNumberImageBArray = getArguments().getByteArray("vehicleNumberImage");
-        vehicleNumberVal = getArguments().getString("vehicleRegistrationNumber");
-
-        return view;
+        queryNumberVal = String.valueOf(getArguments().getInt(Globals.QUERY_NUMBER));
+        statusVal = getArguments().getString(Globals.STATUS);
+        messageVal = getArguments().getString(Globals.MESSAGE);
+        dateTime = getArguments().getString(Globals.QUERY_CREATE_DATE);
+        vehicleNumberImageBArray = getArguments().getByteArray(Globals.VEHICLE_IMAGE_NUMBER);
+        vehicleNumberVal = getArguments().getString(Globals.VEHICLE_REGISTRATION_NUMBER);
+        return inflater.inflate(R.layout.fragment_query_details, container, false);
     }
 
     @Override

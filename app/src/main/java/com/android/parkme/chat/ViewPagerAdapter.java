@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import java.util.ArrayList;
 
 public class ViewPagerAdapter extends FragmentPagerAdapter {
+    private static final String TAG = "ViewPagerAdapter";
     private final ArrayList<Fragment> fragmentList = new ArrayList<>();
     private final ArrayList<String> fragmentTitle = new ArrayList<>();
 
@@ -25,7 +26,7 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
         return fragmentList.size();
     }
 
-    public void addfragment(Fragment fragment, String title) {
+    public void addFragment(Fragment fragment, String title) {
         fragmentList.add(fragment);
         fragmentTitle.add(title);
     }

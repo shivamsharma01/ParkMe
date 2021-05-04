@@ -19,7 +19,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.parkme.R;
 import com.android.parkme.database.Query;
+import com.android.parkme.util.Functions;
 import com.android.parkme.util.Globals;
+import com.iarcuschin.simpleratingbar.SimpleRatingBar;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -27,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RaisedFragment extends Fragment {
+    private static final String TAG = "RaisedFragment";
     private final DateFormat simple = new SimpleDateFormat("MMM dd");
     private String user;
     private RecyclerView mcQueryRecyclerView;
@@ -46,10 +49,12 @@ public class RaisedFragment extends Fragment {
         List<Query> queries = new ArrayList<>();
         user = sharedpreferences.getString(Globals.NAME, "");
         String to = "stranger";
-        queries.add(new Query("Resolved", to, user, System.currentTimeMillis() - 20 * 24 * 60 * 60 * 1000));
-        queries.add(new Query("Unresolved", to, user, System.currentTimeMillis() - 40 * 24 * 60 * 60 * 1000));
-
-
+        queries.add(new Query("Resolved", to, user, System.currentTimeMillis() - 20 * 24 * 60 * 60 * 1000, 1));
+        queries.add(new Query("Unresolved", to, user, System.currentTimeMillis() - 17 * 24 * 60 * 60 * 1000, 0));
+        queries.add(new Query("Resolved", to, user, System.currentTimeMillis() - 12 * 24 * 60 * 60 * 1000, -1));
+        queries.add(new Query("Unresolved", to, user, System.currentTimeMillis() - 8 * 24 * 60 * 60 * 1000, 3.3f));
+        queries.add(new Query("Unresolved", to, user, System.currentTimeMillis() - 2 * 24 * 60 * 60 * 1000, 4.7f));
+        queries.add(new Query("Unresolved", to, user, System.currentTimeMillis() - 2 * 24 * 60 * 60 * 1000, 5f));
         mAdapter = new QueryAdapter(queries);
         mcQueryRecyclerView.setAdapter(mAdapter);
         return view;
@@ -67,7 +72,7 @@ public class RaisedFragment extends Fragment {
 
         @Override
         public QueryHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(getActivity()).inflate(R.layout.list_query_view, parent, false);
+            View view = LayoutInflater.from(getActivity()).inflate(R.layout.list_query_view_raised, parent, false);
             return new QueryHolder(view);
         }
 
@@ -91,6 +96,7 @@ public class RaisedFragment extends Fragment {
         private Query mQuery;
         private View v;
         private TextView mNameTextView, mDateTextView, mStatusTextView;
+        private SimpleRatingBar ratingbar;
 
         public QueryHolder(View itemView) {
             super(itemView);
@@ -99,18 +105,40 @@ public class RaisedFragment extends Fragment {
             mNameTextView = itemView.findViewById(R.id.query_name);
             mDateTextView = itemView.findViewById(R.id.query_date);
             mStatusTextView = itemView.findViewById(R.id.query_status);
+            ratingbar = itemView.findViewById(R.id.ratingBar);
         }
 
         public void bind(Query query) {
             mQuery = query;
             mNameTextView.setText(query.getTo());
             mNameTextView.setPaintFlags(mNameTextView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-            mDateTextView.setText(simple.format(query.getTime()));
+            mDateTextView.setText(Functions.parseDateText(simple.format(query.getTime())));
             mStatusTextView.setText(query.getStatus());
             if ("resolved".equals(query.getStatus().toLowerCase()))
                 mStatusTextView.setTextColor(Color.GREEN);
             else
                 mStatusTextView.setTextColor(Color.RED);
+
+            if (query.getRating() < 0)
+                ratingbar.setVisibility(View.GONE);
+            else {
+                ratingbar.setIndicator(true);
+                SimpleRatingBar.AnimationBuilder builder = ratingbar.getAnimationBuilder()
+                        .setRatingTarget(query.getRating())
+                        .setRepeatCount(0)
+                        .setInterpolator(new android.view.animation.AccelerateInterpolator(0.1f));
+                if (query.getRating() == 5.0) {
+                    ratingbar.setBorderColor(getResources().getColor(R.color.golden_stars));
+                    ratingbar.setFillColor(getResources().getColor(R.color.golden_stars));
+                } else if (query.getRating() >= 3.0) {
+                    ratingbar.setBorderColor(getResources().getColor(R.color.orange));
+                    ratingbar.setFillColor(getResources().getColor(R.color.orange));
+                } else {
+                    ratingbar.setBorderColor(getResources().getColor(R.color.red));
+                    ratingbar.setFillColor(getResources().getColor(R.color.red));
+                }
+                builder.start();
+            }
         }
 
         @Override
@@ -121,6 +149,7 @@ public class RaisedFragment extends Fragment {
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
         }
+
     }
 
 }

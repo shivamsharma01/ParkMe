@@ -31,15 +31,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PersonalDetailsFragment extends Fragment {
-    final String TAG = "PersonalDetailsFragment";
-    RequestQueue queue = null;
-    TextView full_name, email_id, phone_number, personal_information, full_name_details, contact_number, address, exit;
+    private final String TAG = "PersonalDetailsFragment";
+    private RequestQueue queue = null;
+    private TextView full_name, email_id, phone_number, personal_information, full_name_details, contact_number, address, exit;
     private SharedPreferences sharedpreferences;
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -65,13 +60,13 @@ public class PersonalDetailsFragment extends Fragment {
 
     private void setFields(JSONObject response) {
         try {
-            JSONObject data = new JSONObject(response.get("data").toString());
-            full_name.setText(data.get("fullname").toString());
-            full_name_details.setText(data.get("fullname").toString());
-            email_id.setText(data.get("email").toString());
-            phone_number.setText(data.get("number").toString());
-            address.setText(data.get("address").toString());
-            contact_number.setText(data.get("number").toString());
+            JSONObject data = new JSONObject(response.get(Globals.DATA).toString());
+            full_name.setText(data.get(Globals.NAME).toString());
+            full_name_details.setText(data.get(Globals.NAME).toString());
+            email_id.setText(data.get(Globals.EMAIL).toString());
+            phone_number.setText(data.get(Globals.NUMBER).toString());
+            address.setText(data.get(Globals.ADDRESS).toString());
+            contact_number.setText(data.get(Globals.NUMBER).toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -89,7 +84,7 @@ public class PersonalDetailsFragment extends Fragment {
         try {
             String responseBody = new String(error.networkResponse.data, "utf-8");
             JSONObject data = new JSONObject(responseBody);
-            int status = data.getInt("status");
+            int status = data.getInt(Globals.STATUS);
             if (status == 403)
                 exit();
         } catch (UnsupportedEncodingException | JSONException e) {
@@ -108,8 +103,8 @@ public class PersonalDetailsFragment extends Fragment {
             try {
                 String jsonString = new String(response.data, HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
                 JSONObject jsonResponse = new JSONObject();
-                jsonResponse.put("data", new JSONObject(jsonString));
-                jsonResponse.put("headers", new JSONObject(response.headers));
+                jsonResponse.put(Globals.DATA, new JSONObject(jsonString));
+                jsonResponse.put(Globals.HEADERS, new JSONObject(response.headers));
                 return Response.success(jsonResponse, HttpHeaderParser.parseCacheHeaders(response));
             } catch (UnsupportedEncodingException e) {
                 return Response.error(new ParseError(e));
@@ -121,7 +116,7 @@ public class PersonalDetailsFragment extends Fragment {
         @Override
         public Map<String, String> getHeaders() {
             Map<String, String> params = new HashMap<>();
-            params.put("session-id", sharedpreferences.getString(Globals.SESSION_KEY, ""));
+            params.put(Globals.SESSION_ID, sharedpreferences.getString(Globals.SESSION_KEY, ""));
             return params;
         }
     }

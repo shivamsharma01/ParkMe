@@ -15,4 +15,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="grey">#cacaca</color>
+    <color name="srb_golden_stars">#FFC619</color>
+    <color name="light_blue">#add8e6</color>
+    <color name="orange">#ff7f00</color>
 </resources>

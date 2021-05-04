@@ -3,8 +3,6 @@ package com.android.parkme;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -14,6 +12,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.parkme.util.APIs;
+import com.android.parkme.util.Functions;
 import com.android.parkme.util.Globals;
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
@@ -28,10 +27,10 @@ import java.io.UnsupportedEncodingException;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
-    Button login, loginUsingPhone;
-    RequestQueue queue = null;
-    TextView forgotPassword;
-    TextInputEditText emailInput, passwordInput;
+    private Button login, loginUsingPhone;
+    private RequestQueue queue = null;
+    private TextView forgotPassword;
+    private TextInputEditText emailInput, passwordInput;
     private SharedPreferences sharedpreferences;
 
     @Override
@@ -47,28 +46,28 @@ public class LoginActivity extends AppCompatActivity {
         passwordInput = findViewById(R.id.login_password_value);
 
         login.setOnClickListener(v -> loginRequest());
-        forgotPassword.setOnClickListener(v -> goto_fpassword());
-        loginUsingPhone.setOnClickListener(v -> goto_phonelogin());
+        forgotPassword.setOnClickListener(v -> goToPassword());
+        loginUsingPhone.setOnClickListener(v -> goToPhoneLogin());
     }
 
-    private void goto_fpassword() {
+    private void goToPassword() {
         Intent intent = new Intent(getApplicationContext(), ForgotPasswordActivity.class);
         startActivity(intent);
     }
 
-    private void goto_phonelogin() {
+    private void goToPhoneLogin() {
         Intent intent = new Intent(getApplicationContext(), LoginPhoneActivity.class);
         startActivity(intent);
     }
 
     private void loginRequest() {
-        if (network_check()) {
+        if (Functions.networkCheck(getApplicationContext())) {
             Log.i(TAG, "Authenticating login at " + getResources().getString(R.string.url).toString().concat(APIs.doLogin));
             JSONObject loginObject = new JSONObject();
             try {
-                loginObject.put("email", emailInput.getText().toString());
-                loginObject.put("password", passwordInput.getText().toString());
-                loginObject.put("token", sharedpreferences.getString(Globals.TOKEN, null));
+                loginObject.put(Globals.EMAIL, emailInput.getText().toString());
+                loginObject.put(Globals.PASSWORD, passwordInput.getText().toString());
+                loginObject.put(Globals.TOKEN, sharedpreferences.getString(Globals.TOKEN, null));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -88,13 +87,6 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private boolean network_check() {
-        ConnectivityManager connMgr = (ConnectivityManager)
-                getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        return (networkInfo != null && networkInfo.isConnected());
-    }
-
     private void handleError(VolleyError error) {
         try {
             if (error == null || error.networkResponse == null) {
@@ -103,8 +95,8 @@ public class LoginActivity extends AppCompatActivity {
             }
             String responseBody = new String(error.networkResponse.data, "utf-8");
             JSONObject data = new JSONObject(responseBody);
-            int status = data.getInt("status");
-            String errorString = data.getString("trace");
+            int status = data.getInt(Globals.STATUS);
+            String errorString = data.getString(Globals.TRACE);
             if (status == 409) {
                 int indexStart = errorString.indexOf('^'), indexEnd = errorString.indexOf('$');
                 emailInput.setError(errorString.substring(indexStart + 1, indexEnd));
@@ -130,7 +122,6 @@ public class LoginActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(this, "An error occurred", Toast.LENGTH_SHORT).show();
                 }
-
             }
         } catch (UnsupportedEncodingException | JSONException e) {
             e.printStackTrace();
@@ -158,4 +149,5 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
+
 }

@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.parkme.R;
 import com.android.parkme.database.Query;
+import com.android.parkme.util.Functions;
 import com.android.parkme.util.Globals;
 
 import java.text.DateFormat;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ReceivedFragment extends Fragment {
+    private static final String TAG = "ReceivedFragment";
     private final DateFormat simple = new SimpleDateFormat("MMM dd");
     private String user;
     private RecyclerView mcQueryRecyclerView;
@@ -46,9 +48,8 @@ public class ReceivedFragment extends Fragment {
         List<Query> queries = new ArrayList<>();
         user = sharedpreferences.getString(Globals.NAME, "");
         String to = "stranger";
-        queries.add(new Query("Resolved", to, user, System.currentTimeMillis() - 20 * 24 * 60 * 60 * 1000));
-        queries.add(new Query("Unresolved", to, user, System.currentTimeMillis() - 40 * 24 * 60 * 60 * 1000));
-
+        queries.add(new Query("Resolved", to, user, System.currentTimeMillis() - 20 * 24 * 60 * 60 * 1000, 1));
+        queries.add(new Query("Unresolved", to, user, System.currentTimeMillis() - 40 * 24 * 60 * 60 * 1000, 36));
 
         mAdapter = new QueryAdapter(queries);
         mcQueryRecyclerView.setAdapter(mAdapter);
@@ -67,7 +68,7 @@ public class ReceivedFragment extends Fragment {
 
         @Override
         public QueryHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(getActivity()).inflate(R.layout.list_query_view, parent, false);
+            View view = LayoutInflater.from(getActivity()).inflate(R.layout.list_query_view_received, parent, false);
             return new QueryHolder(view);
         }
 
@@ -105,7 +106,7 @@ public class ReceivedFragment extends Fragment {
             mQuery = query;
             mNameTextView.setText(query.getFrom());
             mNameTextView.setPaintFlags(mNameTextView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-            mDateTextView.setText(simple.format(query.getTime()));
+            mDateTextView.setText(Functions.parseDateText(simple.format(query.getTime())));
             mStatusTextView.setText(query.getStatus());
             if ("resolved".equals(query.getStatus().toLowerCase()))
                 mStatusTextView.setTextColor(Color.GREEN);

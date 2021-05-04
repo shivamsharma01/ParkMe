@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.android.parkme.util.Globals;
 
 public class LogoActivity extends AppCompatActivity {
+    private static final String TAG = "LogoActivity";
     private SharedPreferences sharedpreferences;
 
     @Override

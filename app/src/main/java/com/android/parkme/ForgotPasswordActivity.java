@@ -3,8 +3,6 @@ package com.android.parkme;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,6 +11,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.parkme.util.APIs;
+import com.android.parkme.util.Functions;
 import com.android.parkme.util.Globals;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
@@ -30,9 +29,10 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 
 public class ForgotPasswordActivity extends AppCompatActivity {
-    Button submit;
-    EditText email;
-    RequestQueue queue = null;
+    private static final String TAG = "ForgotPasswordActivity";
+    private Button submit;
+    private EditText email;
+    private RequestQueue queue = null;
     private SharedPreferences sharedpreferences;
 
     @Override
@@ -41,20 +41,20 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         setContentView(R.layout.activity_forgot_password);
         submit = findViewById(R.id.submit_button);
         email = findViewById(R.id.fpassword_email_value);
-        submit.setOnClickListener(v -> fpassword_module());
+        submit.setOnClickListener(v -> passwordModule());
         sharedpreferences = getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
         queue = Volley.newRequestQueue(this);
     }
 
-    private void fpassword_module() {
-        if (network_check()) {
+    private void passwordModule() {
+        if (Functions.networkCheck(getApplicationContext())) {
             if (email.getText().toString().equals("")) {
                 email.setError("This is a mandatory field.");
                 return;
             }
             JSONObject obj = new JSONObject();
             try {
-                obj.put("email", email.getText().toString());
+                obj.put(Globals.EMAIL, email.getText().toString());
                 String url = getResources().getString(R.string.url).concat(APIs.forgotPassword);
                 JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, obj, response -> login(), (VolleyError error) -> {
                     handleError(error);
@@ -85,13 +85,6 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         }
     }
 
-    private boolean network_check() {
-        ConnectivityManager connMgr = (ConnectivityManager)
-                getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        return (networkInfo != null && networkInfo.isConnected());
-    }
-
     private void login() {
         Toast.makeText(this, "Password sent to " + email.getText().toString() + ". Please login again.", Toast.LENGTH_SHORT).show();
         SharedPreferences.Editor editor = sharedpreferences.edit();
@@ -106,13 +99,13 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         try {
             String responseBody = new String(error.networkResponse.data, "utf-8");
             JSONObject data = new JSONObject(responseBody);
-            int status = data.getInt("status");
+            int status = data.getInt(Globals.STATUS);
             if (status == 409) {
-                String errorString = data.getString("trace");
+                String errorString = data.getString(Globals.TRACE);
                 int indexStart = errorString.indexOf('^'), indexEnd = errorString.indexOf('$');
                 email.setError(errorString.substring(indexStart + 1, indexEnd));
             } else if (status == 404) {
-                String errorString = data.getString("trace");
+                String errorString = data.getString(Globals.TRACE);
                 int indexStart = errorString.indexOf('^'), indexEnd = errorString.indexOf('$');
                 email.setError(errorString.substring(indexStart + 1, indexEnd));
             } else

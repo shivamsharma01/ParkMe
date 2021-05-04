@@ -14,9 +14,9 @@ import com.android.parkme.R;
 import com.google.android.material.tabs.TabLayout;
 
 public class ChatRoomFragment extends Fragment {
+    private static final String TAG = "ChatRoomFragment";
     private TabLayout tabLayout;
     private ViewPager viewPager;
-    private boolean hasPermissions;
     private View v;
 
     @Override
@@ -31,20 +31,16 @@ public class ChatRoomFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         tabLayout = v.findViewById(R.id.tab);
         viewPager = v.findViewById(R.id.myviewpager);
-
-        setupViewpPager(viewPager);
+        setupViewPager(viewPager);
         tabLayout.setupWithViewPager(viewPager);
-
     }
 
-    private void setupViewpPager(ViewPager viewPager) {
+    private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter viewpagerAdapter = new ViewPagerAdapter(getChildFragmentManager());
-        Bundle bundle = new Bundle();
-        bundle.putBoolean("permission-wifi", hasPermissions);
         RaisedFragment raisedFragment = new RaisedFragment();
         ReceivedFragment receivedFragment = new ReceivedFragment();
-        viewpagerAdapter.addfragment(raisedFragment, "Raised By Me");
-        viewpagerAdapter.addfragment(receivedFragment, "Raised Against Me");
+        viewpagerAdapter.addFragment(raisedFragment, "Raised By Me");
+        viewpagerAdapter.addFragment(receivedFragment, "Raised Against Me");
         viewPager.setAdapter(viewpagerAdapter);
     }
 

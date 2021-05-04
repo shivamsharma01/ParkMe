@@ -9,14 +9,15 @@ import com.android.parkme.chat.ChatRoomFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
-    BottomNavigationView navbar;
+    private static final String TAG = "MainActivity";
+    private BottomNavigationView navBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        navbar = findViewById(R.id.bottomNavigationView);
-        navbar.setOnNavigationItemSelectedListener(item -> {
+        navBar = findViewById(R.id.bottomNavigationView);
+        navBar.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.profile:
                     setCurrentFragment(new PersonalDetailsFragment());
