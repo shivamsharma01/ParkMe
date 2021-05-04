@@ -74,7 +74,7 @@ public class RaiseQueryFragment extends Fragment {
     private RequestQueue queue = null;
     private SharedPreferences sharedpreferences;
     private View view;
-    private JSONObject requestObject,  responseObject;
+    private JSONObject requestObject, responseObject;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -247,6 +247,25 @@ public class RaiseQueryFragment extends Fragment {
         vehicleNumber.setText(str);
     }
 
+    private void finishTask() {
+        try {
+            Bundle bundle = new Bundle();
+            bundle.putInt(Globals.QUERY_NUMBER, Integer.parseInt(responseObject.getString(Globals.QID)));
+            bundle.putString(Globals.STATUS, Globals.QUERY_DEFAULT_STATUS);
+            bundle.putString(Globals.MESSAGE, requestObject.getString(Globals.MESSAGE));
+            bundle.putLong(Globals.QUERY_CREATE_DATE, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(requestObject.getString(Globals.QUERY_CREATE_DATE)).getTime());
+            bundle.putByteArray(Globals.VEHICLE_IMAGE_NUMBER, bArray);
+            bundle.putString(Globals.VEHICLE_REGISTRATION_NUMBER, requestObject.getString(Globals.VEHICLE_REGISTRATION_NUMBER));
+            QueryDetailsFragment querydetailsFragment = new QueryDetailsFragment();
+            querydetailsFragment.setArguments(bundle);
+            Functions.openFragment(querydetailsFragment, getActivity());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
     private class BitmapTask extends AsyncTask<Void, Void, Void> {
         private final Bitmap bitmap_tmp;
 
@@ -273,25 +292,6 @@ public class RaiseQueryFragment extends Fragment {
             DatabaseClient.getInstance(getContext()).getAppDatabase().parkMeDao().insert(params[0]);
             finishTask();
             return null;
-        }
-
-    }
-    private void finishTask() {
-        try {
-            Bundle bundle = new Bundle();
-            bundle.putInt(Globals.QUERY_NUMBER, Integer.parseInt(responseObject.getString(Globals.QID)));
-            bundle.putString(Globals.STATUS, Globals.QUERY_DEFAULT_STATUS);
-            bundle.putString(Globals.MESSAGE, requestObject.getString(Globals.MESSAGE));
-            bundle.putLong(Globals.QUERY_CREATE_DATE, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(requestObject.getString(Globals.QUERY_CREATE_DATE)).getTime());
-            bundle.putByteArray(Globals.VEHICLE_IMAGE_NUMBER, bArray);
-            bundle.putString(Globals.VEHICLE_REGISTRATION_NUMBER, requestObject.getString(Globals.VEHICLE_REGISTRATION_NUMBER));
-            QueryDetailsFragment querydetailsFragment = new QueryDetailsFragment();
-            querydetailsFragment.setArguments(bundle);
-            Functions.openFragment(querydetailsFragment, getActivity());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
-            e.printStackTrace();
         }
     }
 }

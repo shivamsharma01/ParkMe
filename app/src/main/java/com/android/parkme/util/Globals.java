@@ -33,8 +33,20 @@ public class Globals {
     public static final String HEADERS = "headers";
 
     public static final String QUERY_DEFAULT_STATUS = "Unresolved";
+    public static final String FROM_USER_ID = "fromId";
+    public static final String FROM_USER_NAME = "fromUser";
     public static final String TO_USER_ID = "toId";
     public static final String TO_USER_NAME = "toUser";
-    public static final String VEHICLE_NUMBER = "vehicleNumberTo";
     public static final String RATING = "rating";
+
+    public static final String NOTIFICATION_PUSH = "push";
+    public static final String NOTIFICATION_CHAT = "chat";
+    public static final String CHAT_MESSAGE = "msg";
+    public static final String TITLE = "title";
+    public static final String TIME = "time";
+    public static final String DATE = "date";
+    public static final String NOTIFICATION_TYPE = "type";
+
+    public static final String NOTIFICATION_CHANNEL_ID = "my_channel_id_01";
+
 }

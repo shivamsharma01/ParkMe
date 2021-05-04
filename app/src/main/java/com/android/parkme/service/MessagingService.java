@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Log;
 
@@ -15,25 +16,44 @@ import androidx.core.app.NotificationCompat;
 
 import com.android.parkme.MainActivity;
 import com.android.parkme.R;
+import com.android.parkme.database.Chat;
+import com.android.parkme.database.DatabaseClient;
+import com.android.parkme.database.Query;
 import com.android.parkme.util.Globals;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Map;
 
+import io.reactivex.rxjava3.subjects.BehaviorSubject;
+
 public class MessagingService extends FirebaseMessagingService {
+    public static final BehaviorSubject<Object> subject = BehaviorSubject.create();
     private static final String TAG = "MessagingService";
     private SharedPreferences sharedpreferences;
 
     public void onMessageReceived(RemoteMessage message) {
-        System.out.println(message.getFrom());
+        sharedpreferences = getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
         Map<String, String> m = message.getData();
-        if ("push".equals(m.get("type"))) {
+        if (Globals.NOTIFICATION_PUSH.equals(m.get(Globals.NOTIFICATION_TYPE))) {
+            Query query = null;
+            for (Map.Entry<String, String> eS : m.entrySet())
+                System.out.println(eS.getKey() + " : " + eS.getValue());
+
+            query = new Query(Integer.parseInt(m.get(Globals.QID)),
+                    m.get(Globals.STATUS),
+                    m.get(Globals.FROM_USER_NAME),
+                    Integer.parseInt(m.get(Globals.FROM_USER_ID)),
+                    sharedpreferences.getString(Globals.NAME, ""),
+                    sharedpreferences.getInt(Globals.ID, 0),
+                    Long.parseLong(m.get(Globals.TIME)),
+                    -1f);
+
+            new QuerySave().execute(query);
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            String NOTIFICATION_CHANNEL_ID = "my_channel_id_01";
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "My Notifications",
+                NotificationChannel notificationChannel = new NotificationChannel(Globals.NOTIFICATION_CHANNEL_ID, "My Notifications",
                         NotificationManager.IMPORTANCE_HIGH);
                 notificationChannel.enableLights(true);
                 notificationChannel.setLightColor(Color.RED);
@@ -42,41 +62,67 @@ public class MessagingService extends FirebaseMessagingService {
                 notificationManager.createNotificationChannel(notificationChannel);
             }
 
-//            String click_action = m.get("click_action");
             Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra("msg", m.get("msg"));
-            intent.putExtra("date",  m.get("date"));
-            intent.putExtra("qid", m.get("qid"));
+            intent.putExtra(Globals.CHAT_MESSAGE, m.get(Globals.CHAT_MESSAGE));
+            intent.putExtra(Globals.DATE, m.get(Globals.DATE));
+            intent.putExtra(Globals.QID, m.get(Globals.QID));
 
             PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent,
                     PendingIntent.FLAG_ONE_SHOT);
 
-            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
+            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, Globals.NOTIFICATION_CHANNEL_ID);
 
             notificationBuilder.setAutoCancel(true)
                     .setDefaults(Notification.DEFAULT_ALL)
                     .setWhen(System.currentTimeMillis())
                     .setSmallIcon(R.drawable.ic_identity_card)
                     .setTicker("Hearty365")
-                    .setContentTitle(m.get("title"))
-                    .setContentText(m.get("msg"))
+                    .setContentTitle(m.get(Globals.TITLE))
+                    .setContentText(m.get(Globals.CHAT_MESSAGE))
                     .setContentIntent(pendingIntent);
-
             notificationManager.notify(/*notification id*/1, notificationBuilder.build());
-        } else if ("chat".equals(m.get("type"))) {
-            for (Map.Entry<String, String> kv : m.entrySet()) {
-                System.out.println(kv.getKey());
-                System.out.println(kv.getValue());
-            }
+        } else if (Globals.NOTIFICATION_CHAT.equals(m.get(Globals.NOTIFICATION_TYPE))) {
+            Chat chat = new Chat(
+                    Integer.parseInt(m.get(Globals.QID)),
+                    Integer.parseInt(m.get(Globals.FROM_USER_ID)),
+                    sharedpreferences.getInt(Globals.ID, 0),
+                    Long.parseLong(m.get(Globals.QID)),
+                    m.get(Globals.CHAT_MESSAGE));
+            new SaveChat().execute(chat);
         }
     }
 
     public void onNewToken(String token) {
+        Log.i(TAG, "new Token generated");
+        Log.i(TAG, token);
         sharedpreferences = getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.putString(Globals.TOKEN, token);
         editor.commit();
-        Log.i(TAG, "new Token generated");
-        Log.i(TAG, token);
+    }
+
+    private class SaveChat extends AsyncTask<Chat, Void, Chat> {
+
+        @Override
+        protected Chat doInBackground(Chat... params) {
+            DatabaseClient.getInstance(getApplicationContext()).getAppDatabase().parkMeDao().insert(params[0]);
+            return params[0];
+        }
+
+        @Override
+        protected void onPostExecute(Chat chat) {
+            super.onPostExecute(chat);
+            subject.onNext(chat);
+        }
+    }
+
+
+    private class QuerySave extends AsyncTask<Query, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Query... params) {
+            DatabaseClient.getInstance(getApplicationContext()).getAppDatabase().parkMeDao().insert(params[0]);
+            return null;
+        }
     }
 }

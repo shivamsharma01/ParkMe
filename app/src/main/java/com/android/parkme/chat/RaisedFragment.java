@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,7 +26,6 @@ import com.iarcuschin.simpleratingbar.SimpleRatingBar;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 public class RaisedFragment extends Fragment {
@@ -135,9 +133,13 @@ public class RaisedFragment extends Fragment {
 
         @Override
         public void onClick(View v) {
-            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.flFragment, new ChatFragment());
+            FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
+            Bundle bundle = new Bundle();
+            bundle.putInt(Globals.QID, mQuery.getQid());
+            bundle.putInt(Globals.TO_USER_ID, mQuery.getToId());
+            ChatFragment chatFragment = new ChatFragment();
+            chatFragment.setArguments(bundle);
+            fragmentTransaction.replace(R.id.flFragment, chatFragment);
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
         }

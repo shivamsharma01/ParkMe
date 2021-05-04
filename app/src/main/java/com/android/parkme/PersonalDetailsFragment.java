@@ -82,11 +82,13 @@ public class PersonalDetailsFragment extends Fragment {
 
     private void handleError(VolleyError error) {
         try {
-            String responseBody = new String(error.networkResponse.data, "utf-8");
-            JSONObject data = new JSONObject(responseBody);
-            int status = data.getInt(Globals.STATUS);
-            if (status == 403)
-                exit();
+            if (error != null && error.networkResponse != null && error.networkResponse.data != null) {
+                String responseBody = new String(error.networkResponse.data, "utf-8");
+                JSONObject data = new JSONObject(responseBody);
+                int status = data.getInt(Globals.STATUS);
+                if (status == 403)
+                    exit();
+            }
         } catch (UnsupportedEncodingException | JSONException e) {
             e.printStackTrace();
         }

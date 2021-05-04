@@ -20,24 +20,26 @@ public class Chat implements Serializable {
     private int qid;
 
     @ColumnInfo(name = "from_id")
-    private String from;
+    private int from;
 
     @ColumnInfo(name = "to_id")
-    private String to;
-
-    @ColumnInfo(name = "msg")
-    private String msg;
+    private int to;
 
     @ColumnInfo(name = "time")
     private long time;
 
+    @ColumnInfo(name = "msg")
+    private String msg;
+
     public Chat() {
     }
 
-    public Chat(String msg, String from, String to) {
-        this.msg = msg;
+    public Chat(int qid, int from, int to, long time, String msg) {
+        this.qid = qid;
         this.from = from;
         this.to = to;
+        this.time = time;
+        this.msg = msg;
     }
 
     public int getId() {
@@ -56,20 +58,28 @@ public class Chat implements Serializable {
         this.qid = qid;
     }
 
-    public String getFrom() {
+    public int getFrom() {
         return from;
     }
 
-    public void setFrom(String from) {
+    public void setFrom(int from) {
         this.from = from;
     }
 
-    public String getTo() {
+    public int getTo() {
         return to;
     }
 
-    public void setTo(String to) {
+    public void setTo(int to) {
         this.to = to;
+    }
+
+    public long getTime() {
+        return time;
+    }
+
+    public void setTime(long time) {
+        this.time = time;
     }
 
     public String getMsg() {
@@ -80,11 +90,4 @@ public class Chat implements Serializable {
         this.msg = msg;
     }
 
-    public long getTime() {
-        return time;
-    }
-
-    public void setTime(long time) {
-        this.time = time;
-    }
 }
