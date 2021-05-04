@@ -197,13 +197,19 @@ public class RaiseQueryFragment extends Fragment {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+
             JsonRequest request = new JsonObjectRequest(Request.Method.POST, url, raiseQueryObject, response -> {
                 Log.i(TAG, "Query Raised Successfully");
                 if (null != response) {
-//                            storeFields(response);
-                    int qid = Integer.parseInt(response.toString());
+                    int qid = 0;
+                    try {
+                        qid = Integer.parseInt(response.getString("qid"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                     onSuccess(qid);
-            } }, error -> this.handleError(error)) {
+                }
+        }, error -> this.handleError(error)) {
                 @Override
                 public Map<String, String> getHeaders() {
                     Map<String, String> params = new HashMap<>();
@@ -310,9 +316,6 @@ public class RaiseQueryFragment extends Fragment {
                 clickedImage.setVisibility(View.VISIBLE);
                 try {
                     bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), mImageuri);
-
-//                    System.out.println("---------------------------------------------------------------------------------");
-//                    System.out.println("RUN");
 
                     int width = bitmap.getWidth();
                     int height = bitmap.getHeight();

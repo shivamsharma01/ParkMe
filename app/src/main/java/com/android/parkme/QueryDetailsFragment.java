@@ -16,7 +16,7 @@ public class QueryDetailsFragment extends Fragment {
 
     private TextView queryNumber, dateText, messageText, vehicleNumber;
     private ImageView vehicleNumberImage;
-    private int queryNumberVal;
+    private String queryNumberVal;
     private String statusVal, messageVal, dateTime, vehicleNumberVal;
     byte[] vehicleNumberImageBArray;
 
@@ -29,7 +29,8 @@ public class QueryDetailsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_query_details, container, false);
-        queryNumberVal = getArguments().getInt("queryNumber");
+        int queryNumberInt = (getArguments().getInt("queryNumber"));
+        queryNumberVal = String.valueOf(queryNumberInt);
         statusVal = getArguments().getString("status");
         messageVal = getArguments().getString("message");
         dateTime = getArguments().getString("queryCreateDate");
