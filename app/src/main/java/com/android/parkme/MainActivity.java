@@ -4,9 +4,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.android.parkme.chat.ChatRoomFragment;
 import com.android.parkme.utils.Functions;
@@ -50,8 +48,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        Log.i(TAG, ""+fragmentManager.getBackStackEntryCount());
-        if(fragmentManager.getBackStackEntryCount() == 1) {
+        Log.i(TAG, "" + fragmentManager.getBackStackEntryCount());
+        if (fragmentManager.getBackStackEntryCount() == 1) {
             fragmentManager.popBackStack();
             finish();
         } else {

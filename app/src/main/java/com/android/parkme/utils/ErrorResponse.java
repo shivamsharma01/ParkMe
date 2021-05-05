@@ -3,6 +3,7 @@ package com.android.parkme.utils;
 public class ErrorResponse {
     private int statusCode;
     private String errorMessage;
+
     public ErrorResponse(int statusCode, String errorMessage) {
         this.statusCode = statusCode;
         this.errorMessage = errorMessage;

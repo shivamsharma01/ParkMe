@@ -7,5 +7,6 @@ public class APIs {
     public static final String doLoginPhone = "login-phone";
     public static final String getDetails = "getDetails?id=%1$s";
     public static final String raiseQuery = "raise-query";
+    public static final String cancelQuery = "cancel-query";
     public static final String sendChat = "send-chat";
 }

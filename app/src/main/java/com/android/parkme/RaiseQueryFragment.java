@@ -23,7 +23,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,7 +35,6 @@ import com.android.parkme.utils.Functions;
 import com.android.parkme.utils.Globals;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.Volley;
@@ -44,13 +42,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.text.Text;
 import com.google.mlkit.vision.text.TextRecognition;
-import com.google.mlkit.vision.text.TextRecognizer;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.text.ParseException;
@@ -70,7 +66,7 @@ public class RaiseQueryFragment extends Fragment {
     private Button resetBtn, sendBtn;
     private Bitmap bitmap;
     private byte[] bArray;
-    private String queryTypeVal, current_value;
+    private String currentValue;
     private RequestQueue queue = null;
     private SharedPreferences sharedpreferences;
     private View view;
@@ -126,46 +122,40 @@ public class RaiseQueryFragment extends Fragment {
     }
 
     private void raiseQuery() {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
-        bArray = bos.toByteArray();
-
         if (Functions.networkCheck(getContext())) {
-            String url = getResources().getString(R.string.url).concat(APIs.raiseQuery);
-            Log.i(TAG, "Raising Query " + url);
-            requestObject = new JSONObject();
             try {
-                queryTypeVal = queryTypeDropdown.getSelectedItem().toString();
-                requestObject.put(Globals.QUERY_TYPE, queryTypeVal);
+                // ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                // bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
+                // bArray = bos.toByteArray();
+                String url = getResources().getString(R.string.url).concat(APIs.raiseQuery);
+                Log.i(TAG, "Raising Query " + url);
+                requestObject = new JSONObject();
+                requestObject.put(Globals.QUERY_TYPE, queryTypeDropdown.getSelectedItem().toString());
                 requestObject.put(Globals.STATUS, Globals.QUERY_DEFAULT_STATUS);
                 requestObject.put(Globals.MESSAGE, messageText.getText().toString());
                 requestObject.put(Globals.QUERY_CREATE_DATE, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(new Date()));
                 requestObject.put(Globals.VEHICLE_REGISTRATION_NUMBER, vehicleNumber.getText().toString());
+
+                JsonRequest request = new JsonObjectRequest(Request.Method.POST, url, requestObject, response -> {
+                    responseObject = response;
+                    Log.i(TAG, "Query Raised Successfully");
+                    if (null != response)
+                        onSuccess();
+                }, error ->
+                        Functions.showToast(getActivity(), "An error occurred")) {
+                    @Override
+                    public Map<String, String> getHeaders() {
+                        Map<String, String> params = new HashMap<>();
+                        params.put(Globals.SESSION_ID, sharedpreferences.getString(Globals.SESSION_KEY, ""));
+                        return params;
+                    }
+                };
+                queue.add(request);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
-            JsonRequest request = new JsonObjectRequest(Request.Method.POST, url, requestObject, response -> {
-                responseObject = response;
-                Log.i(TAG, "Query Raised Successfully");
-                if (null != response)
-                    onSuccess();
-            }, error -> this.handleError(error)) {
-                @Override
-                public Map<String, String> getHeaders() {
-                    Map<String, String> params = new HashMap<>();
-                    params.put(Globals.SESSION_ID, sharedpreferences.getString(Globals.SESSION_KEY, ""));
-                    return params;
-                }
-            };
-            queue.add(request);
-        } else {
-            Toast.makeText(getActivity(), "Please connect to the Internet", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void handleError(VolleyError error) {
-        Toast.makeText(getActivity(), "An error occurred", Toast.LENGTH_SHORT).show();
+        } else
+            Functions.showToast(getActivity(), "Please connect to the Internet");
     }
 
     private void onSuccess() {
@@ -188,7 +178,7 @@ public class RaiseQueryFragment extends Fragment {
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        current_value = queryTypeDropdown.getSelectedItem().toString();
+        currentValue = queryTypeDropdown.getSelectedItem().toString();
         Log.i(TAG, "value of result code: " + resultCode);
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
@@ -204,36 +194,29 @@ public class RaiseQueryFragment extends Fragment {
                     clickedImage.setImageBitmap(bitmap);
                 } catch (IOException e) {
                     e.printStackTrace();
-                    showToast("Click image again");
+                    Functions.showToast(getActivity(), "Click image again");
                 }
-            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
-                Toast.makeText(getContext(), "No App available for Cropping", Toast.LENGTH_SHORT).show();
-            }
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE)
+                Functions.showToast(getActivity(), "No App available for Cropping");
         }
     }
 
     private void runTextRecognition(Bitmap x) {
-        InputImage image = InputImage.fromBitmap(x, 0);
-        TextRecognizer recognizer = TextRecognition.getClient();
-        recognizer.process(image)
+        TextRecognition.getClient().process(InputImage.fromBitmap(x, 0))
                 .addOnSuccessListener(texts -> processTextRecognitionResult(texts))
                 .addOnFailureListener(e -> {
-                    showToast("Please enter manually");
+                    Functions.showToast(getActivity(), "Please enter manually");
                     e.printStackTrace();
                 });
     }
 
-    private void showToast(String message) {
-        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
-    }
-
     private void processTextRecognitionResult(Text texts) {
         List<Text.TextBlock> blocks = texts.getTextBlocks();
-        StringBuilder str = new StringBuilder();
         if (blocks.size() == 0) {
-            showToast("Please enter manually");
+            Functions.showToast(getActivity(), "Please enter manually");
             return;
         }
+        StringBuilder str = new StringBuilder();
         for (int i = 0; i < blocks.size(); i++) {
             List<Text.Line> lines = blocks.get(i).getLines();
             for (int j = 0; j < lines.size(); j++) {
@@ -242,7 +225,7 @@ public class RaiseQueryFragment extends Fragment {
                     str.append(elements.get(k).getText());
             }
         }
-        int spinnerPosition1 = queryTypeAdaptor.getPosition(current_value);
+        int spinnerPosition1 = queryTypeAdaptor.getPosition(currentValue);
         queryTypeDropdown.setSelection(spinnerPosition1);
         vehicleNumber.setText(str);
     }
@@ -250,7 +233,7 @@ public class RaiseQueryFragment extends Fragment {
     private void finishTask() {
         try {
             Bundle bundle = new Bundle();
-            bundle.putInt(Globals.QUERY_NUMBER, Integer.parseInt(responseObject.getString(Globals.QID)));
+            bundle.putInt(Globals.QID, Integer.parseInt(responseObject.getString(Globals.QID)));
             bundle.putString(Globals.STATUS, Globals.QUERY_DEFAULT_STATUS);
             bundle.putString(Globals.MESSAGE, requestObject.getString(Globals.MESSAGE));
             bundle.putLong(Globals.QUERY_CREATE_DATE, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(requestObject.getString(Globals.QUERY_CREATE_DATE)).getTime());
@@ -267,19 +250,19 @@ public class RaiseQueryFragment extends Fragment {
     }
 
     private class BitmapTask extends AsyncTask<Void, Void, Void> {
-        private final Bitmap bitmap_tmp;
+        private final Bitmap bitmapTmp;
 
         public BitmapTask(byte[] byteArray, int width, int height, String conf) {
             Bitmap.Config configBmp = Bitmap.Config.valueOf(conf);
-            Bitmap bitmap_tmp = Bitmap.createBitmap(width, height, configBmp);
+            Bitmap bitmapTmp = Bitmap.createBitmap(width, height, configBmp);
             ByteBuffer buffer = ByteBuffer.wrap(byteArray);
-            bitmap_tmp.copyPixelsFromBuffer(buffer);
-            this.bitmap_tmp = bitmap_tmp;
+            bitmapTmp.copyPixelsFromBuffer(buffer);
+            this.bitmapTmp = bitmapTmp;
         }
 
         @Override
         protected Void doInBackground(Void... params) {
-            runTextRecognition(this.bitmap_tmp);
+            runTextRecognition(this.bitmapTmp);
             return null;
         }
 

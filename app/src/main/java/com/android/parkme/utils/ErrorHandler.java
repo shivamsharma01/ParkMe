@@ -1,14 +1,10 @@
 package com.android.parkme.utils;
 
 import android.util.Log;
-import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 
-import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.UnsupportedEncodingException;
 
 public class ErrorHandler {
     private static final String TAG = "ErrorHandler";
@@ -21,7 +17,7 @@ public class ErrorHandler {
             String errorString = data.getString(Globals.TRACE);
             int indexStart = errorString.indexOf('^'), indexEnd = errorString.indexOf('$');
             String[] split = errorString.substring(indexStart + 1, indexEnd).split(":");
-            Log.i(TAG, split[0] +" : "+split[1]);
+            Log.i(TAG, split[0] + " : " + split[1]);
             errorResponse = new ErrorResponse(Integer.parseInt(split[0]), split[1]);
         } catch (Exception e) {
             errorResponse = new ErrorResponse(0, "An error occurred");
@@ -37,7 +33,7 @@ public class ErrorHandler {
             String errorString = data.getString(Globals.TRACE);
             int indexStart = errorString.indexOf('^'), indexEnd = errorString.indexOf('$');
             String[] split = errorString.substring(indexStart + 1, indexEnd).split(":");
-            Log.i(TAG, split[0] +" : "+split[1]);
+            Log.i(TAG, split[0] + " : " + split[1]);
             errorResponse = new ErrorResponse(Integer.parseInt(split[0]), split[1]);
         } catch (Exception e) {
             errorResponse = new ErrorResponse(0, "An error occurred");

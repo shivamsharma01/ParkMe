@@ -33,6 +33,8 @@ public class Globals {
     public static final String HEADERS = "headers";
 
     public static final String QUERY_DEFAULT_STATUS = "Unresolved";
+    public static final String QUERY_CANCEL_STATUS = "Cancelled";
+
     public static final String FROM_USER_ID = "fromId";
     public static final String FROM_USER_NAME = "fromUser";
     public static final String TO_USER_ID = "toId";

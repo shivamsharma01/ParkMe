@@ -54,7 +54,7 @@ public class PersonalDetailsFragment extends Fragment {
         exit.setOnClickListener(v -> {
             Functions.exit(getActivity(), sharedpreferences, null);
             getActivity().finish();
-                });
+        });
 
         String url = String.format(getActivity().getResources().getString(R.string.url).toString().concat(APIs.getDetails), sharedpreferences.getInt(Globals.ID, 0));
         JsonRequest request = new JsonRequest(Request.Method.GET, url, null, response -> setFields(response), error -> this.handleError(error));

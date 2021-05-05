@@ -1,7 +1,6 @@
 package com.android.parkme;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -117,7 +116,7 @@ public class ChangePasswordFragment extends Fragment {
 
     private void handleError(VolleyError error) {
         ErrorResponse errorResponse = ErrorHandler.parseAndGetErrorChangePassword(error);
-        if (errorResponse.getStatusCode() <6000 || errorResponse.getStatusCode() == 6004)
+        if (errorResponse.getStatusCode() < 6000 || errorResponse.getStatusCode() == 6004)
             Toast.makeText(getActivity(), errorResponse.getErrorMessage(), Toast.LENGTH_SHORT).show();
         else if (errorResponse.getStatusCode() == 6003) {
             newPassword.setError(errorResponse.getErrorMessage());

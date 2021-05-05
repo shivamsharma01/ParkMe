@@ -25,8 +25,6 @@ import com.google.android.material.textfield.TextInputEditText;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
-
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     private Button login, loginUsingPhone;

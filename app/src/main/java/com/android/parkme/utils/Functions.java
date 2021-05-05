@@ -48,13 +48,13 @@ public class Functions {
     }
 
 
-    public static void setCurrentFragment(FragmentActivity fragmentActivity, Fragment fragment){
+    public static void setCurrentFragment(FragmentActivity fragmentActivity, Fragment fragment) {
         FragmentManager fragmentManager = fragmentActivity.getSupportFragmentManager();
         Log.i(TAG, "setCurrentFragment");
-        String fragmentTag =  fragment.getClass().getName();
-        boolean fragmentPopped = fragmentManager.popBackStackImmediate (fragmentTag, 0);
+        String fragmentTag = fragment.getClass().getName();
+        boolean fragmentPopped = fragmentManager.popBackStackImmediate(fragmentTag, 0);
 
-        if (!fragmentPopped && fragmentManager.findFragmentByTag(fragmentTag) == null){ //fragment not in back stack, create it.
+        if (!fragmentPopped && fragmentManager.findFragmentByTag(fragmentTag) == null) { //fragment not in back stack, create it.
             FragmentTransaction ft = fragmentManager.beginTransaction();
             ft.replace(R.id.flFragment, fragment, fragmentTag);
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
@@ -93,7 +93,11 @@ public class Functions {
         editor.putString(Globals.TOKEN, token);
         editor.commit();
         Log.i(TAG, token);
-        context.startActivity(new Intent(context, LoginActivity.class).addFlags( Intent.FLAG_ACTIVITY_NEW_TASK ));
+        context.startActivity(new Intent(context, LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+    }
+
+    public static void showToast(Context context, String message) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
 
 }
