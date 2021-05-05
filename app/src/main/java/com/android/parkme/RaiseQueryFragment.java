@@ -31,9 +31,9 @@ import androidx.fragment.app.Fragment;
 
 import com.android.parkme.database.DatabaseClient;
 import com.android.parkme.database.Query;
-import com.android.parkme.util.APIs;
-import com.android.parkme.util.Functions;
-import com.android.parkme.util.Globals;
+import com.android.parkme.utils.APIs;
+import com.android.parkme.utils.Functions;
+import com.android.parkme.utils.Globals;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
@@ -258,7 +258,7 @@ public class RaiseQueryFragment extends Fragment {
             bundle.putString(Globals.VEHICLE_REGISTRATION_NUMBER, requestObject.getString(Globals.VEHICLE_REGISTRATION_NUMBER));
             QueryDetailsFragment querydetailsFragment = new QueryDetailsFragment();
             querydetailsFragment.setArguments(bundle);
-            Functions.openFragment(querydetailsFragment, getActivity());
+            Functions.setCurrentFragment(getActivity(), querydetailsFragment);
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (ParseException e) {

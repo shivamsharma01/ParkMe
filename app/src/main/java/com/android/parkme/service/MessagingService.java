@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
 
@@ -19,7 +20,7 @@ import com.android.parkme.R;
 import com.android.parkme.database.Chat;
 import com.android.parkme.database.DatabaseClient;
 import com.android.parkme.database.Query;
-import com.android.parkme.util.Globals;
+import com.android.parkme.utils.Globals;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -33,8 +34,12 @@ public class MessagingService extends FirebaseMessagingService {
     private SharedPreferences sharedpreferences;
 
     public void onMessageReceived(RemoteMessage message) {
-        sharedpreferences = getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
         Map<String, String> m = message.getData();
+        if (Globals.NOTIFICATION_TEST.equals(m.get(Globals.NOTIFICATION_TYPE))) {
+            Log.i(TAG, "message received");
+            Toast.makeText(getApplicationContext(), "message received", Toast.LENGTH_SHORT).show();
+        }
+        sharedpreferences = getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
         if (Globals.NOTIFICATION_PUSH.equals(m.get(Globals.NOTIFICATION_TYPE))) {
             Query query = null;
             for (Map.Entry<String, String> eS : m.entrySet())

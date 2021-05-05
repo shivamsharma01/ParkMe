@@ -1,4 +1,4 @@
-package com.android.parkme.util;
+package com.android.parkme.utils;
 
 public class APIs {
     public static final String changePassword = "confirm-password";

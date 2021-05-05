@@ -12,8 +12,8 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 
 import com.android.parkme.chat.ChatRoomFragment;
-import com.android.parkme.util.Functions;
-import com.android.parkme.util.Globals;
+import com.android.parkme.utils.Functions;
+import com.android.parkme.utils.Globals;
 
 public class HomeFragment extends Fragment {
     private static final String TAG = "HomeFragment";
@@ -36,12 +36,13 @@ public class HomeFragment extends Fragment {
         textView = view.findViewById(R.id.textView);
         settings = view.findViewById(R.id.settings_button);
         sharedpreferences = getActivity().getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
-        profilePic.setOnClickListener(v -> Functions.openFragment(new PersonalDetailsFragment(), getActivity()));
         textView.setText(String.format(getActivity().getResources().getString(R.string.greet).toString(), sharedpreferences.getString(Globals.NAME, "")));
-        chat.setOnClickListener(v -> Functions.openFragment(new ChatRoomFragment(), getActivity()));
-        raiseQueryOptions.setOnClickListener(v -> Functions.openFragment(new RaiseQueryFragment(), getActivity()));
-        settings.setOnClickListener(v -> Functions.openFragment(new SettingsFragment(), getActivity()));
+        profilePic.setOnClickListener(v -> Functions.setCurrentFragment(getActivity(), new PersonalDetailsFragment()));
+        chat.setOnClickListener(v -> Functions.setCurrentFragment(getActivity(), new ChatRoomFragment()));
+        raiseQueryOptions.setOnClickListener(v -> Functions.setCurrentFragment(getActivity(), new RaiseQueryFragment()));
+        settings.setOnClickListener(v -> Functions.setCurrentFragment(getActivity(), new SettingsFragment()));
         return view;
     }
+
 
 }

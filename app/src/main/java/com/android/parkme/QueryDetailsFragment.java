@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
-import com.android.parkme.util.Globals;
+import com.android.parkme.utils.Globals;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

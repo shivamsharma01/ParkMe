@@ -20,8 +20,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.parkme.R;
 import com.android.parkme.database.DatabaseClient;
 import com.android.parkme.database.Query;
-import com.android.parkme.util.Functions;
-import com.android.parkme.util.Globals;
+import com.android.parkme.utils.Functions;
+import com.android.parkme.utils.Globals;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

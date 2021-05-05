@@ -13,9 +13,11 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
-import com.android.parkme.util.APIs;
-import com.android.parkme.util.Functions;
-import com.android.parkme.util.Globals;
+import com.android.parkme.utils.APIs;
+import com.android.parkme.utils.ErrorHandler;
+import com.android.parkme.utils.ErrorResponse;
+import com.android.parkme.utils.Functions;
+import com.android.parkme.utils.Globals;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
@@ -68,7 +70,10 @@ public class ChangePasswordFragment extends Fragment {
                 return;
             }
             String url = getActivity().getResources().getString(R.string.url).concat(APIs.changePassword);
-            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, getJsonObject(), response -> Toast.makeText(getContext(), "Password updated successfully", Toast.LENGTH_SHORT).show(), this::handleError) {
+            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, getJsonObject(), response -> {
+                Functions.exit(getActivity(), sharedpreferences, "Password updated successfully");
+                getActivity().finish();
+            }, this::handleError) {
                 @Override
                 public Map<String, String> getHeaders() {
                     Map<String, String> params = new HashMap<>();
@@ -111,57 +116,18 @@ public class ChangePasswordFragment extends Fragment {
     }
 
     private void handleError(VolleyError error) {
-        try {
-            String responseBody = new String(error.networkResponse.data, "utf-8");
-            setError(new JSONObject(responseBody));
-        } catch (UnsupportedEncodingException | JSONException e) {
-            e.printStackTrace();
+        ErrorResponse errorResponse = ErrorHandler.parseAndGetErrorChangePassword(error);
+        if (errorResponse.getStatusCode() <6000 || errorResponse.getStatusCode() == 6004)
+            Toast.makeText(getActivity(), errorResponse.getErrorMessage(), Toast.LENGTH_SHORT).show();
+        else if (errorResponse.getStatusCode() == 6003) {
+            newPassword.setError(errorResponse.getErrorMessage());
+            newConfirmPassword.setError(errorResponse.getErrorMessage());
+        } else if (errorResponse.getStatusCode() == 6002)
+            oldPassword.setError(errorResponse.getErrorMessage());
+        else {
+            Functions.exit(getActivity(), sharedpreferences, null);
+            getActivity().finish();
         }
     }
 
-    private void setError(JSONObject data) {
-        try {
-            int status = data.getInt(Globals.DATA);
-            String trace = data.get(Globals.TRACE).toString();
-            switch (status) {
-                case 403:
-                    exit();
-                    break;
-                case 409:
-                    emailText.setError(trace.substring(trace.indexOf("^") + 1, trace.indexOf("$")));
-                    break;
-                default:
-                    int start = trace.indexOf("^"), end = trace.indexOf("$");
-                    if (start != -1 && end != -1) {
-                        String[] split = trace.substring(start + 1, end).split(":");
-                        status = Integer.parseInt(split[0]);
-                        switch (status) {
-                            case 411:
-                                newPassword.setError(split[1]);
-                                newConfirmPassword.setError(split[1]);
-                                break;
-                            case 412:
-                            case 4132:
-                                newPassword.setError(split[1]);
-                                break;
-                            default:
-                                oldPassword.setError(split[1]);
-                                break;
-                        }
-                    } else
-                        Toast.makeText(getContext(), "An error occurred", Toast.LENGTH_SHORT).show();
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void exit() {
-        Toast.makeText(getContext(), "Session has ended. Please login again.", Toast.LENGTH_SHORT).show();
-        SharedPreferences.Editor editor = sharedpreferences.edit();
-        editor.clear();
-        editor.apply();
-        startActivity(new Intent(getActivity(), LoginActivity.class));
-        getActivity().finish();
-    }
 }

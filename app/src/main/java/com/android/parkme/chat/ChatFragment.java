@@ -25,9 +25,9 @@ import com.android.parkme.R;
 import com.android.parkme.database.Chat;
 import com.android.parkme.database.DatabaseClient;
 import com.android.parkme.service.MessagingService;
-import com.android.parkme.util.APIs;
-import com.android.parkme.util.Functions;
-import com.android.parkme.util.Globals;
+import com.android.parkme.utils.APIs;
+import com.android.parkme.utils.Functions;
+import com.android.parkme.utils.Globals;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
@@ -177,7 +177,6 @@ public class ChatFragment extends Fragment {
     }
 
     private class ChatHolder extends RecyclerView.ViewHolder {
-        private Chat mChat;
         private View v;
         private TextView mMessage;
 
@@ -188,7 +187,6 @@ public class ChatFragment extends Fragment {
         }
 
         public void bind(Chat chat) {
-            mChat = chat;
             mMessage.setText(chat.getMsg());
             RelativeLayout rl = v.findViewById(R.id.rl_holder);
             CardView cv = rl.findViewById(R.id.cardView);

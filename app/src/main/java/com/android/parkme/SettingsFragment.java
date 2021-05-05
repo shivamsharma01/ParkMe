@@ -18,8 +18,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import com.android.parkme.util.Functions;
-import com.android.parkme.util.Globals;
+import com.android.parkme.utils.Functions;
+import com.android.parkme.utils.Globals;
 
 public class SettingsFragment extends Fragment {
     private static final String TAG = "SettingsFragment", TEMP_NUM = "tel:+919567485768";
@@ -49,9 +49,12 @@ public class SettingsFragment extends Fragment {
                 startActivity(intent);
             }
         });
-        logoutButton.setOnClickListener(v -> exit());
-        about.setOnClickListener(v -> Functions.openFragment(new AboutFragment(), getActivity()));
-        changePassword.setOnClickListener(v -> Functions.openFragment(new ChangePasswordFragment(), getActivity()));
+        logoutButton.setOnClickListener(v -> {
+            Functions.exit(getActivity(), sharedpreferences, null);
+            getActivity().finish();
+        });
+        about.setOnClickListener(v -> Functions.setCurrentFragment(getActivity(), new AboutFragment()));
+        changePassword.setOnClickListener(v -> Functions.setCurrentFragment(getActivity(), new ChangePasswordFragment()));
         return view;
     }
 
@@ -67,11 +70,4 @@ public class SettingsFragment extends Fragment {
         }
     }
 
-    private void exit() {
-        SharedPreferences.Editor editor = sharedpreferences.edit();
-        editor.clear();
-        editor.apply();
-        startActivity(new Intent(getActivity(), LoginActivity.class));
-        getActivity().finish();
-    }
 }

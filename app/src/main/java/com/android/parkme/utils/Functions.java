@@ -1,11 +1,15 @@
-package com.android.parkme.util;
+package com.android.parkme.utils;
 
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -14,12 +18,14 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.android.parkme.LoginActivity;
 import com.android.parkme.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Functions {
+    private static final String TAG = "Functions";
 
     public static String parseDateText(String dateText) {
         String[] dateParts = dateText.split(" ");
@@ -41,12 +47,20 @@ public class Functions {
         return (networkInfo != null && networkInfo.isConnected());
     }
 
-    public static void openFragment(Fragment fragment, FragmentActivity fragmentActivity) {
+
+    public static void setCurrentFragment(FragmentActivity fragmentActivity, Fragment fragment){
         FragmentManager fragmentManager = fragmentActivity.getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.flFragment, fragment);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
+        Log.i(TAG, "setCurrentFragment");
+        String fragmentTag =  fragment.getClass().getName();
+        boolean fragmentPopped = fragmentManager.popBackStackImmediate (fragmentTag, 0);
+
+        if (!fragmentPopped && fragmentManager.findFragmentByTag(fragmentTag) == null){ //fragment not in back stack, create it.
+            FragmentTransaction ft = fragmentManager.beginTransaction();
+            ft.replace(R.id.flFragment, fragment, fragmentTag);
+            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+            ft.addToBackStack(fragmentTag);
+            ft.commit();
+        }
     }
 
     public static boolean checkAndRequestPermissions(Activity activity) {
@@ -66,4 +80,20 @@ public class Functions {
         }
         return true;
     }
+
+    public static void exit(Context context, SharedPreferences sharedpreferences, String msg) {
+        if (msg == null)
+            Toast.makeText(context, "Session has ended. Please login again.", Toast.LENGTH_SHORT).show();
+        else
+            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        String token = sharedpreferences.getString(Globals.TOKEN, null);
+        editor.clear();
+        editor.apply();
+        editor.putString(Globals.TOKEN, token);
+        editor.commit();
+        Log.i(TAG, token);
+        context.startActivity(new Intent(context, LoginActivity.class).addFlags( Intent.FLAG_ACTIVITY_NEW_TASK ));
+    }
+
 }

@@ -11,9 +11,11 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.android.parkme.util.APIs;
-import com.android.parkme.util.Functions;
-import com.android.parkme.util.Globals;
+import com.android.parkme.utils.APIs;
+import com.android.parkme.utils.ErrorHandler;
+import com.android.parkme.utils.ErrorResponse;
+import com.android.parkme.utils.Functions;
+import com.android.parkme.utils.Globals;
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -71,40 +73,13 @@ public class LoginPhoneActivity extends AppCompatActivity {
     }
 
     private void handleError(VolleyError error) {
-        try {
-            String responseBody = new String(error.networkResponse.data, "utf-8");
-            JSONObject data = new JSONObject(responseBody);
-            int status = data.getInt(Globals.STATUS);
-            String errorString = data.getString(Globals.TRACE);
-            if (status == 409) {
-                int indexStart = errorString.indexOf('^'), indexEnd = errorString.indexOf('$');
-                phoneInput.setError(errorString.substring(indexStart + 1, indexEnd));
-            } else {
-                int indexStart = errorString.indexOf('^'), indexEnd = errorString.indexOf('$');
-                if (indexStart != -1 && indexEnd != -1) {
-                    String[] split = errorString.substring(indexStart + 1, indexEnd).split(":");
-                    status = Integer.parseInt(split[0]);
-                    switch (status) {
-                        case 410:
-                        case 411:
-                        case 412:
-                        case 413:
-                            passwordInput.setError(split[1]);
-                            break;
-                        case 500:
-                            Toast.makeText(this, split[1], Toast.LENGTH_SHORT).show();
-                            break;
-                        default:
-                            Toast.makeText(this, errorString.substring(indexStart + 1, indexEnd), Toast.LENGTH_SHORT).show();
-                            break;
-                    }
-                } else {
-                    Toast.makeText(this, "An error occurred", Toast.LENGTH_SHORT).show();
-                }
-            }
-        } catch (UnsupportedEncodingException | JSONException e) {
-            e.printStackTrace();
-        }
+        ErrorResponse errorResponse = ErrorHandler.parseAndGetErrorLogin(error);
+        if (errorResponse.getStatusCode() == 0 || errorResponse.getStatusCode() == 5000)
+            Toast.makeText(getApplicationContext(), errorResponse.getErrorMessage(), Toast.LENGTH_SHORT).show();
+        else if (errorResponse.getStatusCode() < 6000)
+            phoneInput.setError(errorResponse.getErrorMessage());
+        else
+            passwordInput.setError(errorResponse.getErrorMessage());
     }
 
     private void storeFields(JSONObject response) {

@@ -8,7 +8,7 @@ import android.os.Handler;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.android.parkme.util.Globals;
+import com.android.parkme.utils.Globals;
 
 public class LogoActivity extends AppCompatActivity {
     private static final String TAG = "LogoActivity";

@@ -10,9 +10,11 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.android.parkme.util.APIs;
-import com.android.parkme.util.Functions;
-import com.android.parkme.util.Globals;
+import com.android.parkme.utils.APIs;
+import com.android.parkme.utils.ErrorHandler;
+import com.android.parkme.utils.ErrorResponse;
+import com.android.parkme.utils.Functions;
+import com.android.parkme.utils.Globals;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
@@ -27,6 +29,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ForgotPasswordActivity extends AppCompatActivity {
     private static final String TAG = "ForgotPasswordActivity";
@@ -56,26 +60,10 @@ public class ForgotPasswordActivity extends AppCompatActivity {
             try {
                 obj.put(Globals.EMAIL, email.getText().toString());
                 String url = getResources().getString(R.string.url).concat(APIs.forgotPassword);
-                JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, obj, response -> login(), (VolleyError error) -> {
-                    handleError(error);
-                }) {
-                    @Override
-                    protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
-                        try {
-                            String jsonString = new String(response.data,
-                                    HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
-                            JSONObject result = null;
-                            if (jsonString != null && jsonString.length() > 0)
-                                result = new JSONObject(jsonString);
-                            return Response.success(result,
-                                    HttpHeaderParser.parseCacheHeaders(response));
-                        } catch (UnsupportedEncodingException e) {
-                            return Response.error(new ParseError(e));
-                        } catch (JSONException je) {
-                            return Response.error(new ParseError(je));
-                        }
-                    }
-                };
+                JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, obj, response -> {
+                    Functions.exit(getApplicationContext(), sharedpreferences, "Password sent to " + email.getText().toString() + ". Please login again.");
+                    finish();
+                }, this::handleError);
                 queue.add(request);
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -85,34 +73,13 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         }
     }
 
-    private void login() {
-        Toast.makeText(this, "Password sent to " + email.getText().toString() + ". Please login again.", Toast.LENGTH_SHORT).show();
-        SharedPreferences.Editor editor = sharedpreferences.edit();
-        editor.clear();
-        editor.apply();
-        startActivity(new Intent(this, LoginActivity.class));
-        finish();
-    }
-
-
     private void handleError(VolleyError error) {
-        try {
-            String responseBody = new String(error.networkResponse.data, "utf-8");
-            JSONObject data = new JSONObject(responseBody);
-            int status = data.getInt(Globals.STATUS);
-            if (status == 409) {
-                String errorString = data.getString(Globals.TRACE);
-                int indexStart = errorString.indexOf('^'), indexEnd = errorString.indexOf('$');
-                email.setError(errorString.substring(indexStart + 1, indexEnd));
-            } else if (status == 404) {
-                String errorString = data.getString(Globals.TRACE);
-                int indexStart = errorString.indexOf('^'), indexEnd = errorString.indexOf('$');
-                email.setError(errorString.substring(indexStart + 1, indexEnd));
-            } else
-                Toast.makeText(this, getResources().getString(R.string.gen_error), Toast.LENGTH_SHORT).show();
-        } catch (UnsupportedEncodingException | JSONException e) {
-            e.printStackTrace();
-        }
+        System.out.println(error);
+        ErrorResponse errorResponse = ErrorHandler.parseAndGetErrorChangePassword(error);
+        if (errorResponse.getStatusCode() <= 5000)
+            Toast.makeText(getApplicationContext(), errorResponse.getErrorMessage(), Toast.LENGTH_SHORT).show();
+        else
+            email.setError(errorResponse.getErrorMessage());
     }
 
 }

@@ -1,4 +1,4 @@
-package com.android.parkme.util;
+package com.android.parkme.utils;
 
 public class Globals {
     public static final String PREFERENCES = "ParkMe";
@@ -39,6 +39,7 @@ public class Globals {
     public static final String TO_USER_NAME = "toUser";
     public static final String RATING = "rating";
 
+    public static final String NOTIFICATION_TEST = "test";
     public static final String NOTIFICATION_PUSH = "push";
     public static final String NOTIFICATION_CHAT = "chat";
     public static final String CHAT_MESSAGE = "msg";
