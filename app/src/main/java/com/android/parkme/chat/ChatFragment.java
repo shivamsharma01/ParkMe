@@ -61,7 +61,6 @@ public class ChatFragment extends Fragment {
     private RequestQueue queue = null;
     private List<Chat> chats = new ArrayList<>();
     private LinearLayoutManager linearLayoutManager;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -69,7 +68,7 @@ public class ChatFragment extends Fragment {
 
         queue = Volley.newRequestQueue(getActivity().getApplicationContext());
         mcChatRecyclerView = view.findViewById(R.id.chats_recycler_view);
-
+        RelativeLayout rl = view.findViewById(R.id.layout_gchat_chatbox);
         sendMessageButton = view.findViewById(R.id.button_gchat_send);
         mMessage = view.findViewById(R.id.edit_gchat_message);
         linearLayoutManager = new LinearLayoutManager(getActivity());
@@ -84,7 +83,8 @@ public class ChatFragment extends Fragment {
         userId = sharedpreferences.getInt(Globals.ID, 0);
         qid = getArguments().getInt(Globals.QID);
         toId = getArguments().getInt(Globals.TO_USER_ID);
-
+        if (!"open".equals(getArguments().getString(Globals.STATUS)))
+            rl.setVisibility(View.INVISIBLE);
         sendMessageButton.setOnClickListener(view1 -> {
             if (Functions.networkCheck(getContext())) {
                 String message = mMessage.getText().toString().trim();

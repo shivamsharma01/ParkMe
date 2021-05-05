@@ -137,6 +137,7 @@ public class RaisedFragment extends Fragment {
             Bundle bundle = new Bundle();
             bundle.putInt(Globals.QID, mQuery.getQid());
             bundle.putInt(Globals.TO_USER_ID, mQuery.getToId());
+            bundle.putString(Globals.STATUS, mQuery.getStatus());
             ChatFragment chatFragment = new ChatFragment();
             chatFragment.setArguments(bundle);
             fragmentTransaction.replace(R.id.flFragment, chatFragment);
