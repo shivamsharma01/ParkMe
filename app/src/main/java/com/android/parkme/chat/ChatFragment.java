@@ -40,6 +40,7 @@ import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -58,7 +59,7 @@ public class ChatFragment extends Fragment {
     private EditText mMessage;
     private Disposable x;
     private RequestQueue queue = null;
-    private List<Chat> chats;
+    private List<Chat> chats = new ArrayList<>();
     private LinearLayoutManager linearLayoutManager;
 
     @Override
@@ -96,6 +97,8 @@ public class ChatFragment extends Fragment {
                 Toast.makeText(getActivity(), "Please connect to the Internet", Toast.LENGTH_SHORT).show();
             }
         });
+        mAdapter = new ChatAdapter(chats);
+        mcChatRecyclerView.setAdapter(mAdapter);
         new GetChats().execute();
         return view;
     }
@@ -110,6 +113,127 @@ public class ChatFragment extends Fragment {
         super.onPause();
         if (x != null)
             x.dispose();
+    }
+
+    private void handleError(VolleyError error) {
+        Toast.makeText(getActivity(), "Server Down", Toast.LENGTH_SHORT).show();
+    }
+
+    private class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+        private List<Chat> mChats;
+
+        public ChatAdapter(List<Chat> chats) {
+            mChats = chats;
+        }
+
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            if (viewType == Globals.VIEW_TYPE_SENDER)
+                return new ChatHolderRight(LayoutInflater.from(getActivity()).inflate(R.layout.list_item_chat_right, parent, false));
+            else
+                return new ChatHolderLeft(LayoutInflater.from(getActivity()).inflate(R.layout.list_item_chat_left, parent, false));
+        }
+
+        @Override
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            if(holder instanceof ChatHolderLeft)
+                ((ChatHolderLeft) holder).bind(mChats.get(position));
+            else
+                ((ChatHolderRight) holder).bind(mChats.get(position));
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            if (chats.get(position).getFrom() == userId)
+                return Globals.VIEW_TYPE_SENDER;
+            else
+                return Globals.VIEW_TYPE_RECEIVER;
+        }
+
+        @Override
+        public int getItemCount() {
+            return mChats.size();
+        }
+
+    }
+
+    private class ChatHolderRight extends RecyclerView.ViewHolder {
+        private View v;
+        private TextView mMessage;
+
+        public ChatHolderRight(View itemView) {
+            super(itemView);
+            v = itemView;
+            mMessage = itemView.findViewById(R.id.chat_message);
+        }
+
+        public void bind(Chat chat) {
+            mMessage.setText(chat.getMsg());
+        }
+
+    }
+
+    private class ChatHolderLeft extends RecyclerView.ViewHolder {
+        private View v;
+        private TextView mMessage;
+
+        public ChatHolderLeft(View itemView) {
+            super(itemView);
+            v = itemView;
+            mMessage = itemView.findViewById(R.id.chat_message);
+        }
+
+        public void bind(Chat chat) {
+            mMessage.setText(chat.getMsg());
+        }
+
+    }
+
+    private class GetChats extends AsyncTask<Void, Void, List<Chat>> {
+
+        @Override
+        protected List<Chat> doInBackground(Void... params) {
+            return DatabaseClient.getInstance(getActivity()).getAppDatabase().parkMeDao().getChatForQueryID(qid);
+        }
+
+        @Override
+        protected void onPostExecute(List<Chat> chats) {
+            super.onPostExecute(chats);
+            ChatFragment.this.chats.addAll(chats);
+            mAdapter.notifyDataSetChanged();
+            x = MessagingService.subject.subscribe(chat -> {
+                if (((Chat)chat).getQid() == qid) {
+                    chats.add((Chat) chat);
+                    getActivity().runOnUiThread(() -> {
+                        mAdapter.notifyItemInserted(chats.size() - 1);
+                        mcChatRecyclerView.scrollToPosition(chats.size() - 1);
+                    });
+                }
+            }, e -> handleRxJavaError(e));
+        }
+    }
+
+    private void handleRxJavaError(Throwable e) {
+        Log.i(TAG, e.getLocalizedMessage());
+    }
+
+    private class SaveChat extends AsyncTask<Chat, Void, Chat> {
+
+        @Override
+        protected Chat doInBackground(Chat... params) {
+            DatabaseClient.getInstance(getActivity()).getAppDatabase().parkMeDao().insert(params[0]);
+            return params[0];
+        }
+
+        @Override
+        protected void onPostExecute(Chat chat) {
+            super.onPostExecute(chat);
+            chats.add(chat);
+            mAdapter.notifyItemInserted(chats.size() - 1);
+            mcChatRecyclerView.scrollToPosition(chats.size() - 1);
+            pushChat(chat);
+        }
     }
 
     private void pushChat(Chat chat) {
@@ -145,156 +269,6 @@ public class ChatFragment extends Fragment {
             queue.add(request);
         } else {
             Toast.makeText(getActivity(), "Please connect to the Internet", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void handleError(VolleyError error) {
-        Toast.makeText(getActivity(), "Server Down", Toast.LENGTH_SHORT).show();
-    }
-
-    private class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-
-        private List<Chat> mChats;
-
-        public ChatAdapter(List<Chat> chats) {
-            mChats = chats;
-        }
-
-        @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            if (viewType == Globals.VIEW_TYPE_SENDER)
-                return new ChatHolderRight(LayoutInflater.from(getActivity()).inflate(R.layout.list_item_chat_right, parent, false));
-            else
-                return new ChatHolderLeft(LayoutInflater.from(getActivity()).inflate(R.layout.list_item_chat_left, parent, false));
-        }
-
-        @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            if(holder instanceof ChatHolderLeft)
-                ((ChatHolderLeft)holder).bind(mChats.get(position));
-            else
-                ((ChatHolderRight)holder).bind(mChats.get(position));
-        }
-
-        @Override
-        public int getItemViewType(int position) {
-            if (chats.get(position).getFrom() == userId)
-                return Globals.VIEW_TYPE_SENDER;
-            else
-                return Globals.VIEW_TYPE_RECEIVER;
-        }
-
-        @Override
-        public int getItemCount() {
-            return mChats.size();
-        }
-
-    }
-
-    private class ChatHolderRight extends RecyclerView.ViewHolder {
-        private View v;
-        private TextView mMessage;
-
-        public ChatHolderRight(View itemView) {
-            super(itemView);
-            v = itemView;
-            mMessage = itemView.findViewById(R.id.box_message);
-        }
-
-        public void bind(Chat chat) {
-            mMessage.setText(chat.getMsg());
-//            RelativeLayout rl = v.findViewById(R.id.rl_holder);
-//            //CardView cv = rl.findViewById(R.id.cardView);
-//            LinearLayout ll = rl.findViewById(R.id.holder);
-//            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) ll.getLayoutParams();
-//            if (chat.getFrom() == userId) {
-//                Log.i(TAG, "my message");
-//                lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-//                ll.setBackgroundColor(Color.CYAN);
-//            } else {
-//                Log.i(TAG, "other user's message");
-//                lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-//                ll.setBackgroundColor(Color.MAGENTA);
-//            }
-            // cv.setLayoutParams(lp);
-        }
-
-    }
-
-    private class ChatHolderLeft extends RecyclerView.ViewHolder {
-        private View v;
-        private TextView mMessage;
-
-        public ChatHolderLeft(View itemView) {
-            super(itemView);
-            v = itemView;
-            mMessage = itemView.findViewById(R.id.box_message);
-        }
-
-        public void bind(Chat chat) {
-            mMessage.setText(chat.getMsg());
-//            RelativeLayout rl = v.findViewById(R.id.rl_holder);
-//            //CardView cv = rl.findViewById(R.id.cardView);
-//            LinearLayout ll = rl.findViewById(R.id.holder);
-//            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) ll.getLayoutParams();
-//            if (chat.getFrom() == userId) {
-//                Log.i(TAG, "my message");
-//                lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-//                ll.setBackgroundColor(Color.CYAN);
-//            } else {
-//                Log.i(TAG, "other user's message");
-//                lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-//                ll.setBackgroundColor(Color.MAGENTA);
-//            }
-            // cv.setLayoutParams(lp);
-        }
-
-    }
-
-    private class GetChats extends AsyncTask<Void, Void, List<Chat>> {
-
-        @Override
-        protected List<Chat> doInBackground(Void... params) {
-            return DatabaseClient.getInstance(getActivity()).getAppDatabase().parkMeDao().getChatForQueryID(qid);
-        }
-
-        @Override
-        protected void onPostExecute(List<Chat> chats) {
-            super.onPostExecute(chats);
-            ChatFragment.this.chats = chats;
-            mAdapter = new ChatAdapter(chats);
-            mcChatRecyclerView.setAdapter(mAdapter);
-            x = MessagingService.subject.subscribe(chat -> {
-                if (((Chat)chat).getQid() == qid) {
-                    chats.add((Chat) chat);
-                    getActivity().runOnUiThread(() -> {
-                        mAdapter.notifyItemInserted(chats.size() - 1);
-                        mcChatRecyclerView.scrollToPosition(chats.size() - 1);
-                    });
-                }
-            }, e -> handleRxJavaError(e));
-        }
-    }
-
-    private void handleRxJavaError(Throwable e) {
-        Log.i(TAG, e.getLocalizedMessage());
-    }
-
-    private class SaveChat extends AsyncTask<Chat, Void, Chat> {
-
-        @Override
-        protected Chat doInBackground(Chat... params) {
-            DatabaseClient.getInstance(getActivity()).getAppDatabase().parkMeDao().insert(params[0]);
-            return params[0];
-        }
-
-        @Override
-        protected void onPostExecute(Chat chat) {
-            super.onPostExecute(chat);
-            chats.add(chat);
-            mAdapter.notifyItemInserted(chats.size() - 1);
-            mcChatRecyclerView.scrollToPosition(chats.size() - 1);
-            pushChat(chat);
         }
     }
 }

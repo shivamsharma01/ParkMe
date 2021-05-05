@@ -53,6 +53,6 @@ public class Globals {
     public static final String NOTIFICATION_CHANNEL_ID = "my_channel_id_01";
 
     public static final int VIEW_TYPE_SENDER = 0;
-    public static final int VIEW_TYPE_RECEIVER = 0;
+    public static final int VIEW_TYPE_RECEIVER = 1;
 
 }
