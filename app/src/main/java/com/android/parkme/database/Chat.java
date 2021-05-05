@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Entity(tableName = "chat_table")
 public class Chat implements Serializable {
 
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @NonNull
     @ColumnInfo(name = "id")
     private int id;

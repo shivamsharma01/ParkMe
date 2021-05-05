@@ -16,7 +16,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.cardview.widget.CardView;
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -59,6 +59,7 @@ public class ChatFragment extends Fragment {
     private Disposable x;
     private RequestQueue queue = null;
     private List<Chat> chats;
+    private LinearLayoutManager linearLayoutManager;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -70,7 +71,13 @@ public class ChatFragment extends Fragment {
 
         sendMessageButton = view.findViewById(R.id.button_gchat_send);
         mMessage = view.findViewById(R.id.edit_gchat_message);
-        mcChatRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        linearLayoutManager = new LinearLayoutManager(getActivity());
+        mcChatRecyclerView.setLayoutManager(linearLayoutManager);
+
+        mcChatRecyclerView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+            if (chats != null)
+                mcChatRecyclerView.scrollToPosition(chats.size() - 1);
+        });
 
         sharedpreferences = getActivity().getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
         userId = sharedpreferences.getInt(Globals.ID, 0);
@@ -83,29 +90,26 @@ public class ChatFragment extends Fragment {
                 if (!message.equals("")) {
                     Chat chat = new Chat(qid, userId, toId, new Date().getTime(), message);
                     new SaveChat().execute(chat);
-                    mMessage.setText("");
+                    mMessage.getText().clear();
                 }
             } else {
                 Toast.makeText(getActivity(), "Please connect to the Internet", Toast.LENGTH_SHORT).show();
             }
         });
+        new GetChats().execute();
         return view;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        new GetChats().execute();
-        x = MessagingService.subject.subscribe(chat -> {
-            chats.add((Chat) chat);
-            mAdapter.notifyItemInserted(chats.size() - 1);
-        });
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        x.dispose();
+        if (x != null)
+            x.dispose();
     }
 
     private void pushChat(Chat chat) {
@@ -148,7 +152,7 @@ public class ChatFragment extends Fragment {
         Toast.makeText(getActivity(), "Server Down", Toast.LENGTH_SHORT).show();
     }
 
-    private class ChatAdapter extends RecyclerView.Adapter<ChatHolder> {
+    private class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         private List<Chat> mChats;
 
@@ -156,17 +160,28 @@ public class ChatFragment extends Fragment {
             mChats = chats;
         }
 
-
         @Override
-        public ChatHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(getActivity()).inflate(R.layout.list_item_chat, parent, false);
-            return new ChatHolder(view);
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            if (viewType == Globals.VIEW_TYPE_SENDER)
+                return new ChatHolderRight(LayoutInflater.from(getActivity()).inflate(R.layout.list_item_chat_right, parent, false));
+            else
+                return new ChatHolderLeft(LayoutInflater.from(getActivity()).inflate(R.layout.list_item_chat_left, parent, false));
         }
 
         @Override
-        public void onBindViewHolder(ChatHolder holder, int position) {
-            Chat chat = mChats.get(position);
-            holder.bind(chat);
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            if(holder instanceof ChatHolderLeft)
+                ((ChatHolderLeft)holder).bind(mChats.get(position));
+            else
+                ((ChatHolderRight)holder).bind(mChats.get(position));
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            if (chats.get(position).getFrom() == userId)
+                return Globals.VIEW_TYPE_SENDER;
+            else
+                return Globals.VIEW_TYPE_RECEIVER;
         }
 
         @Override
@@ -176,11 +191,11 @@ public class ChatFragment extends Fragment {
 
     }
 
-    private class ChatHolder extends RecyclerView.ViewHolder {
+    private class ChatHolderRight extends RecyclerView.ViewHolder {
         private View v;
         private TextView mMessage;
 
-        public ChatHolder(View itemView) {
+        public ChatHolderRight(View itemView) {
             super(itemView);
             v = itemView;
             mMessage = itemView.findViewById(R.id.box_message);
@@ -188,20 +203,50 @@ public class ChatFragment extends Fragment {
 
         public void bind(Chat chat) {
             mMessage.setText(chat.getMsg());
-            RelativeLayout rl = v.findViewById(R.id.rl_holder);
-            CardView cv = rl.findViewById(R.id.cardView);
-            LinearLayout ll = cv.findViewById(R.id.holder);
-            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) cv.getLayoutParams();
-            if (chat.getFrom() == userId) {
-                lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.ALIGN_PARENT_RIGHT);
-                cv.setLayoutParams(lp);
-                ll.setBackgroundColor(Color.CYAN);
-            } else {
-                lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.ALIGN_LEFT);
-                cv.setLayoutParams(lp);
-                ll.setBackgroundColor(Color.MAGENTA);
-            }
+//            RelativeLayout rl = v.findViewById(R.id.rl_holder);
+//            //CardView cv = rl.findViewById(R.id.cardView);
+//            LinearLayout ll = rl.findViewById(R.id.holder);
+//            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) ll.getLayoutParams();
+//            if (chat.getFrom() == userId) {
+//                Log.i(TAG, "my message");
+//                lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+//                ll.setBackgroundColor(Color.CYAN);
+//            } else {
+//                Log.i(TAG, "other user's message");
+//                lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+//                ll.setBackgroundColor(Color.MAGENTA);
+//            }
+            // cv.setLayoutParams(lp);
+        }
 
+    }
+
+    private class ChatHolderLeft extends RecyclerView.ViewHolder {
+        private View v;
+        private TextView mMessage;
+
+        public ChatHolderLeft(View itemView) {
+            super(itemView);
+            v = itemView;
+            mMessage = itemView.findViewById(R.id.box_message);
+        }
+
+        public void bind(Chat chat) {
+            mMessage.setText(chat.getMsg());
+//            RelativeLayout rl = v.findViewById(R.id.rl_holder);
+//            //CardView cv = rl.findViewById(R.id.cardView);
+//            LinearLayout ll = rl.findViewById(R.id.holder);
+//            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) ll.getLayoutParams();
+//            if (chat.getFrom() == userId) {
+//                Log.i(TAG, "my message");
+//                lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+//                ll.setBackgroundColor(Color.CYAN);
+//            } else {
+//                Log.i(TAG, "other user's message");
+//                lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+//                ll.setBackgroundColor(Color.MAGENTA);
+//            }
+            // cv.setLayoutParams(lp);
         }
 
     }
@@ -219,7 +264,20 @@ public class ChatFragment extends Fragment {
             ChatFragment.this.chats = chats;
             mAdapter = new ChatAdapter(chats);
             mcChatRecyclerView.setAdapter(mAdapter);
+            x = MessagingService.subject.subscribe(chat -> {
+                if (((Chat)chat).getQid() == qid) {
+                    chats.add((Chat) chat);
+                    getActivity().runOnUiThread(() -> {
+                        mAdapter.notifyItemInserted(chats.size() - 1);
+                        mcChatRecyclerView.scrollToPosition(chats.size() - 1);
+                    });
+                }
+            }, e -> handleRxJavaError(e));
         }
+    }
+
+    private void handleRxJavaError(Throwable e) {
+        Log.i(TAG, e.getLocalizedMessage());
     }
 
     private class SaveChat extends AsyncTask<Chat, Void, Chat> {
@@ -235,6 +293,7 @@ public class ChatFragment extends Fragment {
             super.onPostExecute(chat);
             chats.add(chat);
             mAdapter.notifyItemInserted(chats.size() - 1);
+            mcChatRecyclerView.scrollToPosition(chats.size() - 1);
             pushChat(chat);
         }
     }

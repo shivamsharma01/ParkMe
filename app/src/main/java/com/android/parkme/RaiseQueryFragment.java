@@ -47,6 +47,7 @@ import com.theartofdev.edmodo.cropper.CropImage;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.text.ParseException;
@@ -124,9 +125,9 @@ public class RaiseQueryFragment extends Fragment {
     private void raiseQuery() {
         if (Functions.networkCheck(getContext())) {
             try {
-                // ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                // bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
-                // bArray = bos.toByteArray();
+                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
+                 bArray = bos.toByteArray();
                 String url = getResources().getString(R.string.url).concat(APIs.raiseQuery);
                 Log.i(TAG, "Raising Query " + url);
                 requestObject = new JSONObject();
@@ -241,7 +242,7 @@ public class RaiseQueryFragment extends Fragment {
             bundle.putString(Globals.VEHICLE_REGISTRATION_NUMBER, requestObject.getString(Globals.VEHICLE_REGISTRATION_NUMBER));
             QueryDetailsFragment querydetailsFragment = new QueryDetailsFragment();
             querydetailsFragment.setArguments(bundle);
-            Functions.setCurrentFragment(getActivity(), querydetailsFragment);
+            getActivity().runOnUiThread(() -> Functions.setCurrentFragment(getActivity(), querydetailsFragment));
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (ParseException e) {

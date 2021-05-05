@@ -10,6 +10,7 @@ import java.util.List;
 
 @Dao
 public interface ParkMeDAO {
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insert(Chat chat);
 

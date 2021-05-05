@@ -54,7 +54,7 @@ public class MessagingService extends FirebaseMessagingService {
                     Long.parseLong(m.get(Globals.TIME)),
                     -1f);
 
-            new QuerySave().execute(query);
+            saveQuery(query);
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -91,9 +91,9 @@ public class MessagingService extends FirebaseMessagingService {
                     Integer.parseInt(m.get(Globals.QID)),
                     Integer.parseInt(m.get(Globals.FROM_USER_ID)),
                     sharedpreferences.getInt(Globals.ID, 0),
-                    Long.parseLong(m.get(Globals.QID)),
+                    Long.parseLong(m.get(Globals.TIME)),
                     m.get(Globals.CHAT_MESSAGE));
-            new SaveChat().execute(chat);
+            saveChat(chat);
         }
     }
 
@@ -106,28 +106,12 @@ public class MessagingService extends FirebaseMessagingService {
         editor.commit();
     }
 
-    private class SaveChat extends AsyncTask<Chat, Void, Chat> {
-
-        @Override
-        protected Chat doInBackground(Chat... params) {
-            DatabaseClient.getInstance(getApplicationContext()).getAppDatabase().parkMeDao().insert(params[0]);
-            return params[0];
-        }
-
-        @Override
-        protected void onPostExecute(Chat chat) {
-            super.onPostExecute(chat);
-            subject.onNext(chat);
-        }
+    private void saveChat(Chat chat) {
+        DatabaseClient.getInstance(getApplicationContext()).getAppDatabase().parkMeDao().insert(chat);
+        subject.onNext(chat);
+    }
+    private void saveQuery(Query query) {
+        DatabaseClient.getInstance(getApplicationContext()).getAppDatabase().parkMeDao().insert(query);
     }
 
-
-    private class QuerySave extends AsyncTask<Query, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Query... params) {
-            DatabaseClient.getInstance(getApplicationContext()).getAppDatabase().parkMeDao().insert(params[0]);
-            return null;
-        }
-    }
 }

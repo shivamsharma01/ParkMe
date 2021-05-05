@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey;
 @Entity(tableName = "query_table")
 public class Query {
 
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @NonNull
     @ColumnInfo(name = "qid")
     private int qid;

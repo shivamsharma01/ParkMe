@@ -65,7 +65,6 @@ public class ForgotPasswordActivity extends AppCompatActivity {
     }
 
     private void handleError(VolleyError error) {
-        System.out.println(error);
         ErrorResponse errorResponse = ErrorHandler.parseAndGetErrorChangePassword(error);
         if (errorResponse.getStatusCode() <= 5000)
             Toast.makeText(getApplicationContext(), errorResponse.getErrorMessage(), Toast.LENGTH_SHORT).show();
