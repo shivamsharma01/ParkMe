@@ -47,6 +47,8 @@
     <string name="query_details_heading"><u>Query Details</u></string>
     <string name="query_number_heading">Query Number</string>
     <string name="number_plate_image_heading">Number Plate Image</string>
+    <string name="query_cancel_button">Cancel</string>
+    <string name="query_Finish_button">Finish</string>
 
     <!-- String for View Profile Page -->
     <string name="full_name">Full Name</string>
