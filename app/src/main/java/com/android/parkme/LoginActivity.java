@@ -1,9 +1,12 @@
 package com.android.parkme;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
@@ -11,6 +14,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.parkme.database.DatabaseClient;
 import com.android.parkme.utils.APIs;
 import com.android.parkme.utils.ErrorHandler;
 import com.android.parkme.utils.ErrorResponse;
@@ -45,7 +49,10 @@ public class LoginActivity extends AppCompatActivity {
         emailInput = findViewById(R.id.login_email_value);
         passwordInput = findViewById(R.id.login_password_value);
 
-        login.setOnClickListener(v -> loginRequest());
+        login.setOnClickListener(v -> {
+            new FetchRSSFeeds().execute();
+            loginRequest();
+        });
         forgotPassword.setOnClickListener(v -> goToPassword());
         loginUsingPhone.setOnClickListener(v -> goToPhoneLogin());
     }
@@ -88,6 +95,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void handleError(VolleyError error) {
+        Log.i(TAG, "here");
         ErrorResponse errorResponse = ErrorHandler.parseAndGetErrorLogin(error);
         if (errorResponse.getStatusCode() == 0 || errorResponse.getStatusCode() == 5000)
             Toast.makeText(getApplicationContext(), errorResponse.getErrorMessage(), Toast.LENGTH_SHORT).show();
@@ -104,6 +112,7 @@ public class LoginActivity extends AppCompatActivity {
             editor.putInt(Globals.ID, Integer.parseInt(response.getString(Globals.ID)));
             editor.putString(Globals.NAME, response.getString(Globals.NAME));
             editor.putString(Globals.EMAIL, response.getString(Globals.EMAIL));
+            editor.putString(Globals.ADDRESS, response.getString(Globals.ADDRESS));
             editor.putLong(Globals.NUMBER, Long.parseLong(response.getString(Globals.NUMBER)));
             editor.commit();
         } catch (JSONException e) {
@@ -118,5 +127,35 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
+    private class FetchRSSFeeds extends AsyncTask<String, Void, Boolean> {
 
+        private ProgressDialog dialog = new ProgressDialog(LoginActivity.this);
+
+        /** progress dialog to show user that the backup is processing. */
+        /**
+         * application context.
+         */
+        @Override
+        protected void onPreExecute() {
+            this.dialog.setMessage("Please wait. Fetching details...");
+            this.dialog.show();
+        }
+
+        @Override
+        protected Boolean doInBackground(final String... args) {
+            try {
+                // DatabaseClient.getInstance(LoginActivity.this).getAppDatabase().clearAllTables();
+                return true;
+            } catch (Exception e) {
+                Log.e("tag", "error", e);
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            if (dialog.isShowing())
+                dialog.dismiss();
+        }
+    }
 }

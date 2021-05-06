@@ -12,8 +12,8 @@ public class Chat implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
     @NonNull
-    @ColumnInfo(name = "id")
-    private int id;
+    @ColumnInfo(name = "msg_id")
+    private long msgId;
 
     @NonNull
     @ColumnInfo(name = "qid")
@@ -31,6 +31,9 @@ public class Chat implements Serializable {
     @ColumnInfo(name = "msg")
     private String msg;
 
+    @ColumnInfo(name = "delivery_status")
+    private int status;
+
     public Chat() {
     }
 
@@ -42,12 +45,12 @@ public class Chat implements Serializable {
         this.msg = msg;
     }
 
-    public int getId() {
-        return id;
+    public long getMsgId() {
+        return msgId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setMsgId(long msgId) {
+        this.msgId = msgId;
     }
 
     public int getQid() {
@@ -90,4 +93,11 @@ public class Chat implements Serializable {
         this.msg = msg;
     }
 
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
 }

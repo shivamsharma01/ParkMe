@@ -33,13 +33,11 @@ import java.util.Map;
 
 public class PersonalDetailsFragment extends Fragment {
     private final String TAG = "PersonalDetailsFragment";
-    private RequestQueue queue = null;
     private TextView fullName, emailId, phoneNumber, personalInformation, fullNameDetails, contactNumber, address, exit;
     private SharedPreferences sharedpreferences;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        queue = Volley.newRequestQueue(getActivity());
         View view = inflater.inflate(R.layout.fragment_personal_details, container, false);
         sharedpreferences = getActivity().getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
 
@@ -55,60 +53,17 @@ public class PersonalDetailsFragment extends Fragment {
             Functions.exit(getActivity(), sharedpreferences, null);
             getActivity().finish();
         });
-
-        String url = String.format(getActivity().getResources().getString(R.string.url).toString().concat(APIs.getDetails), sharedpreferences.getInt(Globals.ID, 0));
-        JsonRequest request = new JsonRequest(Request.Method.GET, url, null, response -> setFields(response), error -> this.handleError(error));
-        queue.add(request);
+        setFields();
         return view;
     }
 
-    private void setFields(JSONObject response) {
-        try {
-            JSONObject data = new JSONObject(response.get(Globals.DATA).toString());
-            fullName.setText(data.get(Globals.NAME).toString());
-            fullNameDetails.setText(data.get(Globals.NAME).toString());
-            emailId.setText(data.get(Globals.EMAIL).toString());
-            phoneNumber.setText(data.get(Globals.NUMBER).toString());
-            address.setText(data.get(Globals.ADDRESS).toString());
-            contactNumber.setText(data.get(Globals.NUMBER).toString());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void handleError(VolleyError error) {
-        Toast.makeText(getActivity(), "An error occurred", Toast.LENGTH_SHORT).show();
-        Functions.exit(getActivity(), sharedpreferences, null);
-        getActivity().finish();
-    }
-
-    private class JsonRequest extends JsonObjectRequest {
-        public JsonRequest(int method, String url, JSONObject jsonRequest, Response.Listener
-                <JSONObject> listener, Response.ErrorListener errorListener) {
-            super(method, url, jsonRequest, listener, errorListener);
-        }
-
-        @Override
-        protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
-            try {
-                String jsonString = new String(response.data, HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
-                JSONObject jsonResponse = new JSONObject();
-                jsonResponse.put(Globals.DATA, new JSONObject(jsonString));
-                jsonResponse.put(Globals.HEADERS, new JSONObject(response.headers));
-                return Response.success(jsonResponse, HttpHeaderParser.parseCacheHeaders(response));
-            } catch (UnsupportedEncodingException e) {
-                return Response.error(new ParseError(e));
-            } catch (JSONException je) {
-                return Response.error(new ParseError(je));
-            }
-        }
-
-        @Override
-        public Map<String, String> getHeaders() {
-            Map<String, String> params = new HashMap<>();
-            params.put(Globals.SESSION_ID, sharedpreferences.getString(Globals.SESSION_KEY, ""));
-            return params;
-        }
+    private void setFields() {
+        fullName.setText(sharedpreferences.getString(Globals.NAME, ""));
+        fullNameDetails.setText(sharedpreferences.getString(Globals.NAME, ""));
+        emailId.setText(sharedpreferences.getString(Globals.EMAIL, ""));
+        phoneNumber.setText(String.valueOf(sharedpreferences.getLong(Globals.NUMBER, 0)));
+        address.setText(sharedpreferences.getString(Globals.ADDRESS, ""));
+        contactNumber.setText(String.valueOf(sharedpreferences.getLong(Globals.NUMBER, 0)));
     }
 
 }

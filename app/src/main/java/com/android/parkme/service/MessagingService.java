@@ -93,6 +93,8 @@ public class MessagingService extends FirebaseMessagingService {
                     sharedpreferences.getInt(Globals.ID, 0),
                     Long.parseLong(m.get(Globals.TIME)),
                     m.get(Globals.CHAT_MESSAGE));
+            chat.setStatus(1);
+            chat.setMsgId(Long.parseLong(m.get(Globals.MSG_ID)));
             saveChat(chat);
         }
     }
