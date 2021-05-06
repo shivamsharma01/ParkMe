@@ -5,9 +5,4 @@
             <solid android:color="@color/black" />
         </shape>
     </item>
-<!--    <item>-->
-<!--        <bitmap-->
-<!--            android:src="@drawable/ic_chat"-->
-<!--            android:tileMode="disabled" />-->
-<!--    </item>-->
 </layer-list>

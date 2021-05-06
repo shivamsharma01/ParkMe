@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".HomeFragment">
+    tools:context=".main.HomeFragment">
 
     <ScrollView
         android:id="@+id/image_holder"
@@ -31,7 +31,6 @@
                 android:id="@+id/image_card"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="50dp"
                 app:cardCornerRadius="50dp"
                 app:cardElevation="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -58,51 +57,125 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/image_card" />
 
-            <ImageView
-                android:id="@+id/chat_option"
+           <RelativeLayout
+               android:id="@+id/announcement_view"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_marginTop="35dp"
+               android:background="@drawable/background"
+               android:paddingLeft="10dp"
+               android:paddingTop="10dp"
+               android:paddingRight="10dp"
+               app:layout_constraintStart_toStartOf="parent"
+               app:layout_constraintTop_toBottomOf="@+id/textView" >
+               <ImageButton
+                   android:id="@+id/announcement"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:background="?attr/selectableItemBackgroundBorderless"
+                   android:src="@drawable/ic_announcement"/>
+
+               <TextView
+                   android:id="@+id/announcement_text"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:src="@drawable/ic_raise_query"
+                   android:layout_below="@id/announcement"
+                   android:layout_centerHorizontal="true"
+                   android:fontFamily="@font/font_lob"
+                   android:layout_margin="1dp"
+                   android:text="Announcements" />
+           </RelativeLayout>
+
+
+            <RelativeLayout
+                android:id="@+id/raise_query_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="50dp"
-                android:layout_marginRight="60dp"
-                android:layout_weight="0.5"
-                android:src="@drawable/ic_chat"
-                app:layout_constraintEnd_toEndOf="@+id/image_card"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView" />
-
-            <ImageView
+                android:layout_marginTop="35dp"
+                android:background="@drawable/background"
+                android:paddingLeft="10dp"
+                android:paddingTop="10dp"
+                android:paddingRight="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView" >
+            <ImageButton
                 android:id="@+id/raise_query_option"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="64dp"
-                android:layout_marginTop="44dp"
-                android:layout_weight="0.5"
-                android:src="@drawable/ic_raise_complaints"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/image_card"
-                app:layout_constraintTop_toBottomOf="@+id/textView" />
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_raise_query" />
+                <TextView
+                    android:id="@+id/raise_query_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/raise_query_option"
+                    android:layout_centerHorizontal="true"
+                    android:fontFamily="@font/font_lob"
+                    android:layout_margin="1dp"
+                    android:text="Raise Query" />
+            </RelativeLayout>
 
-            <ImageView
+            <RelativeLayout
+                android:id="@+id/view_query_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4.5dp"
-                android:layout_marginRight="60dp"
-                android:layout_weight="0.5"
-                android:src="@drawable/ic_query"
-                app:layout_constraintEnd_toEndOf="@+id/image_card"
+                android:layout_marginTop="35dp"
+                android:background="@drawable/background"
+                android:paddingLeft="10dp"
+                android:paddingTop="10dp"
+                android:paddingRight="10dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/raise_query_option" />
+                app:layout_constraintTop_toBottomOf="@+id/announcement_view" >
 
-            <ImageView
-                android:id="@+id/settings_button"
+                <ImageButton
+                    android:id="@+id/view_query"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_all_queries"/>
+
+                <TextView
+                    android:id="@+id/view_query_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/view_query"
+                    android:layout_centerHorizontal="true"
+                    android:fontFamily="@font/font_lob"
+                    android:layout_margin="1dp"
+                    android:text="View All Queries" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/settings_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="40dp"
-                android:layout_weight="0.5"
-                android:src="@drawable/ic_setting"
+                android:layout_marginTop="35dp"
+                android:background="@drawable/background"
+                android:paddingLeft="10dp"
+                android:paddingTop="10dp"
+                android:paddingRight="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/image_card"
-                app:layout_constraintTop_toBottomOf="@+id/raise_query_option" />
+                app:layout_constraintTop_toBottomOf="@+id/raise_query_view">
+
+                <ImageButton
+                    android:id="@+id/settings_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_settings" />
+
+                <TextView
+                    android:id="@+id/settings_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/settings_button"
+                    android:layout_centerHorizontal="true"
+                    android:fontFamily="@font/font_lob"
+                    android:layout_margin="1dp"
+                    android:text="Settings" />
+            </RelativeLayout>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 

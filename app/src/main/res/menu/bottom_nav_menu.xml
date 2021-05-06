@@ -13,9 +13,9 @@
         android:icon="@drawable/ic_query_foreground"
         android:title="Query" />
     <item
-        android:id="@+id/chat"
+        android:id="@+id/announcement"
         android:icon="@drawable/ic_chat_foreground"
-        android:title="Chat" />
+        android:title="Announcement" />
     <item
         android:id="@+id/profile"
         android:icon="@drawable/ic_profile_foreground"

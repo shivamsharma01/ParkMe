@@ -1,4 +1,4 @@
-package com.android.parkme;
+package com.android.parkme.common;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -7,29 +7,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
-import com.android.parkme.utils.APIs;
+import com.android.parkme.R;
 import com.android.parkme.utils.Functions;
 import com.android.parkme.utils.Globals;
-import com.android.volley.NetworkResponse;
-import com.android.volley.ParseError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class PersonalDetailsFragment extends Fragment {
     private final String TAG = "PersonalDetailsFragment";

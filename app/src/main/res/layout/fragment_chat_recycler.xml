@@ -26,6 +26,7 @@
             android:layout_height="1dp"
             android:background="@android:color/holo_blue_bright"
             app:layout_constraintBottom_toTopOf="@+id/edit_gchat_message" />
+
         <EditText
             android:id="@+id/edit_gchat_message"
             android:layout_width="match_parent"

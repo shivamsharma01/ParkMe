@@ -1,4 +1,4 @@
-package com.android.parkme;
+package com.android.parkme.query;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -17,6 +17,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
+import com.android.parkme.R;
+import com.android.parkme.main.HomeFragment;
 import com.android.parkme.utils.APIs;
 import com.android.parkme.utils.ErrorHandler;
 import com.android.parkme.utils.ErrorResponse;
@@ -39,7 +41,6 @@ import java.util.Map;
 
 public class QueryDetailsFragment extends Fragment {
     private static final String TAG = "QueryDetailsFragment";
-    private static final String MyPREFERENCES = "ParkMe";
     RequestQueue queue = null;
     private TextView queryNumber, dateText, messageText, vehicleNumber;
     private ImageView vehicleNumberImage;
@@ -55,7 +56,7 @@ public class QueryDetailsFragment extends Fragment {
     public void onStart() {
         super.onStart();
         queue = Volley.newRequestQueue(getActivity().getApplicationContext());
-        sharedpreferences = getActivity().getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        sharedpreferences = getActivity().getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
         queryNumber = getActivity().findViewById(R.id.query_number_qd);
         messageText = getActivity().findViewById(R.id.message_text_qd);
         dateText = getActivity().findViewById(R.id.date_value_qd);

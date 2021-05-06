@@ -23,17 +23,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
 
-        <activity android:name=".LoginPhoneActivity" />
-        <activity android:name=".ForgotPasswordActivity" />
-        <activity android:name=".MainActivity" />
+        <activity android:name=".login.LoginPhoneActivity" />
+        <activity android:name=".common.ForgotPasswordActivity" />
+        <activity android:name=".main.MainActivity" />
         <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity" />
-        <activity android:name=".LogoActivity">
+        <activity android:name=".main.LogoActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LoginActivity" />
+        <activity android:name=".login.LoginActivity" />
 
         <meta-data
             android:name="com.google.android.gms.version"

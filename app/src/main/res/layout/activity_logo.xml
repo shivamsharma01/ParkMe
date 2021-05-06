@@ -6,7 +6,7 @@
     android:background="@drawable/ic_main_background"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context=".LogoActivity">
+    tools:context=".main.LogoActivity">
 
     <TextView
         android:layout_width="match_parent"

@@ -1,4 +1,4 @@
-package com.android.parkme;
+package com.android.parkme.common;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
+import com.android.parkme.R;
 import com.android.parkme.utils.APIs;
 import com.android.parkme.utils.ErrorHandler;
 import com.android.parkme.utils.ErrorResponse;

@@ -1,4 +1,4 @@
-package com.android.parkme.chat;
+package com.android.parkme.query.view;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.parkme.R;
+import com.android.parkme.chat.ChatFragment;
 import com.android.parkme.database.DatabaseClient;
 import com.android.parkme.database.Query;
 import com.android.parkme.utils.Functions;
@@ -28,7 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ReceivedFragment extends Fragment {
+public class ReceivedQueryFragment extends Fragment {
     private static final String TAG = "ReceivedFragment";
     private final DateFormat simple = new SimpleDateFormat("MMM dd");
     private int id;
@@ -36,6 +37,7 @@ public class ReceivedFragment extends Fragment {
     private QueryAdapter mAdapter;
     private SharedPreferences sharedpreferences;
     private List<Query> queries;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -70,7 +72,7 @@ public class ReceivedFragment extends Fragment {
 
         @Override
         public QueryHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(getActivity()).inflate(R.layout.list_query_view_received, parent, false);
+            View view = LayoutInflater.from(getActivity()).inflate(R.layout.list_item_query_view_received, parent, false);
             return new QueryHolder(view);
         }
 
@@ -140,8 +142,8 @@ public class ReceivedFragment extends Fragment {
         @Override
         protected void onPostExecute(List<Query> queries) {
             super.onPostExecute(queries);
-            ReceivedFragment.this.
-            mAdapter.notifyDataSetChanged();
+            ReceivedQueryFragment.this.
+                    mAdapter.notifyDataSetChanged();
         }
     }
 

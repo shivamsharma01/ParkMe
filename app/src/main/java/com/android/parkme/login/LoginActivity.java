@@ -1,4 +1,4 @@
-package com.android.parkme;
+package com.android.parkme.login;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
@@ -14,7 +13,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.android.parkme.database.DatabaseClient;
+import com.android.parkme.R;
+import com.android.parkme.common.ForgotPasswordActivity;
+import com.android.parkme.main.MainActivity;
 import com.android.parkme.utils.APIs;
 import com.android.parkme.utils.ErrorHandler;
 import com.android.parkme.utils.ErrorResponse;
@@ -95,7 +96,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void handleError(VolleyError error) {
-        Log.i(TAG, "here");
         ErrorResponse errorResponse = ErrorHandler.parseAndGetErrorLogin(error);
         if (errorResponse.getStatusCode() == 0 || errorResponse.getStatusCode() == 5000)
             Toast.makeText(getApplicationContext(), errorResponse.getErrorMessage(), Toast.LENGTH_SHORT).show();
@@ -127,6 +127,7 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
+
     private class FetchRSSFeeds extends AsyncTask<String, Void, Boolean> {
 
         private ProgressDialog dialog = new ProgressDialog(LoginActivity.this);

@@ -1,4 +1,4 @@
-package com.android.parkme;
+package com.android.parkme.main;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -6,9 +6,13 @@ import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
-import com.android.parkme.chat.ChatRoomFragment;
+import com.android.parkme.R;
+import com.android.parkme.common.PersonalDetailsFragment;
+import com.android.parkme.query.view.ViewQueriesFragment;
 import com.android.parkme.utils.Functions;
+import com.android.parkme.utils.Globals;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -28,22 +32,19 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.home:
                     Functions.setCurrentFragment(this, new HomeFragment());
                     break;
-                case R.id.chat:
-                    Functions.setCurrentFragment(this, new ChatRoomFragment());
+                case R.id.announcement:
+                    Functions.setCurrentFragment(this, new ViewQueriesFragment());
                     break;
             }
             return true;
         });
 
         Functions.setCurrentFragment(this, new HomeFragment());
-    }
 
-//    private void setCurrentFragment(Fragment fragment) {
-//        Log.i(TAG, "setCurrentFragment");
-//        fragmentManager.beginTransaction().
-//                replace(R.id.flFragment, fragment).
-//                commit();
-//    }
+        FirebaseMessaging.getInstance().subscribeToTopic(Globals.TOPIC)
+                .addOnCompleteListener(task -> {
+                });
+    }
 
     @Override
     public void onBackPressed() {

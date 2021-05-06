@@ -3,6 +3,7 @@ package com.android.parkme.database;
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "query_table")
@@ -44,6 +45,7 @@ public class Query {
     public Query() {
     }
 
+    @Ignore
     public Query(int qid, String status, String fromName, int fromId, String toName, int toId, long time, float rating) {
         this.qid = qid;
         this.status = status;

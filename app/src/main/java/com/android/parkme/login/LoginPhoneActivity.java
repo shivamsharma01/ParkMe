@@ -1,4 +1,4 @@
-package com.android.parkme;
+package com.android.parkme.login;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +11,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.parkme.R;
+import com.android.parkme.main.MainActivity;
 import com.android.parkme.utils.APIs;
 import com.android.parkme.utils.ErrorHandler;
 import com.android.parkme.utils.ErrorResponse;

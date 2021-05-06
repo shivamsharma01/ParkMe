@@ -18,8 +18,8 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.android.parkme.LoginActivity;
 import com.android.parkme.R;
+import com.android.parkme.login.LoginActivity;
 
 import java.util.ArrayList;
 import java.util.List;

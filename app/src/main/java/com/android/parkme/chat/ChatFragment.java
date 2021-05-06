@@ -105,7 +105,7 @@ public class ChatFragment extends Fragment {
         mcChatRecyclerView.setItemAnimator(null);
         new GetChats().execute();
         observer = MessagingService.subject.subscribe(chat -> {
-            if (((Chat)chat).getQid() == qid) {
+            if (((Chat) chat).getQid() == qid) {
                 chats.add((Chat) chat);
                 getActivity().runOnUiThread(() -> updateRecyclerView());
             }
@@ -135,6 +135,47 @@ public class ChatFragment extends Fragment {
         Toast.makeText(getActivity(), "Server Down", Toast.LENGTH_SHORT).show();
     }
 
+    private void handleRxJavaError(Throwable e) {
+        Log.i(TAG, e.getLocalizedMessage());
+    }
+
+    private void pushChat(Chat chat) {
+        if (Functions.networkCheck(getContext())) {
+            String url = getResources().getString(R.string.url).concat(APIs.sendChat);
+            Log.i(TAG, "Send Chat Query " + url);
+            JSONObject requestObject = new JSONObject();
+            try {
+                requestObject.put(Globals.QID, qid);
+                requestObject.put(Globals.TIME, chat.getTime());
+                requestObject.put(Globals.FROM_USER_ID, userId);
+                requestObject.put(Globals.TO_USER_ID, toId);
+                requestObject.put(Globals.CHAT_MESSAGE, chat.getMsg());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            JsonRequest request = new JsonObjectRequest(Request.Method.POST, url, requestObject, response -> {
+                try {
+                    boolean status = Boolean.parseBoolean(response.getString(Globals.STATUS));
+                    chat.setStatus(status ? 1 : -1);
+                    new SaveChat().execute(chat);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }, error -> this.handleError(error)) {
+                @Override
+                public Map<String, String> getHeaders() {
+                    Map<String, String> params = new HashMap<>();
+                    params.put(Globals.SESSION_ID, sharedpreferences.getString(Globals.SESSION_KEY, ""));
+                    return params;
+                }
+            };
+            queue.add(request);
+        } else {
+            Toast.makeText(getActivity(), "Please connect to the Internet", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         private List<Chat> mChats;
@@ -153,7 +194,7 @@ public class ChatFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            if(holder instanceof ChatHolderLeft)
+            if (holder instanceof ChatHolderLeft)
                 ((ChatHolderLeft) holder).bind(mChats.get(position));
             else
                 ((ChatHolderRight) holder).bind(mChats.get(position));
@@ -221,10 +262,6 @@ public class ChatFragment extends Fragment {
         }
     }
 
-    private void handleRxJavaError(Throwable e) {
-        Log.i(TAG, e.getLocalizedMessage());
-    }
-
     private class SaveChat extends AsyncTask<Chat, Void, Void> {
 
         @Override
@@ -237,43 +274,6 @@ public class ChatFragment extends Fragment {
         protected void onPostExecute(Void voids) {
             super.onPostExecute(voids);
             updateRecyclerView();
-        }
-    }
-
-    private void pushChat(Chat chat) {
-        if (Functions.networkCheck(getContext())) {
-            String url = getResources().getString(R.string.url).concat(APIs.sendChat);
-            Log.i(TAG, "Send Chat Query " + url);
-            JSONObject requestObject = new JSONObject();
-            try {
-                requestObject.put(Globals.QID, qid);
-                requestObject.put(Globals.TIME, chat.getTime());
-                requestObject.put(Globals.FROM_USER_ID, userId);
-                requestObject.put(Globals.TO_USER_ID, toId);
-                requestObject.put(Globals.CHAT_MESSAGE, chat.getMsg());
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            JsonRequest request = new JsonObjectRequest(Request.Method.POST, url, requestObject, response -> {
-                try {
-                    boolean status = Boolean.parseBoolean(response.getString(Globals.STATUS));
-                    chat.setStatus(status ? 1: -1);
-                    new SaveChat().execute(chat);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }, error -> this.handleError(error)) {
-                @Override
-                public Map<String, String> getHeaders() {
-                    Map<String, String> params = new HashMap<>();
-                    params.put(Globals.SESSION_ID, sharedpreferences.getString(Globals.SESSION_KEY, ""));
-                    return params;
-                }
-            };
-            queue.add(request);
-        } else {
-            Toast.makeText(getActivity(), "Please connect to the Internet", Toast.LENGTH_SHORT).show();
         }
     }
 }

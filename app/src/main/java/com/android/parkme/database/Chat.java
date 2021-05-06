@@ -3,6 +3,7 @@ package com.android.parkme.database;
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
@@ -37,6 +38,7 @@ public class Chat implements Serializable {
     public Chat() {
     }
 
+    @Ignore
     public Chat(int qid, int from, int to, long time, String msg) {
         this.qid = qid;
         this.from = from;

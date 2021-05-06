@@ -1,4 +1,4 @@
-package com.android.parkme.chat;
+package com.android.parkme.query.view;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.parkme.R;
+import com.android.parkme.chat.ChatFragment;
 import com.android.parkme.database.DatabaseClient;
 import com.android.parkme.database.Query;
 import com.android.parkme.utils.Functions;
@@ -29,7 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RaisedFragment extends Fragment {
+public class RaisedQueryFragment extends Fragment {
     private static final String TAG = "RaisedFragment";
     private final DateFormat simple = new SimpleDateFormat("MMM dd");
     private RecyclerView mcQueryRecyclerView;
@@ -74,7 +75,7 @@ public class RaisedFragment extends Fragment {
 
         @Override
         public QueryHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(getActivity()).inflate(R.layout.list_query_view_raised, parent, false);
+            View view = LayoutInflater.from(getActivity()).inflate(R.layout.list_item_query_view_raised, parent, false);
             return new QueryHolder(view);
         }
 

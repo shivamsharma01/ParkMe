@@ -4,7 +4,7 @@
 //}
 
 
-package com.android.parkme;
+package com.android.parkme.query;
 
 import android.app.Activity;
 import android.content.Context;
@@ -30,6 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.android.parkme.R;
 import com.android.parkme.database.DatabaseClient;
 import com.android.parkme.database.Query;
 import com.android.parkme.utils.APIs;
@@ -128,9 +129,9 @@ public class RaiseQueryFragment extends Fragment {
         });
     }
 
-    public  boolean checkValidation() {
+    public boolean checkValidation() {
         if (queryTypeDropdown.getSelectedItem().toString().equals("--Select Query Type--")) {
-            TextView errorText = (TextView)queryTypeDropdown.getSelectedView();
+            TextView errorText = (TextView) queryTypeDropdown.getSelectedView();
             errorText.setError("");
             errorText.setTextColor(Color.RED);//just to highlight that this is an error
             errorText.setText("Please Select a Query Type");//changes the selected item text to this
@@ -140,7 +141,7 @@ public class RaiseQueryFragment extends Fragment {
             messageText.requestFocus();
             messageText.setError("Enter Message");
             return false;
-        } else if(clickedImage.getDrawable() == null){
+        } else if (clickedImage.getDrawable() == null) {
             addImageError.setTextColor(Color.RED);
             addImageError.setText("Please Click Vehicle Number Plate Image");
             addImageError.setVisibility(View.VISIBLE);

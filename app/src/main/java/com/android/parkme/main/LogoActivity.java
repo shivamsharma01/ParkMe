@@ -1,4 +1,4 @@
-package com.android.parkme;
+package com.android.parkme.main;
 
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +8,8 @@ import android.os.Handler;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.parkme.R;
+import com.android.parkme.login.LoginActivity;
 import com.android.parkme.utils.Globals;
 
 public class LogoActivity extends AppCompatActivity {
