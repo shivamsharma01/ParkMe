@@ -26,6 +26,7 @@ import com.iarcuschin.simpleratingbar.SimpleRatingBar;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 public class RaisedFragment extends Fragment {
@@ -34,6 +35,8 @@ public class RaisedFragment extends Fragment {
     private RecyclerView mcQueryRecyclerView;
     private QueryAdapter mAdapter;
     private SharedPreferences sharedpreferences;
+    private List<Query> queries;
+    private int id;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -50,6 +53,15 @@ public class RaisedFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        this.queries = new ArrayList<>();
+        mAdapter = new QueryAdapter(queries);
+        mcQueryRecyclerView.setAdapter(mAdapter);
+        id = sharedpreferences.getInt(Globals.ID, 0);
+        new RetrieveQuery().execute(id);
+    }
 
     class QueryAdapter extends RecyclerView.Adapter<QueryHolder> {
 

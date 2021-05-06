@@ -55,5 +55,4 @@ public class Globals {
     public static final int VIEW_TYPE_SENDER = 0;
     public static final int VIEW_TYPE_RECEIVER = 1;
 
-    public static final String MSG_ID = "MSG_ID";
 }

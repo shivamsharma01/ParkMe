@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -23,6 +24,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,6 +41,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textview.MaterialTextView;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.text.Text;
 import com.google.mlkit.vision.text.TextRecognition;
@@ -62,6 +65,7 @@ public class RaiseQueryFragment extends Fragment {
     private ArrayAdapter<String> queryTypeAdaptor;
     private Spinner queryTypeDropdown;
     private EditText dateText, messageText, vehicleNumber;
+    private MaterialTextView addImageError;
     private ImageView clickedImage;
     private FloatingActionButton addImage;
     private Button resetBtn, sendBtn;
@@ -94,7 +98,7 @@ public class RaiseQueryFragment extends Fragment {
                 getResources().getStringArray(R.array.query_types_array));
         queryTypeAdaptor.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        queryTypeDropdown = (Spinner) view.findViewById(R.id.dropdown_query_types);
+        queryTypeDropdown = view.findViewById(R.id.dropdown_query_types);
         messageText = view.findViewById(R.id.message_text);
         vehicleNumber = view.findViewById(R.id.number_value);
         clickedImage = view.findViewById(R.id.clicked_image);
@@ -102,11 +106,13 @@ public class RaiseQueryFragment extends Fragment {
         addImage = view.findViewById(R.id.add_image_button);
         dateText = view.findViewById(R.id.date_value);
         resetBtn = view.findViewById(R.id.reset_button);
+        addImageError = view.findViewById(R.id.add_image_error);
 
         queryTypeDropdown.setAdapter(queryTypeAdaptor);
         dateText.setText(new SimpleDateFormat("YYYY-MM-dd HH:mm").format(new Date()));
 
         addImage.setOnClickListener(v -> {
+            addImageError.setVisibility(View.GONE);
             if (Functions.checkAndRequestPermissions(getActivity())) {
                 CropImage.activity().start(getContext(), RaiseQueryFragment.this);
             }
@@ -122,12 +128,38 @@ public class RaiseQueryFragment extends Fragment {
         });
     }
 
+    public  boolean checkValidation() {
+        if (queryTypeDropdown.getSelectedItem().toString().equals("--Select Query Type--")) {
+            TextView errorText = (TextView)queryTypeDropdown.getSelectedView();
+            errorText.setError("");
+            errorText.setTextColor(Color.RED);//just to highlight that this is an error
+            errorText.setText("Please Select a Query Type");//changes the selected item text to this
+            queryTypeDropdown.requestFocus();
+            return false;
+        } else if (messageText.length() <= 0) {
+            messageText.requestFocus();
+            messageText.setError("Enter Message");
+            return false;
+        } else if(clickedImage.getDrawable() == null){
+            addImageError.setTextColor(Color.RED);
+            addImageError.setText("Please Click Vehicle Number Plate Image");
+            addImageError.setVisibility(View.VISIBLE);
+            return false;
+        } else if (vehicleNumber.length() <= 0) {
+            vehicleNumber.requestFocus();
+            vehicleNumber.setError("Enter vehicleNumber if not Extracted correctly by Image");
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     private void raiseQuery() {
-        if (Functions.networkCheck(getContext())) {
+        if (checkValidation() && Functions.networkCheck(getContext())) {
             try {
-                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
-                 bArray = bos.toByteArray();
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
+                bArray = bos.toByteArray();
                 String url = getResources().getString(R.string.url).concat(APIs.raiseQuery);
                 Log.i(TAG, "Raising Query " + url);
                 requestObject = new JSONObject();

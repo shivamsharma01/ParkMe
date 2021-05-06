@@ -25,6 +25,7 @@ import com.android.parkme.utils.Globals;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ReceivedFragment extends Fragment {
@@ -34,7 +35,7 @@ public class ReceivedFragment extends Fragment {
     private RecyclerView mcQueryRecyclerView;
     private QueryAdapter mAdapter;
     private SharedPreferences sharedpreferences;
-
+    private List<Query> queries;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -45,11 +46,18 @@ public class ReceivedFragment extends Fragment {
 
         mcQueryRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        int id = sharedpreferences.getInt(Globals.ID, 0);
-        new RetrieveQuery().execute(id);
         return view;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        this.queries = new ArrayList<>();
+        id = sharedpreferences.getInt(Globals.ID, 0);
+        mAdapter = new QueryAdapter(queries);
+        mcQueryRecyclerView.setAdapter(mAdapter);
+        new RetrieveQuery().execute(id);
+    }
 
     class QueryAdapter extends RecyclerView.Adapter<QueryHolder> {
 
@@ -132,8 +140,8 @@ public class ReceivedFragment extends Fragment {
         @Override
         protected void onPostExecute(List<Query> queries) {
             super.onPostExecute(queries);
-            mAdapter = new QueryAdapter(queries);
-            mcQueryRecyclerView.setAdapter(mAdapter);
+            ReceivedFragment.this.
+            mAdapter.notifyDataSetChanged();
         }
     }
 

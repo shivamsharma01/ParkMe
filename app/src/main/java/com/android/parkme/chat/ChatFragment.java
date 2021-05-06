@@ -35,8 +35,6 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -72,19 +70,17 @@ public class ChatFragment extends Fragment {
         mcChatRecyclerView.setLayoutManager(linearLayoutManager);
 
         // is This needed?
-        mcChatRecyclerView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
-            if (chats != null)
-                updateRecyclerView();
-        });
+//        mcChatRecyclerView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+//            if (chats != null)
+//                updateRecyclerView();
+//        });
 
         sharedpreferences = getActivity().getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
         userId = sharedpreferences.getInt(Globals.ID, 0);
         qid = getArguments().getInt(Globals.QID);
         toId = getArguments().getInt(Globals.TO_USER_ID);
 
-        // is This correct?
-        Log.i(TAG, getArguments().getString(Globals.STATUS));
-        if (!"open".equals(getArguments().getString(Globals.STATUS)))
+        if (!Globals.QUERY_DEFAULT_STATUS.equals(getArguments().getString(Globals.STATUS)))
             rl.setVisibility(View.INVISIBLE);
         sendMessageButton.setOnClickListener(view1 -> {
             if (Functions.networkCheck(getContext())) {
@@ -106,6 +102,7 @@ public class ChatFragment extends Fragment {
     public void initialSetup() {
         mAdapter = new ChatAdapter(chats);
         mcChatRecyclerView.setAdapter(mAdapter);
+        mcChatRecyclerView.setItemAnimator(null);
         new GetChats().execute();
         observer = MessagingService.subject.subscribe(chat -> {
             if (((Chat)chat).getQid() == qid) {
@@ -115,9 +112,10 @@ public class ChatFragment extends Fragment {
         }, e -> handleRxJavaError(e));
     }
 
-    private void updateRecyclerView() {
-        mAdapter.notifyItemInserted(chats.size() - 1);
-        mcChatRecyclerView.scrollToPosition(chats.size() - 1);
+    private synchronized void updateRecyclerView() {
+        int newSize = chats.size() - 1;
+        mAdapter.notifyItemInserted(newSize);
+        mcChatRecyclerView.scrollToPosition(newSize);
     }
 
     @Override
@@ -260,7 +258,6 @@ public class ChatFragment extends Fragment {
             JsonRequest request = new JsonObjectRequest(Request.Method.POST, url, requestObject, response -> {
                 try {
                     boolean status = Boolean.parseBoolean(response.getString(Globals.STATUS));
-                    chat.setMsgId(response.getLong(Globals.MSG_ID));
                     chat.setStatus(status ? 1: -1);
                     new SaveChat().execute(chat);
                 } catch (JSONException e) {
