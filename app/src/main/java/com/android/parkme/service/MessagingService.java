@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.android.parkme.database.DatabaseClient;
 import com.android.parkme.utils.Globals;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -13,12 +14,12 @@ import java.util.Map;
 import io.reactivex.rxjava3.subjects.BehaviorSubject;
 
 public class MessagingService extends FirebaseMessagingService {
-    public static final BehaviorSubject<Object> subject = BehaviorSubject.create();
     private static final String TAG = "MessagingService";
+    public static final BehaviorSubject<Object> subject = BehaviorSubject.create();
 
     public void onMessageReceived(RemoteMessage message) {
         Map<String, String> m = message.getData();
-        m.entrySet().stream().spliterator().forEachRemaining(c -> System.out.println(c.getKey() + " : " + c.getValue()));
+        m.entrySet().stream().spliterator().forEachRemaining(c-> System.out.println(c.getKey()+" : "+c.getValue()));
         SharedPreferences sharedPreferences = getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
         if (Globals.NOTIFICATION_CHAT.equals(m.get(Globals.NOTIFICATION_TYPE)))
             HandleFirebaseMessage.handleChatNotification(getApplicationContext(), sharedPreferences, m, subject);
@@ -35,7 +36,7 @@ public class MessagingService extends FirebaseMessagingService {
     }
 
     public void onNewToken(String token) {
-        Log.i(TAG, "new Token generated:" + token);
+        Log.i(TAG, "new Token generated:"+token);
         SharedPreferences sharedPreferences = getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(Globals.TOKEN, token);

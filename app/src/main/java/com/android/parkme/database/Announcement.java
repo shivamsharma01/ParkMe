@@ -21,8 +21,7 @@ public class Announcement {
     @ColumnInfo(name = "msg")
     private String message;
 
-    public Announcement() {
-    }
+    public Announcement() {}
 
     @Ignore
     public Announcement(long time, String message) {

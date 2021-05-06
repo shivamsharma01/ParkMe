@@ -13,17 +13,20 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.android.parkme.R;
+import com.android.parkme.announcement.AnnouncementFragment;
 import com.android.parkme.common.PersonalDetailsFragment;
 import com.android.parkme.common.SettingsFragment;
 import com.android.parkme.query.RaiseQueryFragment;
 import com.android.parkme.query.view.ViewQueriesFragment;
 import com.android.parkme.utils.Functions;
 import com.android.parkme.utils.Globals;
+import com.yarolegovich.discretescrollview.DiscreteScrollView;
 
 public class HomeFragment extends Fragment {
     private static final String TAG = "HomeFragment";
     private ImageView announcement, raiseQueryOptions, profilePic, viewQueries, settings;
     private TextView textView;
+    private View view;
     private SharedPreferences sharedpreferences;
 
     @Override
@@ -34,7 +37,7 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        view = inflater.inflate(R.layout.fragment_home, container, false);
 
         announcement = view.findViewById(R.id.announcement);
         viewQueries = view.findViewById(R.id.view_query);
@@ -44,6 +47,7 @@ public class HomeFragment extends Fragment {
         settings = view.findViewById(R.id.settings_button);
         sharedpreferences = getActivity().getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
         textView.setText(String.format(getActivity().getResources().getString(R.string.greet).toString(), sharedpreferences.getString(Globals.NAME, "")));
+        announcement.setOnClickListener(v -> Functions.setCurrentFragment(getActivity(), new AnnouncementFragment()));
         profilePic.setOnClickListener(v -> Functions.setCurrentFragment(getActivity(), new PersonalDetailsFragment()));
         viewQueries.setOnClickListener(v -> Functions.setCurrentFragment(getActivity(), new ViewQueriesFragment()));
         raiseQueryOptions.setOnClickListener(v -> Functions.setCurrentFragment(getActivity(), new RaiseQueryFragment()));
@@ -62,5 +66,6 @@ public class HomeFragment extends Fragment {
             profilePic.setImageResource(R.drawable.img_shradha);
         else if (sharedpreferences.getString(Globals.EMAIL, "").toLowerCase().contains("akanksha"))
             profilePic.setImageResource(R.drawable.img_akanksha);
+
     }
 }
