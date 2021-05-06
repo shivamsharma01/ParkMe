@@ -9,26 +9,28 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
 import com.android.parkme.R;
+import com.android.parkme.database.Announcement;
 import com.android.parkme.database.Chat;
 import com.android.parkme.database.DatabaseClient;
 import com.android.parkme.database.Query;
 import com.android.parkme.main.MainActivity;
 import com.android.parkme.utils.Globals;
 
+import java.util.Date;
 import java.util.Map;
 
 import io.reactivex.rxjava3.subjects.BehaviorSubject;
 
 public class HandleFirebaseMessage {
+    private static final String TAG = "HandleFirebaseMessage";
 
-    public static void handleQueryPushNotifcation(Context context, SharedPreferences sharedpreferences, Map<String, String> m) {
+    public static void handleRaiseQueryPushNotification(Context context, SharedPreferences sharedpreferences, Map<String, String> m) {
         Query query = null;
-        for (Map.Entry<String, String> eS : m.entrySet())
-            System.out.println(eS.getKey() + " : " + eS.getValue());
 
         query = new Query(Integer.parseInt(m.get(Globals.QID)),
                 m.get(Globals.STATUS),
@@ -37,7 +39,7 @@ public class HandleFirebaseMessage {
                 sharedpreferences.getString(Globals.NAME, ""),
                 sharedpreferences.getInt(Globals.ID, 0),
                 Long.parseLong(m.get(Globals.TIME)),
-                -1f);
+                Float.parseFloat(m.get(Globals.RATING)));
 
         saveQuery(context, query);
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -73,8 +75,16 @@ public class HandleFirebaseMessage {
         notificationManager.notify(/*notification id*/1, notificationBuilder.build());
     }
 
-    private static void saveQuery(Context context, Query query) {
-        DatabaseClient.getInstance(context).getAppDatabase().parkMeDao().insert(query);
+    public static void handleCancelQueryPushNotification(Context context, SharedPreferences sharedpreferences, Map<String, String> m) {
+        DatabaseClient.getInstance(context).getAppDatabase().parkMeDao().updateCancelRequest(m.get(Globals.NOTIFICATION_TYPE).toString(), Integer.parseInt(m.get(Globals.QID)));
+    }
+
+    public static void handleCloseQueryPushNotification(Context context, SharedPreferences sharedpreferences, Map<String, String> m) {
+        DatabaseClient.getInstance(context).getAppDatabase().parkMeDao().updateCloseRequest(m.get(Globals.NOTIFICATION_TYPE).toString(), Integer.parseInt(m.get(Globals.QID)), Float.parseFloat(m.get(Globals.RATING)));
+    }
+
+    public static void handleAnnouncementPushNotification(Context context, SharedPreferences sharedpreferences, Map<String, String> m) {
+        DatabaseClient.getInstance(context).getAppDatabase().parkMeDao().insert(new Announcement(Long.parseLong(m.get(Globals.TIME).toString()), m.get(Globals.MESSAGE).toString()));
     }
 
     public static void handleChatNotification(Context context, SharedPreferences sharedpreferences, Map<String, String> m, BehaviorSubject subject) {
@@ -86,6 +96,10 @@ public class HandleFirebaseMessage {
                 m.get(Globals.CHAT_MESSAGE));
         chat.setStatus(1);
         saveChat(context, chat, subject);
+    }
+
+    private static void saveQuery(Context context, Query query) {
+        DatabaseClient.getInstance(context).getAppDatabase().parkMeDao().insert(query);
     }
 
     private static void saveChat(Context context, Chat chat, BehaviorSubject subject) {

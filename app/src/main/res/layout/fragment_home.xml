@@ -57,35 +57,36 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/image_card" />
 
-           <RelativeLayout
-               android:id="@+id/announcement_view"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:layout_marginTop="35dp"
-               android:background="@drawable/background"
-               android:paddingLeft="10dp"
-               android:paddingTop="10dp"
-               android:paddingRight="10dp"
-               app:layout_constraintStart_toStartOf="parent"
-               app:layout_constraintTop_toBottomOf="@+id/textView" >
-               <ImageButton
-                   android:id="@+id/announcement"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:background="?attr/selectableItemBackgroundBorderless"
-                   android:src="@drawable/ic_announcement"/>
+            <RelativeLayout
+                android:id="@+id/announcement_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="35dp"
+                android:background="@drawable/background"
+                android:paddingLeft="10dp"
+                android:paddingTop="10dp"
+                android:paddingRight="10dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView">
 
-               <TextView
-                   android:id="@+id/announcement_text"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:src="@drawable/ic_raise_query"
-                   android:layout_below="@id/announcement"
-                   android:layout_centerHorizontal="true"
-                   android:fontFamily="@font/font_lob"
-                   android:layout_margin="1dp"
-                   android:text="Announcements" />
-           </RelativeLayout>
+                <ImageButton
+                    android:id="@+id/announcement"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_announcement" />
+
+                <TextView
+                    android:id="@+id/announcement_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/announcement"
+                    android:layout_centerHorizontal="true"
+                    android:layout_margin="1dp"
+                    android:fontFamily="@font/font_lob"
+                    android:src="@drawable/ic_raise_query"
+                    android:text="Announcements" />
+            </RelativeLayout>
 
 
             <RelativeLayout
@@ -98,21 +99,23 @@
                 android:paddingTop="10dp"
                 android:paddingRight="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView" >
-            <ImageButton
-                android:id="@+id/raise_query_option"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_raise_query" />
+                app:layout_constraintTop_toBottomOf="@+id/textView">
+
+                <ImageButton
+                    android:id="@+id/raise_query_option"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_raise_query" />
+
                 <TextView
                     android:id="@+id/raise_query_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/raise_query_option"
                     android:layout_centerHorizontal="true"
-                    android:fontFamily="@font/font_lob"
                     android:layout_margin="1dp"
+                    android:fontFamily="@font/font_lob"
                     android:text="Raise Query" />
             </RelativeLayout>
 
@@ -126,14 +129,14 @@
                 android:paddingTop="10dp"
                 android:paddingRight="10dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/announcement_view" >
+                app:layout_constraintTop_toBottomOf="@+id/announcement_view">
 
                 <ImageButton
                     android:id="@+id/view_query"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/ic_all_queries"/>
+                    android:src="@drawable/ic_all_queries" />
 
                 <TextView
                     android:id="@+id/view_query_text"
@@ -141,8 +144,8 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/view_query"
                     android:layout_centerHorizontal="true"
-                    android:fontFamily="@font/font_lob"
                     android:layout_margin="1dp"
+                    android:fontFamily="@font/font_lob"
                     android:text="View All Queries" />
             </RelativeLayout>
 
@@ -171,8 +174,8 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/settings_button"
                     android:layout_centerHorizontal="true"
-                    android:fontFamily="@font/font_lob"
                     android:layout_margin="1dp"
+                    android:fontFamily="@font/font_lob"
                     android:text="Settings" />
             </RelativeLayout>
 

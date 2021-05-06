@@ -41,9 +41,11 @@ public class Globals {
     public static final String TO_USER_NAME = "toUser";
     public static final String RATING = "rating";
 
-    public static final String NOTIFICATION_TEST = "test";
-    public static final String NOTIFICATION_PUSH = "push";
+    public static final String NOTIFICATION_RAISE = "Unresolved";
+    public static final String NOTIFICATION_CANCEL = "Cancelled";
+    public static final String NOTIFICATION_CLOSE = "Closed";
     public static final String NOTIFICATION_CHAT = "chat";
+    public static final String NOTIFICATION_TOPIC = "announcement";
     public static final String CHAT_MESSAGE = "msg";
     public static final String TITLE = "title";
     public static final String TIME = "time";
@@ -55,6 +57,5 @@ public class Globals {
     public static final int VIEW_TYPE_SENDER = 0;
     public static final int VIEW_TYPE_RECEIVER = 1;
 
-    public static final String TOPIC = "announcement";
 
 }

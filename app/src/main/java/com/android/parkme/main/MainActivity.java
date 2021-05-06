@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
         Functions.setCurrentFragment(this, new HomeFragment());
 
-        FirebaseMessaging.getInstance().subscribeToTopic(Globals.TOPIC)
+        FirebaseMessaging.getInstance().subscribeToTopic(Globals.NOTIFICATION_TOPIC)
                 .addOnCompleteListener(task -> {
                 });
     }

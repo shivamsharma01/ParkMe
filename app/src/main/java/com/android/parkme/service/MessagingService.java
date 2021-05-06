@@ -18,20 +18,24 @@ public class MessagingService extends FirebaseMessagingService {
 
     public void onMessageReceived(RemoteMessage message) {
         Map<String, String> m = message.getData();
+        m.entrySet().stream().spliterator().forEachRemaining(c -> System.out.println(c.getKey() + " : " + c.getValue()));
         SharedPreferences sharedPreferences = getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
-        if (Globals.NOTIFICATION_PUSH.equals(m.get(Globals.NOTIFICATION_TYPE)))
-            HandleFirebaseMessage.handleQueryPushNotifcation(getApplicationContext(), sharedPreferences, m);
-        else if (Globals.NOTIFICATION_CHAT.equals(m.get(Globals.NOTIFICATION_TYPE)))
+        if (Globals.NOTIFICATION_CHAT.equals(m.get(Globals.NOTIFICATION_TYPE)))
             HandleFirebaseMessage.handleChatNotification(getApplicationContext(), sharedPreferences, m, subject);
-        else if (Globals.NOTIFICATION_CHAT.equals(m.get(Globals.NOTIFICATION_TYPE)))
-            HandleFirebaseMessage.handleChatNotification(getApplicationContext(), sharedPreferences, m, subject);
+        else if (Globals.NOTIFICATION_TOPIC.equals(m.get(Globals.NOTIFICATION_TYPE)))
+            HandleFirebaseMessage.handleAnnouncementPushNotification(getApplicationContext(), sharedPreferences, m);
+        else if (Globals.NOTIFICATION_RAISE.equals(m.get(Globals.NOTIFICATION_TYPE)))
+            HandleFirebaseMessage.handleRaiseQueryPushNotification(getApplicationContext(), sharedPreferences, m);
+        else if (Globals.NOTIFICATION_CLOSE.equals(m.get(Globals.NOTIFICATION_TYPE)))
+            HandleFirebaseMessage.handleCloseQueryPushNotification(getApplicationContext(), sharedPreferences, m);
+        else if (Globals.NOTIFICATION_CANCEL.equals(m.get(Globals.NOTIFICATION_TYPE)))
+            HandleFirebaseMessage.handleCancelQueryPushNotification(getApplicationContext(), sharedPreferences, m);
         else
-            Log.i(TAG, "message received");
+            Log.i(TAG, "message received.. but didn't match any criteria");
     }
 
     public void onNewToken(String token) {
-        Log.i(TAG, "new Token generated");
-        Log.i(TAG, token);
+        Log.i(TAG, "new Token generated:" + token);
         SharedPreferences sharedPreferences = getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(Globals.TOKEN, token);
