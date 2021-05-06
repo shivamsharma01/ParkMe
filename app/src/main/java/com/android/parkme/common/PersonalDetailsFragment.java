@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
@@ -17,6 +18,7 @@ import com.android.parkme.utils.Globals;
 public class PersonalDetailsFragment extends Fragment {
     private final String TAG = "PersonalDetailsFragment";
     private TextView fullName, emailId, phoneNumber, personalInformation, fullNameDetails, contactNumber, address, exit;
+    private ImageView profilePic;
     private SharedPreferences sharedpreferences;
 
     @Override
@@ -32,6 +34,16 @@ public class PersonalDetailsFragment extends Fragment {
         contactNumber = view.findViewById(R.id.contact_number);
         address = view.findViewById(R.id.address);
         exit = view.findViewById(R.id.exit);
+        profilePic = view.findViewById(R.id.user_pic);
+
+        if (sharedpreferences.getString(Globals.EMAIL, "").toLowerCase().contains("shivam"))
+            profilePic.setImageResource(R.drawable.img_shivam);
+        else if (sharedpreferences.getString(Globals.EMAIL, "").toLowerCase().contains("akhil"))
+            profilePic.setImageResource(R.drawable.img_akhil);
+        else if (sharedpreferences.getString(Globals.EMAIL, "").toLowerCase().contains("shradha"))
+            profilePic.setImageResource(R.drawable.img_shradha);
+        else if (sharedpreferences.getString(Globals.EMAIL, "").toLowerCase().contains("akanksha"))
+            profilePic.setImageResource(R.drawable.img_akanksha);
         exit.setOnClickListener(v -> {
             Functions.exit(getActivity(), sharedpreferences, null);
             getActivity().finish();

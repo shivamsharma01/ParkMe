@@ -6,7 +6,7 @@
     android:orientation="horizontal">
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/user_pic"
+        android:id="@+id/user_pic_card"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -14,10 +14,10 @@
         app:cardCornerRadius="100dp">
 
         <ImageView
-            android:id="@+id/user_pic1"
+            android:id="@+id/user_pic"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:src="@drawable/img_akhil" />
+            android:src="@drawable/img_admin" />
     </androidx.cardview.widget.CardView>
 
     <LinearLayout
@@ -32,7 +32,6 @@
             android:layout_marginTop="10dp"
             android:fontFamily="@font/font_lob"
             android:gravity="center"
-            android:text="123123123adsad"
             android:textSize="16dp"
             android:textStyle="bold" />
 

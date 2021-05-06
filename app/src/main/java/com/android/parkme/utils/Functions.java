@@ -50,7 +50,6 @@ public class Functions {
 
     public static void setCurrentFragment(FragmentActivity fragmentActivity, Fragment fragment) {
         FragmentManager fragmentManager = fragmentActivity.getSupportFragmentManager();
-        Log.i(TAG, "setCurrentFragment");
         String fragmentTag = fragment.getClass().getName();
         boolean fragmentPopped = fragmentManager.popBackStackImmediate(fragmentTag, 0);
 

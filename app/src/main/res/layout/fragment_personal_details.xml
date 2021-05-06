@@ -22,7 +22,7 @@
         tools:layout_editor_absoluteX="27dp">
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/user_pic"
+            android:id="@+id/user_pic_card"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_gravity="center"
@@ -30,7 +30,7 @@
             app:cardElevation="10dp">
 
             <ImageView
-                android:id="@+id/user_pic1"
+                android:id="@+id/user_pic"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:src="@drawable/img_akhil" />

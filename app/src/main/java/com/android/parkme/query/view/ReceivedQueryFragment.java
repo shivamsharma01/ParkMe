@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -96,6 +97,7 @@ public class ReceivedQueryFragment extends Fragment {
         private Query mQuery;
         private View v;
         private TextView mNameTextView, mDateTextView, mStatusTextView;
+        private ImageView userPicImageView;
 
         public QueryHolder(View itemView) {
             super(itemView);
@@ -104,6 +106,7 @@ public class ReceivedQueryFragment extends Fragment {
             mNameTextView = itemView.findViewById(R.id.query_name);
             mDateTextView = itemView.findViewById(R.id.query_date);
             mStatusTextView = itemView.findViewById(R.id.query_status);
+            userPicImageView = itemView.findViewById(R.id.user_pic);
         }
 
         public void bind(Query query) {
@@ -112,6 +115,14 @@ public class ReceivedQueryFragment extends Fragment {
             mNameTextView.setPaintFlags(mNameTextView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             mDateTextView.setText(Functions.parseDateText(simple.format(query.getTime())));
             mStatusTextView.setText(query.getStatus());
+            if (query.getFromName().toLowerCase().contains("shivam"))
+                userPicImageView.setImageResource(R.drawable.img_shivam);
+            else if (query.getFromName().toLowerCase().contains("akhil"))
+                userPicImageView.setImageResource(R.drawable.img_akhil);
+            else if (query.getFromName().toLowerCase().contains("shradha"))
+                userPicImageView.setImageResource(R.drawable.img_shradha);
+            else if (query.getFromName().toLowerCase().contains("akanksha"))
+                userPicImageView.setImageResource(R.drawable.img_akanksha);
             if ("resolved".equals(query.getStatus().toLowerCase()))
                 mStatusTextView.setTextColor(Color.GREEN);
             else

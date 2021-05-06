@@ -54,5 +54,13 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        if (sharedpreferences.getString(Globals.EMAIL, "").toLowerCase().contains("shivam"))
+            profilePic.setImageResource(R.drawable.img_shivam);
+        else if (sharedpreferences.getString(Globals.EMAIL, "").toLowerCase().contains("akhil"))
+            profilePic.setImageResource(R.drawable.img_akhil);
+        else if (sharedpreferences.getString(Globals.EMAIL, "").toLowerCase().contains("shradha"))
+            profilePic.setImageResource(R.drawable.img_shradha);
+        else if (sharedpreferences.getString(Globals.EMAIL, "").toLowerCase().contains("akanksha"))
+            profilePic.setImageResource(R.drawable.img_akanksha);
     }
 }
