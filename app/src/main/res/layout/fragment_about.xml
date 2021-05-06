@@ -39,7 +39,7 @@
         android:layout_marginTop="324dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView5"
-        app:srcCompat="@drawable/shradha" />
+        app:srcCompat="@drawable/logo_shradha" />
 
     <ImageView
         android:id="@+id/imageView5"
@@ -49,7 +49,7 @@
         android:layout_marginTop="244dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView5"
-        app:srcCompat="@drawable/shivam1" />
+        app:srcCompat="@drawable/logo_shivam" />
 
     <TextView
         android:id="@+id/textView10"
@@ -70,7 +70,7 @@
         android:layout_marginTop="156dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView5"
-        app:srcCompat="@drawable/akhil3" />
+        app:srcCompat="@drawable/logo_akhil" />
 
     <ImageView
         android:id="@+id/imageView3"
@@ -80,7 +80,7 @@
         android:layout_marginTop="68dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView5"
-        app:srcCompat="@drawable/akanksha" />
+        app:srcCompat="@drawable/logo_akanksha" />
 
     <TextView
         android:id="@+id/textView9"
