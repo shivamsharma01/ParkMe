@@ -20,7 +20,6 @@ import com.android.parkme.query.RaiseQueryFragment;
 import com.android.parkme.query.view.ViewQueriesFragment;
 import com.android.parkme.utils.Functions;
 import com.android.parkme.utils.Globals;
-import com.yarolegovich.discretescrollview.DiscreteScrollView;
 
 public class HomeFragment extends Fragment {
     private static final String TAG = "HomeFragment";

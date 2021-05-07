@@ -4,10 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.yarolegovich.discretescrollview.DiscreteScrollView
-        android:id="@+id/picker"
+    <recycler.coverflow.RecyclerCoverFlow
+        android:id="@+id/list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/settings_view"
-        app:dsv_orientation="horizontal" />
+        android:layout_height="match_parent">
+    </recycler.coverflow.RecyclerCoverFlow>
 </LinearLayout>

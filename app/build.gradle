@@ -52,7 +52,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging'
     implementation 'com.google.firebase:firebase-analytics'
     
-    implementation 'com.yarolegovich:discrete-scrollview:1.5.1'
+    implementation 'com.chenlittleping:recyclercoverflow:1.0.6'
 
     def room_version = "2.3.0"
 
