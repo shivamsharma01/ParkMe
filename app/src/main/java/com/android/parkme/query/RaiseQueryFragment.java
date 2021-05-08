@@ -1,9 +1,3 @@
-//package com.android.parkme;
-//
-//public class temp {
-//}
-
-
 package com.android.parkme.query;
 
 import android.app.Activity;
@@ -25,6 +19,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,8 +33,11 @@ import com.android.parkme.utils.Functions;
 import com.android.parkme.utils.Globals;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.JsonRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textview.MaterialTextView;
@@ -72,7 +70,6 @@ public class RaiseQueryFragment extends Fragment {
     private Button resetBtn, sendBtn;
     private Bitmap bitmap;
     private byte[] bArray;
-    private String currentValue;
     private RequestQueue queue = null;
     private SharedPreferences sharedpreferences;
     private View view;
@@ -88,6 +85,18 @@ public class RaiseQueryFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_raise_query, container, false);
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        queryTypeDropdown.setSelection((int)sharedpreferences.getLong("dropDown", 0));
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        sharedpreferences.edit().putLong("dropDown", queryTypeDropdown.getSelectedItemPosition()).commit();
     }
 
     @Override
@@ -123,10 +132,16 @@ public class RaiseQueryFragment extends Fragment {
             String compareValue = "--Select Query Type--";
             int spinnerPosition = queryTypeAdaptor.getPosition(compareValue);
             queryTypeDropdown.setSelection(spinnerPosition);
-            messageText.setText("");
-            vehicleNumber.setText("");
+            messageText.getText().clear();
+            vehicleNumber.getText().clear();
             clickedImage.setVisibility(View.GONE);
         });
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putLong("dropdownVal", queryTypeDropdown.getSelectedItemId());
     }
 
     public boolean checkValidation() {
@@ -156,40 +171,42 @@ public class RaiseQueryFragment extends Fragment {
     }
 
     private void raiseQuery() {
-        if (checkValidation() && Functions.networkCheck(getContext())) {
-            try {
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
-                bArray = bos.toByteArray();
-                String url = getResources().getString(R.string.url).concat(APIs.raiseQuery);
-                Log.i(TAG, "Raising Query " + url);
-                requestObject = new JSONObject();
-                requestObject.put(Globals.QUERY_TYPE, queryTypeDropdown.getSelectedItem().toString());
-                requestObject.put(Globals.STATUS, Globals.QUERY_DEFAULT_STATUS);
-                requestObject.put(Globals.MESSAGE, messageText.getText().toString());
-                requestObject.put(Globals.QUERY_CREATE_DATE, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(new Date()));
-                requestObject.put(Globals.VEHICLE_REGISTRATION_NUMBER, vehicleNumber.getText().toString());
+        if (checkValidation()) {
+            if (Functions.networkCheck(getContext())) {
+                try {
+                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
+                    bArray = bos.toByteArray();
+                    String url = getResources().getString(R.string.url).concat(APIs.raiseQuery);
+                    Log.i(TAG, "Raising Query " + url);
+                    requestObject = new JSONObject();
+                    requestObject.put(Globals.QUERY_TYPE, queryTypeDropdown.getSelectedItem().toString());
+                    requestObject.put(Globals.STATUS, Globals.QUERY_DEFAULT_STATUS);
+                    requestObject.put(Globals.MESSAGE, messageText.getText().toString());
+                    requestObject.put(Globals.QUERY_CREATE_DATE, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(new Date()));
+                    requestObject.put(Globals.VEHICLE_REGISTRATION_NUMBER, vehicleNumber.getText().toString());
 
-                JsonRequest request = new JsonObjectRequest(Request.Method.POST, url, requestObject, response -> {
-                    responseObject = response;
-                    Log.i(TAG, "Query Raised Successfully");
-                    if (null != response)
-                        onSuccess();
-                }, error ->
-                        Functions.showToast(getActivity(), "An error occurred")) {
-                    @Override
-                    public Map<String, String> getHeaders() {
-                        Map<String, String> params = new HashMap<>();
-                        params.put(Globals.SESSION_ID, sharedpreferences.getString(Globals.SESSION_KEY, ""));
-                        return params;
-                    }
-                };
-                queue.add(request);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } else
-            Functions.showToast(getActivity(), "Please connect to the Internet");
+                    JsonRequest request = new JsonObjectRequest(Request.Method.POST, url, requestObject, response -> {
+                        responseObject = response;
+                        Log.i(TAG, "Query Raised Successfully");
+                        if (null != response)
+                            onSuccess();
+                    }, error ->
+                            Functions.showToast(getActivity(), "An error occurred")) {
+                        @Override
+                        public Map<String, String> getHeaders() {
+                            Map<String, String> params = new HashMap<>();
+                            params.put(Globals.SESSION_ID, sharedpreferences.getString(Globals.SESSION_KEY, ""));
+                            return params;
+                        }
+                    };
+                    queue.add(request);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else
+                Functions.showToast(getActivity(), "Please connect to the Internet");
+        }
     }
 
     private void onSuccess() {
@@ -211,9 +228,9 @@ public class RaiseQueryFragment extends Fragment {
         }
     }
 
+
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        currentValue = queryTypeDropdown.getSelectedItem().toString();
         Log.i(TAG, "value of result code: " + resultCode);
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
@@ -260,8 +277,6 @@ public class RaiseQueryFragment extends Fragment {
                     str.append(elements.get(k).getText());
             }
         }
-        int spinnerPosition1 = queryTypeAdaptor.getPosition(currentValue);
-        queryTypeDropdown.setSelection(spinnerPosition1);
         vehicleNumber.setText(str);
     }
 
@@ -312,4 +327,5 @@ public class RaiseQueryFragment extends Fragment {
             return null;
         }
     }
+
 }
