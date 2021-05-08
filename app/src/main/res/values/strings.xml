@@ -2,7 +2,7 @@
     <string name="app_name">ParkMe</string>
     <!-- Use 192.168.x.x when using device, 10.0.2.2 when using default emulator, 10.0.3.2 when using genymotion-->
 <!--    <string name="url">http://10.0.2.2:8083/parkme/</string>-->
-    <!--        <string name="url">https://parkme-service.herokuapp.com/parkme/</string>-->
+<!--            <string name="url">https://parkme-service.herokuapp.com/parkme/</string>-->
         <string name="url">http://192.168.29.87:8083/parkme/</string>
     <string name="login_head"><u>Login</u></string>
     <string name="settings_head"><u>Account Settings</u></string>

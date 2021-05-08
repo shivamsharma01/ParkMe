@@ -17,9 +17,15 @@ import com.android.parkme.R;
 import com.android.parkme.database.Announcement;
 import com.android.parkme.database.Chat;
 import com.android.parkme.database.DatabaseClient;
+import com.android.parkme.database.ParkMeRoomDatabase;
 import com.android.parkme.database.Query;
 import com.android.parkme.main.MainActivity;
+import com.android.parkme.utils.Functions;
 import com.android.parkme.utils.Globals;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import org.json.JSONObject;
 
 import java.util.Date;
 import java.util.Map;
@@ -39,7 +45,9 @@ public class HandleFirebaseMessage {
                 sharedpreferences.getString(Globals.NAME, ""),
                 sharedpreferences.getInt(Globals.ID, 0),
                 Long.parseLong(m.get(Globals.TIME)),
-                Float.parseFloat(m.get(Globals.RATING)));
+                0f,
+                m.get(Globals.CHAT_MESSAGE)
+        );
 
         saveQuery(context, query);
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -98,7 +106,8 @@ public class HandleFirebaseMessage {
         saveChat(context, chat, subject);
     }
 
-    private static void saveQuery(Context context, Query query) {
+    public static void saveQuery(Context context, Query query) {
+        Functions.printJson(query);
         DatabaseClient.getInstance(context).getAppDatabase().parkMeDao().insert(query);
     }
 

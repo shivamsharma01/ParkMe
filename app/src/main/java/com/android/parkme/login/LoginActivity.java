@@ -15,7 +15,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.parkme.R;
 import com.android.parkme.common.ForgotPasswordActivity;
+import com.android.parkme.database.DatabaseClient;
+import com.android.parkme.database.ParkMeRoomDatabase;
+import com.android.parkme.database.Query;
 import com.android.parkme.main.MainActivity;
+import com.android.parkme.service.HandleFirebaseMessage;
 import com.android.parkme.utils.APIs;
 import com.android.parkme.utils.ErrorHandler;
 import com.android.parkme.utils.ErrorResponse;
@@ -29,6 +33,8 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Date;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
@@ -50,12 +56,24 @@ public class LoginActivity extends AppCompatActivity {
         emailInput = findViewById(R.id.login_email_value);
         passwordInput = findViewById(R.id.login_password_value);
 
+        emailInput.setText("shivam20121@iiitd.ac.in");
+        passwordInput.setText("xxxxaaaaX1!");
         login.setOnClickListener(v -> {
-            new FetchRSSFeeds().execute();
             loginRequest();
         });
         forgotPassword.setOnClickListener(v -> goToPassword());
         loginUsingPhone.setOnClickListener(v -> goToPhoneLogin());
+        Query query = new Query(Integer.parseInt("20"),
+                "status",
+                "Akhil",
+                3,
+                "Shivam",
+                2,
+                new Date().getTime(),
+                0f,
+                "Test message"
+        );
+        new QuerySave().execute(query);
     }
 
     private void goToPassword() {
@@ -128,35 +146,12 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
-    private class FetchRSSFeeds extends AsyncTask<String, Void, Boolean> {
-
-        private ProgressDialog dialog = new ProgressDialog(LoginActivity.this);
-
-        /** progress dialog to show user that the backup is processing. */
-        /**
-         * application context.
-         */
-        @Override
-        protected void onPreExecute() {
-            this.dialog.setMessage("Please wait. Fetching details...");
-            this.dialog.show();
-        }
+    private class QuerySave extends AsyncTask<Query, Void, Void> {
 
         @Override
-        protected Boolean doInBackground(final String... args) {
-            try {
-                // DatabaseClient.getInstance(LoginActivity.this).getAppDatabase().clearAllTables();
-                return true;
-            } catch (Exception e) {
-                Log.e("tag", "error", e);
-                return false;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            if (dialog.isShowing())
-                dialog.dismiss();
+        protected Void doInBackground(Query... params) {
+            DatabaseClient.getInstance(getApplicationContext()).getAppDatabase().parkMeDao().insert(params[0]);
+            return null;
         }
     }
 }

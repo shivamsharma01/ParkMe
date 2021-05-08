@@ -9,7 +9,7 @@ import androidx.room.PrimaryKey;
 @Entity(tableName = "query_table")
 public class Query {
 
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey()
     @NonNull
     @ColumnInfo(name = "qid")
     private int qid;
@@ -42,11 +42,15 @@ public class Query {
     @ColumnInfo(name = "rating")
     private float rating;
 
+    @NonNull
+    @ColumnInfo(name = "message")
+    private String msg;
+
     public Query() {
     }
 
     @Ignore
-    public Query(int qid, String status, String fromName, int fromId, String toName, int toId, long time, float rating) {
+    public Query(int qid, String status, String fromName, int fromId, String toName, int toId, long time, float rating, String msg) {
         this.qid = qid;
         this.status = status;
         this.fromName = fromName;
@@ -55,6 +59,7 @@ public class Query {
         this.toId = toId;
         this.time = time;
         this.rating = rating;
+        this.msg = msg;
     }
 
     public int getQid() {
@@ -123,5 +128,14 @@ public class Query {
 
     public void setToId(@NonNull int toId) {
         this.toId = toId;
+    }
+
+    @NonNull
+    public String getMsg() {
+        return msg;
+    }
+
+    public void setMsg(@NonNull String msg) {
+        this.msg = msg;
     }
 }

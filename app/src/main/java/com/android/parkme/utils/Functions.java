@@ -20,12 +20,15 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.android.parkme.R;
 import com.android.parkme.login.LoginActivity;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Functions {
     private static final String TAG = "Functions";
+    private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     public static String parseDateText(String dateText) {
         String[] dateParts = dateText.split(" ");
@@ -38,6 +41,10 @@ public class Functions {
             return dateText + "rd";
         else
             return dateText + "th";
+    }
+
+    public static void printJson(Object obj) {
+        Log.i(TAG, gson.toJson(obj));
     }
 
     public static boolean networkCheck(Context context) {

@@ -33,7 +33,7 @@
                 android:id="@+id/user_pic"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:src="@drawable/img_akhil" />
+                android:src="@drawable/img_shivam" />
         </androidx.cardview.widget.CardView>
 
         <androidx.constraintlayout.widget.ConstraintLayout

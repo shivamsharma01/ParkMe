@@ -201,7 +201,8 @@ public class RaiseQueryFragment extends Fragment {
                     responseObject.getString(Globals.TO_USER_NAME),
                     responseObject.getInt(Globals.TO_USER_ID),
                     new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(requestObject.getString(Globals.QUERY_CREATE_DATE)).getTime(),
-                    (float) responseObject.getDouble(Globals.RATING));
+                    (float) responseObject.getDouble(Globals.RATING),
+                    requestObject.getString(Globals.MESSAGE));
             new QuerySave().execute(query);
         } catch (JSONException e) {
             e.printStackTrace();
