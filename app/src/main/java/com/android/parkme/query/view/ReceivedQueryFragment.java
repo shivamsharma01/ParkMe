@@ -33,11 +33,11 @@ import java.util.List;
 public class ReceivedQueryFragment extends Fragment {
     private static final String TAG = "ReceivedFragment";
     private final DateFormat simple = new SimpleDateFormat("MMM dd");
-    private int id;
     private RecyclerView mcQueryRecyclerView;
     private QueryAdapter mAdapter;
     private SharedPreferences sharedpreferences;
-    private List<Query> queries;
+    private List<Query> mQueries = new ArrayList<>();
+    private int id;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -48,17 +48,15 @@ public class ReceivedQueryFragment extends Fragment {
         sharedpreferences = getActivity().getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
 
         mcQueryRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
+        mAdapter = new QueryAdapter(mQueries);
+        mcQueryRecyclerView.setAdapter(mAdapter);
         return view;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        this.queries = new ArrayList<>();
         id = sharedpreferences.getInt(Globals.ID, 0);
-        mAdapter = new QueryAdapter(queries);
-        mcQueryRecyclerView.setAdapter(mAdapter);
         new RetrieveQuery().execute(id);
     }
 
@@ -153,8 +151,8 @@ public class ReceivedQueryFragment extends Fragment {
         @Override
         protected void onPostExecute(List<Query> queries) {
             super.onPostExecute(queries);
-            ReceivedQueryFragment.this.
-                    mAdapter.notifyDataSetChanged();
+            mQueries.addAll(queries);
+            mAdapter.notifyDataSetChanged();
         }
     }
 

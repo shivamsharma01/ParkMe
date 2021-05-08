@@ -2,8 +2,10 @@ package com.android.parkme.announcement;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.parkme.R;
 import com.android.parkme.chat.ChatFragment;
 import com.android.parkme.database.Announcement;
+import com.android.parkme.database.DatabaseClient;
 import com.android.parkme.database.Query;
 import com.android.parkme.utils.Functions;
 import com.android.parkme.utils.Globals;
@@ -26,6 +29,7 @@ import com.android.volley.RequestQueue;
 import com.iarcuschin.simpleratingbar.SimpleRatingBar;
 
 
+import java.nio.ByteBuffer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -40,9 +44,10 @@ import recycler.coverflow.RecyclerCoverFlow;
 public class AnnouncementFragment extends Fragment {
     private static final String TAG = "AnnouncementFragment";
     private final DateFormat simple = new SimpleDateFormat("MMM dd");
-    RequestQueue queue = null;
     private View view;
-    private SharedPreferences sharedpreferences;
+    private RecyclerCoverFlow mList;
+    private List<Announcement> list;
+    private AnnouncementAdapter announcementAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -53,31 +58,11 @@ public class AnnouncementFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        sharedpreferences = getActivity().getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
-
-        RecyclerCoverFlow mList = (RecyclerCoverFlow) view.findViewById(R.id.list);
-        //        mList.setFlatFlow(true); //平面滚动
-
-        List<Announcement> list = new ArrayList<>();
-        list.add(new Announcement(new Date().getTime()- 20*24*60*60*1000, "This is message 1"));
-        list.add(new Announcement(new Date().getTime()- 10*24*60*60*1000, "This is message 2"));
-        list.add(new Announcement(new Date().getTime()- 30*24*60*60*1000, "This is message 3"));
-        list.add(new Announcement(new Date().getTime()+ 20*24*60*60*1000, "This is message 4"));
-        list.add(new Announcement(new Date().getTime()+ 2*24*60*60*1000, "This is message 5"));
-        list.add(new Announcement(new Date().getTime()+ 5*24*60*60*1000, "This is message 6"));
-        list.add(new Announcement(new Date().getTime()- 50*24*60*60*1000, "This is message 7"));
-        list.add(new Announcement(new Date().getTime()+ 50*24*60*60*1000, "This is message 8"));
-
-
-        mList.setAdapter(new AnnouncementAdapter(list));
+        mList = (RecyclerCoverFlow) view.findViewById(R.id.list);
+        list = new ArrayList<>();
+        announcementAdapter = new AnnouncementAdapter(list);
+        mList.setAdapter(announcementAdapter);
         mList.setOnItemSelectedListener(position -> ((TextView)view.findViewById(R.id.index)).setText((position+1)+"/"+mList.getLayoutManager().getItemCount()));
-
-        //queryNumber = getActivity().findViewById(R.id.query_number_qd);
-
-        //queryNumber.setText(String.valueOf(getArguments().getInt(Globals.QID)));
-
-        //dateText.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(getArguments().getLong(Globals.QUERY_CREATE_DATE))));
-
     }
     class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementHolder> {
 
@@ -86,7 +71,6 @@ public class AnnouncementFragment extends Fragment {
         public AnnouncementAdapter(List<Announcement> announcement) {
             mAnnouncement = announcement;
         }
-
 
         @Override
         public AnnouncementHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -136,4 +120,20 @@ public class AnnouncementFragment extends Fragment {
         }
 
     }
+    private class AnnouncementTask extends AsyncTask<Void, Void, List<Announcement>> {
+
+        @Override
+        protected List<Announcement> doInBackground(Void... params) {
+            List<Announcement> ann = DatabaseClient.getInstance(getActivity()).getAppDatabase().parkMeDao().getAll();
+            return ann;
+        }
+
+        @Override
+        protected void onPostExecute(List<Announcement> announcements) {
+            super.onPostExecute(announcements);
+            list.addAll(announcements);
+            announcementAdapter.notifyDataSetChanged();
+        }
+    }
+
 }

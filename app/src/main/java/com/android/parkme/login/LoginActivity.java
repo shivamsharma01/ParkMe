@@ -63,17 +63,6 @@ public class LoginActivity extends AppCompatActivity {
         });
         forgotPassword.setOnClickListener(v -> goToPassword());
         loginUsingPhone.setOnClickListener(v -> goToPhoneLogin());
-        Query query = new Query(Integer.parseInt("20"),
-                "status",
-                "Akhil",
-                3,
-                "Shivam",
-                2,
-                new Date().getTime(),
-                0f,
-                "Test message"
-        );
-        new QuerySave().execute(query);
     }
 
     private void goToPassword() {
@@ -146,12 +135,4 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
-    private class QuerySave extends AsyncTask<Query, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Query... params) {
-            DatabaseClient.getInstance(getApplicationContext()).getAppDatabase().parkMeDao().insert(params[0]);
-            return null;
-        }
-    }
 }

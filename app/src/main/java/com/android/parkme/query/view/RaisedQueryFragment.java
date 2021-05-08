@@ -37,7 +37,7 @@ public class RaisedQueryFragment extends Fragment {
     private RecyclerView mcQueryRecyclerView;
     private QueryAdapter mAdapter;
     private SharedPreferences sharedpreferences;
-    private List<Query> queries;
+    private List<Query> mQueries = new ArrayList<>();
     private int id;
 
     @Override
@@ -49,18 +49,15 @@ public class RaisedQueryFragment extends Fragment {
         sharedpreferences = getActivity().getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
 
         mcQueryRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mAdapter = new QueryAdapter(mQueries);
+        mcQueryRecyclerView.setAdapter(mAdapter);
 
-        int id = sharedpreferences.getInt(Globals.ID, 0);
-        new RetrieveQuery().execute(id);
         return view;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        this.queries = new ArrayList<>();
-        mAdapter = new QueryAdapter(queries);
-        mcQueryRecyclerView.setAdapter(mAdapter);
         id = sharedpreferences.getInt(Globals.ID, 0);
         new RetrieveQuery().execute(id);
     }
@@ -181,8 +178,8 @@ public class RaisedQueryFragment extends Fragment {
         @Override
         protected void onPostExecute(List<Query> queries) {
             super.onPostExecute(queries);
-            mAdapter = new QueryAdapter(queries);
-            mcQueryRecyclerView.setAdapter(mAdapter);
+            mQueries.addAll(queries);
+            mAdapter.notifyDataSetChanged();
         }
     }
 

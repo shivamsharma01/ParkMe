@@ -35,4 +35,6 @@ public interface ParkMeDAO {
     @Query("UPDATE query_table SET status =:status AND rating =:rating where qid=:qid")
     void updateCloseRequest(String status, int qid, float rating);
 
+    @Query("Select * FROM ANNOUNCEMENT_TABLE")
+    List<Announcement> getAll();
 }
