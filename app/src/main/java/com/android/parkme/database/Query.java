@@ -46,11 +46,15 @@ public class Query {
     @ColumnInfo(name = "message")
     private String msg;
 
+    @NonNull
+    @ColumnInfo(name = "vid")
+    private String vid;
+
     public Query() {
     }
 
     @Ignore
-    public Query(int qid, String status, String fromName, int fromId, String toName, int toId, long time, float rating, String msg) {
+    public Query(int qid, String status, String fromName, int fromId, String toName, int toId, long time, float rating, String msg, String vid) {
         this.qid = qid;
         this.status = status;
         this.fromName = fromName;
@@ -60,6 +64,7 @@ public class Query {
         this.time = time;
         this.rating = rating;
         this.msg = msg;
+        this.vid = vid;
     }
 
     public int getQid() {
@@ -137,5 +142,14 @@ public class Query {
 
     public void setMsg(@NonNull String msg) {
         this.msg = msg;
+    }
+
+    @NonNull
+    public String getVid() {
+        return vid;
+    }
+
+    public void setVid(@NonNull String vid) {
+        this.vid = vid;
     }
 }

@@ -46,7 +46,8 @@ public class HandleFirebaseMessage {
                 sharedpreferences.getInt(Globals.ID, 0),
                 Long.parseLong(m.get(Globals.TIME)),
                 0f,
-                m.get(Globals.CHAT_MESSAGE)
+                m.get(Globals.CHAT_MESSAGE),
+                m.get(Globals.VEHICLE_REGISTRATION_NUMBER)
         );
 
         saveQuery(context, query);

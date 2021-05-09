@@ -125,7 +125,8 @@ public class RaisedQueryFragment extends Fragment {
                 userPicImageView.setImageResource(R.drawable.img_shradha);
             else if (query.getFromName().toLowerCase().contains("akanksha"))
                 userPicImageView.setImageResource(R.drawable.img_akanksha);
-            if ("resolved".equals(query.getStatus().toLowerCase()))
+            if ("closed".equals(query.getStatus().toLowerCase()) ||
+                    "cancelled".equals(query.getStatus().toLowerCase()))
                 mStatusTextView.setTextColor(Color.GREEN);
             else
                 mStatusTextView.setTextColor(Color.RED);
@@ -152,19 +153,22 @@ public class RaisedQueryFragment extends Fragment {
             }
         }
 
+//        @Override
+//        public void onClick(View v) {
+//            FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
+//            Bundle bundle = new Bundle();
+//            bundle.putInt(Globals.QID, mQuery.getQid());
+//            bundle.putInt(Globals.TO_USER_ID, mQuery.getToId());
+//            bundle.putString(Globals.STATUS, mQuery.getStatus());
+//            ChatFragment chatFragment = new ChatFragment();
+//            chatFragment.setArguments(bundle);
+//            fragmentTransaction.replace(R.id.flFragment, chatFragment);
+//            fragmentTransaction.addToBackStack(null);
+//            fragmentTransaction.commit();
+//        }
+
         @Override
-        public void onClick(View v) {
-            FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
-            Bundle bundle = new Bundle();
-            bundle.putInt(Globals.QID, mQuery.getQid());
-            bundle.putInt(Globals.TO_USER_ID, mQuery.getToId());
-            bundle.putString(Globals.STATUS, mQuery.getStatus());
-            ChatFragment chatFragment = new ChatFragment();
-            chatFragment.setArguments(bundle);
-            fragmentTransaction.replace(R.id.flFragment, chatFragment);
-            fragmentTransaction.addToBackStack(null);
-            fragmentTransaction.commit();
-        }
+        public void onClick(View v) {}
 
     }
 

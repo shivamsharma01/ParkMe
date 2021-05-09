@@ -138,12 +138,6 @@ public class RaiseQueryFragment extends Fragment {
         });
     }
 
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putLong("dropdownVal", queryTypeDropdown.getSelectedItemId());
-    }
-
     public boolean checkValidation() {
         if (queryTypeDropdown.getSelectedItem().toString().equals("--Select Query Type--")) {
             TextView errorText = (TextView) queryTypeDropdown.getSelectedView();
@@ -183,6 +177,7 @@ public class RaiseQueryFragment extends Fragment {
                     requestObject.put(Globals.QUERY_TYPE, queryTypeDropdown.getSelectedItem().toString());
                     requestObject.put(Globals.STATUS, Globals.QUERY_DEFAULT_STATUS);
                     requestObject.put(Globals.MESSAGE, messageText.getText().toString());
+                    // requestObject.put(Globals.MESSAGE, bArray);
                     requestObject.put(Globals.QUERY_CREATE_DATE, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(new Date()));
                     requestObject.put(Globals.VEHICLE_REGISTRATION_NUMBER, vehicleNumber.getText().toString());
 
@@ -219,7 +214,8 @@ public class RaiseQueryFragment extends Fragment {
                     responseObject.getInt(Globals.TO_USER_ID),
                     new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(requestObject.getString(Globals.QUERY_CREATE_DATE)).getTime(),
                     (float) responseObject.getDouble(Globals.RATING),
-                    requestObject.getString(Globals.MESSAGE));
+                    requestObject.getString(Globals.MESSAGE),
+                    requestObject.getString(Globals.VEHICLE_REGISTRATION_NUMBER));
             new QuerySave().execute(query);
         } catch (JSONException e) {
             e.printStackTrace();
