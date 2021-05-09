@@ -32,8 +32,10 @@ import com.android.parkme.R;
 import com.android.parkme.database.DatabaseClient;
 import com.android.parkme.database.Query;
 import com.android.parkme.utils.APIs;
+import com.android.parkme.utils.DataPart;
 import com.android.parkme.utils.Functions;
 import com.android.parkme.utils.Globals;
+import com.android.parkme.utils.VolleyImageRequest;
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
@@ -188,13 +190,17 @@ public class RaiseQueryFragment extends Fragment {
                     requestObject.put(Globals.QUERY_TYPE, queryTypeDropdown.getSelectedItem().toString());
                     requestObject.put(Globals.STATUS, Globals.QUERY_DEFAULT_STATUS);
                     requestObject.put(Globals.MESSAGE, messageText.getText().toString());
-                    requestObject.put("check", bArray);
                     requestObject.put(Globals.QUERY_CREATE_DATE, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(new Date()));
                     requestObject.put(Globals.VEHICLE_REGISTRATION_NUMBER, vehicleNumber.getText().toString());
 
                     JsonRequest request = new JsonObjectRequest(Request.Method.POST, url, requestObject, response -> {
                         responseObject = response;
                         Log.i(TAG, "Query Raised Successfully");
+                        try {
+                            uploadBitmap(bitmap, responseObject.getString(Globals.QID));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                         if (null != response)
                             onSuccess();
                     }, error ->
@@ -235,27 +241,19 @@ public class RaiseQueryFragment extends Fragment {
         }
     }
 
-
-    private void uploadBitmap(final Bitmap bitmap) {
-
-        VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, getResources().getString(R.string.url).concat(APIs.raiseQuery),
-                new Response.Listener<NetworkResponse>() {
-                    @Override
-                    public void onResponse(NetworkResponse response) {
-                        try {
-                            JSONObject obj = new JSONObject(new String(response.data));
-                            Toast.makeText(getActivity(), obj.getString("message"), Toast.LENGTH_SHORT).show();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+    private void uploadBitmap(final Bitmap bitmap, String qid) {
+        VolleyImageRequest volleyMultipartRequest = new VolleyImageRequest(qid, Request.Method.POST, getResources().getString(R.string.url).concat(APIs.doQueryImage),
+                response -> {
+                    try {
+                        JSONObject obj = new JSONObject(new String(response.data));
+                        Toast.makeText(getActivity(), obj.getString("message"), Toast.LENGTH_SHORT).show();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
                 },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_LONG).show();
-                        Log.e("GotError",""+error.getMessage());
-                    }
+                error -> {
+                    Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_LONG).show();
+                    Log.e("GotError",""+error.getMessage());
                 }) {
 
 
@@ -268,229 +266,13 @@ public class RaiseQueryFragment extends Fragment {
             }
         };
 
-        //adding the request to volley
         Volley.newRequestQueue(getActivity()).add(volleyMultipartRequest);
     }
 
-    class VolleyMultipartRequest extends Request<NetworkResponse> {
-
-
-        private final String twoHyphens = "--";
-        private final String lineEnd = "\r\n";
-        private final String boundary = "apiclient-" + System.currentTimeMillis();
-
-        private Response.Listener<NetworkResponse> mListener;
-        private Response.ErrorListener mErrorListener;
-        private Map<String, String> mHeaders;
-
-
-        public VolleyMultipartRequest(int method, String url,
-                                      Response.Listener<NetworkResponse> listener,
-                                      Response.ErrorListener errorListener) {
-            super(method, url, errorListener);
-            this.mListener = listener;
-            this.mErrorListener = errorListener;
-        }
-
-        @Override
-        public Map<String, String> getHeaders() throws AuthFailureError {
-            return (mHeaders != null) ? mHeaders : super.getHeaders();
-        }
-
-        @Override
-        public String getBodyContentType() {
-            return "multipart/form-data;boundary=" + boundary;
-        }
-
-        @Override
-        public byte[] getBody() throws AuthFailureError {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            DataOutputStream dos = new DataOutputStream(bos);
-
-            try {
-                // populate text payload
-                Map<String, String> params = getParams();
-                if (params != null && params.size() > 0) {
-                    textParse(dos, params, getParamsEncoding());
-                }
-
-                // populate data byte payload
-                Map<String, DataPart> data = getByteData();
-                if (data != null && data.size() > 0) {
-                    dataParse(dos, data);
-                }
-
-                // close multipart form data after text and file data
-                dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
-
-                return bos.toByteArray();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        /**
-         * Custom method handle data payload.
-         *
-         * @return Map data part label with data byte
-         * @throws AuthFailureError
-         */
-        protected Map<String, DataPart> getByteData() throws AuthFailureError {
-            return null;
-        }
-
-        @Override
-        protected Response<NetworkResponse> parseNetworkResponse(NetworkResponse response) {
-            try {
-                return Response.success(
-                        response,
-                        HttpHeaderParser.parseCacheHeaders(response));
-            } catch (Exception e) {
-                return Response.error(new ParseError(e));
-            }
-        }
-
-        @Override
-        protected void deliverResponse(NetworkResponse response) {
-            mListener.onResponse(response);
-        }
-
-        @Override
-        public void deliverError(VolleyError error) {
-            mErrorListener.onErrorResponse(error);
-        }
-
-        /**
-         * Parse string map into data output stream by key and value.
-         *
-         * @param dataOutputStream data output stream handle string parsing
-         * @param params           string inputs collection
-         * @param encoding         encode the inputs, default UTF-8
-         * @throws IOException
-         */
-        private void textParse(DataOutputStream dataOutputStream, Map<String, String> params, String encoding) throws IOException {
-            try {
-                for (Map.Entry<String, String> entry : params.entrySet()) {
-                    buildTextPart(dataOutputStream, entry.getKey(), entry.getValue());
-                }
-            } catch (UnsupportedEncodingException uee) {
-                throw new RuntimeException("Encoding not supported: " + encoding, uee);
-            }
-        }
-
-        /**
-         * Parse data into data output stream.
-         *
-         * @param dataOutputStream data output stream handle file attachment
-         * @param data             loop through data
-         * @throws IOException
-         */
-        private void dataParse(DataOutputStream dataOutputStream, Map<String, DataPart> data) throws IOException {
-            for (Map.Entry<String, DataPart> entry : data.entrySet()) {
-                buildDataPart(dataOutputStream, entry.getValue(), entry.getKey());
-            }
-        }
-
-        /**
-         * Write string data into header and data output stream.
-         *
-         * @param dataOutputStream data output stream handle string parsing
-         * @param parameterName    name of input
-         * @param parameterValue   value of input
-         * @throws IOException
-         */
-        private void buildTextPart(DataOutputStream dataOutputStream, String parameterName, String parameterValue) throws IOException {
-            dataOutputStream.writeBytes(twoHyphens + boundary + lineEnd);
-            dataOutputStream.writeBytes("Content-Disposition: form-data; name=\"" + parameterName + "\"" + lineEnd);
-            dataOutputStream.writeBytes(lineEnd);
-            dataOutputStream.writeBytes(parameterValue + lineEnd);
-        }
-
-        /**
-         * Write data file into header and data output stream.
-         *
-         * @param dataOutputStream data output stream handle data parsing
-         * @param dataFile         data byte as DataPart from collection
-         * @param inputName        name of data input
-         * @throws IOException
-         */
-        private void buildDataPart(DataOutputStream dataOutputStream, DataPart dataFile, String inputName) throws IOException {
-            dataOutputStream.writeBytes(twoHyphens + boundary + lineEnd);
-            dataOutputStream.writeBytes("Content-Disposition: form-data; name=\"" +
-                    inputName + "\"; filename=\"" + dataFile.getFileName() + "\"" + lineEnd);
-            if (dataFile.getType() != null && !dataFile.getType().trim().isEmpty()) {
-                dataOutputStream.writeBytes("Content-Type: " + dataFile.getType() + lineEnd);
-            }
-            dataOutputStream.writeBytes(lineEnd);
-
-            ByteArrayInputStream fileInputStream = new ByteArrayInputStream(dataFile.getContent());
-            int bytesAvailable = fileInputStream.available();
-
-            int maxBufferSize = 1024 * 1024;
-            int bufferSize = Math.min(bytesAvailable, maxBufferSize);
-            byte[] buffer = new byte[bufferSize];
-
-            int bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-
-            while (bytesRead > 0) {
-                dataOutputStream.write(buffer, 0, bufferSize);
-                bytesAvailable = fileInputStream.available();
-                bufferSize = Math.min(bytesAvailable, maxBufferSize);
-                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-            }
-
-            dataOutputStream.writeBytes(lineEnd);
-        }
-
-        class DataPart {
-            private String fileName;
-            private byte[] content;
-            private String type;
-
-            public DataPart() {
-            }
-
-            DataPart(String name, byte[] data) {
-                fileName = name;
-                content = data;
-            }
-
-            String getFileName() {
-                return fileName;
-            }
-
-            byte[] getContent() {
-                return content;
-            }
-
-            String getType() {
-                return type;
-            }
-
-        }
-    }
     public byte[] getFileDataFromDrawable(Bitmap bitmap) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 80, byteArrayOutputStream);
         return byteArrayOutputStream.toByteArray();
-    }
-
-    public String getPath(Uri uri) {
-        Cursor cursor = getActivity().getContentResolver().query(uri, null, null, null, null);
-        cursor.moveToFirst();
-        String document_id = cursor.getString(0);
-        document_id = document_id.substring(document_id.lastIndexOf(":") + 1);
-        cursor.close();
-
-        cursor = getActivity().getContentResolver().query(
-                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                null, MediaStore.Images.Media._ID + " = ? ", new String[]{document_id}, null);
-        cursor.moveToFirst();
-        String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
-        cursor.close();
-
-        return path;
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -509,23 +291,6 @@ public class RaiseQueryFragment extends Fragment {
                     byte[] byteArray = byteBuffer.array();
                     new BitmapTask(byteArray, width, height, bitmap.getConfig().name()).execute();
                     clickedImage.setImageBitmap(bitmap);
-                    Uri picUri = data.getData();
-                    String filePath = getPath(picUri);
-                    if (filePath != null) {
-                        try {
-                            Log.d("filePath", String.valueOf(filePath));
-                            bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), picUri);
-                            uploadBitmap(bitmap);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    else
-                    {
-                        Toast.makeText(
-                                getActivity(),"no image selected",
-                                Toast.LENGTH_LONG).show();
-                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                     Functions.showToast(getActivity(), "Click image again");

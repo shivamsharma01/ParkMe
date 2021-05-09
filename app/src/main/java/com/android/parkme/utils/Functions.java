@@ -6,9 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Environment;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
@@ -20,9 +24,15 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.android.parkme.R;
 import com.android.parkme.login.LoginActivity;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.HurlStack;
+import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -104,6 +114,50 @@ public class Functions {
 
     public static void showToast(Context context, String message) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+    }
+
+    public static Bitmap loadResourceFromLocalStorage(int qid) {
+        String path = Environment.getExternalStorageDirectory().toString() + "/Pictures";
+        File directory = new File(path);
+        File[] files = directory.listFiles();
+        boolean found = false;
+        for (int i = 0; i < files.length; i++) {
+            Log.d("Files", "FileName:" + files[i].getName());
+            if (files[i].getName().equals(qid + ".jpg")) {
+                return BitmapFactory.decodeFile(files[i].getPath());
+            }
+        }
+        return null;
+    }
+
+    public static void getQidImage(Context context, int qid, ImageView imageView) {
+        String mUrl = context.getResources().getString(R.string.url).concat(APIs.getQueryImage)+6;
+        DownloadVolleyRequest request = new DownloadVolleyRequest(Request.Method.GET, mUrl,
+                response -> {
+                try {
+                    if (response!=null) {
+                        String name= qid +".jpg";
+                        File myDir = new File(Environment.getExternalStorageDirectory().toString() + Globals.SAVE_LOCATION);
+                        if (!myDir.exists())
+                            myDir.mkdirs();
+                        File file = new File (myDir, name);
+                        FileOutputStream out = new FileOutputStream(file);
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(response, 0, response.length);
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+                        imageView.setImageBitmap(bitmap);
+                        out.flush();
+                        out.close();
+                        Toast.makeText(context, "Download complete.", Toast.LENGTH_LONG).show();
+                    }
+                } catch (Exception e) {
+                    Log.d("KEY_ERROR", "UNABLE TO DOWNLOAD FILE");
+                    e.printStackTrace();
+                }
+                }, error -> {
+            error.printStackTrace();
+        }, null);
+        RequestQueue mRequestQueue = Volley.newRequestQueue(context, new HurlStack());
+        mRequestQueue.add(request);
     }
 
 }

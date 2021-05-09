@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +21,7 @@ import androidx.fragment.app.Fragment;
 import com.android.parkme.R;
 import com.android.parkme.main.HomeFragment;
 import com.android.parkme.utils.APIs;
+import com.android.parkme.utils.DownloadVolleyRequest;
 import com.android.parkme.utils.ErrorHandler;
 import com.android.parkme.utils.ErrorResponse;
 import com.android.parkme.utils.Functions;
@@ -27,6 +29,7 @@ import com.android.parkme.utils.Globals;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.Volley;
@@ -34,6 +37,8 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -64,6 +69,7 @@ public class QueryDetailsFragment extends Fragment {
         vehicleNumber = getActivity().findViewById(R.id.vehicle_number_qd);
         cancelButton = getActivity().findViewById(R.id.cancel_button);
         finishButton = getActivity().findViewById(R.id.finish_button);
+
 
         queryNumber.setText(String.valueOf(getArguments().getInt(Globals.QID)));
         messageText.setText(getArguments().getString(Globals.MESSAGE));
@@ -118,4 +124,5 @@ public class QueryDetailsFragment extends Fragment {
             getActivity().finish();
         }
     }
+
 }
