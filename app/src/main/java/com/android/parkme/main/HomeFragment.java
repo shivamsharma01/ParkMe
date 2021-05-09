@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -65,7 +66,8 @@ public class HomeFragment extends Fragment {
         textView = view.findViewById(R.id.textView);
         settings = view.findViewById(R.id.settings_button);
         sharedpreferences = getActivity().getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
-        textView.setText(String.format(getActivity().getResources().getString(R.string.greet).toString(), sharedpreferences.getString(Globals.NAME, "")));
+        textView.setText(String.format(getActivity().getResources().getString(R.string.greet), sharedpreferences.getString(Globals.NAME, "")));
+
         announcement.setOnClickListener(v -> Functions.setCurrentFragment(getActivity(), new AnnouncementFragment()));
         profilePic.setOnClickListener(v -> Functions.setCurrentFragment(getActivity(), new PersonalDetailsFragment()));
         viewQueries.setOnClickListener(v -> Functions.setCurrentFragment(getActivity(), new ViewQueriesFragment()));

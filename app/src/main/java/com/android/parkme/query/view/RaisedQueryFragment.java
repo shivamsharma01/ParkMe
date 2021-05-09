@@ -22,7 +22,9 @@ import com.android.parkme.R;
 import com.android.parkme.chat.ChatFragment;
 import com.android.parkme.database.DatabaseClient;
 import com.android.parkme.database.Query;
+import com.android.parkme.query.CancelQueryFragment;
 import com.android.parkme.query.QueryDetailsFragment;
+import com.android.parkme.query.ResolveQueryFragment;
 import com.android.parkme.utils.Functions;
 import com.android.parkme.utils.Globals;
 import com.iarcuschin.simpleratingbar.SimpleRatingBar;
@@ -125,19 +127,19 @@ public class RaisedQueryFragment extends Fragment {
             cancel = itemView.findViewById(R.id.query_cancel);
             resolve.setOnClickListener(e -> {
                 Log.i(TAG, "resolve");
+                Bundle bundle = new Bundle();
+                bundle.putInt(Globals.QID, mQuery.getQid());
+                ResolveQueryFragment resolveQueryFragment = new ResolveQueryFragment();
+                resolveQueryFragment.setArguments(bundle);
+                getActivity().runOnUiThread(() -> Functions.setCurrentFragment(getActivity(), resolveQueryFragment));
             });
             cancel.setOnClickListener(e -> {
                 Log.i(TAG, "cancel");
                 Bundle bundle = new Bundle();
                 bundle.putInt(Globals.QID, mQuery.getQid());
-                bundle.putInt(Globals.TO_USER_ID, mQuery.getToId());
-                bundle.putString(Globals.STATUS, "Unresolved");
-                ChatFragment querydetailsFragment = new ChatFragment();
-                querydetailsFragment.setArguments(bundle);
-                getActivity().runOnUiThread(() -> Functions.setCurrentFragment(getActivity(), querydetailsFragment));
-//                QueryDetailsFragment querydetailsFragment = new QueryDetailsFragment();
-//                querydetailsFragment.setArguments(bundle);
-//                getActivity().runOnUiThread(() -> Functions.setCurrentFragment(getActivity(), querydetailsFragment));
+                CancelQueryFragment cancelQueryFragment = new CancelQueryFragment();
+                cancelQueryFragment.setArguments(bundle);
+                getActivity().runOnUiThread(() -> Functions.setCurrentFragment(getActivity(), cancelQueryFragment));
             });
         }
 
@@ -147,13 +149,13 @@ public class RaisedQueryFragment extends Fragment {
             mNameTextView.setPaintFlags(mNameTextView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             mDateTextView.setText(Functions.parseDateText(simple.format(new Date(query.getCreateTime()))));
             mStatusTextView.setText(query.getStatus());
-            if (query.getFromName().toLowerCase().contains("shivam"))
+            if (query.getToName().toLowerCase().contains("shivam"))
                 userPicImageView.setImageResource(R.drawable.img_shivam);
-            else if (query.getFromName().toLowerCase().contains("akhil"))
+            else if (query.getToName().toLowerCase().contains("akhil"))
                 userPicImageView.setImageResource(R.drawable.img_akhil);
-            else if (query.getFromName().toLowerCase().contains("shradha"))
+            else if (query.getToName().toLowerCase().contains("shradha"))
                 userPicImageView.setImageResource(R.drawable.img_shradha);
-            else if (query.getFromName().toLowerCase().contains("akanksha"))
+            else if (query.getToName().toLowerCase().contains("akanksha"))
                 userPicImageView.setImageResource(R.drawable.img_akanksha);
             mStatusTextView.setTextColor(Color.RED);
         }
@@ -181,13 +183,13 @@ public class RaisedQueryFragment extends Fragment {
             mNameTextView.setPaintFlags(mNameTextView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             mDateTextView.setText(Functions.parseDateText(simple.format(new Date(query.getCreateTime()))));
             mStatusTextView.setText(query.getStatus());
-            if (query.getFromName().toLowerCase().contains("shivam"))
+            if (query.getToName().toLowerCase().contains("shivam"))
                 userPicImageView.setImageResource(R.drawable.img_shivam);
-            else if (query.getFromName().toLowerCase().contains("akhil"))
+            else if (query.getToName().toLowerCase().contains("akhil"))
                 userPicImageView.setImageResource(R.drawable.img_akhil);
-            else if (query.getFromName().toLowerCase().contains("shradha"))
+            else if (query.getToName().toLowerCase().contains("shradha"))
                 userPicImageView.setImageResource(R.drawable.img_shradha);
-            else if (query.getFromName().toLowerCase().contains("akanksha"))
+            else if (query.getToName().toLowerCase().contains("akanksha"))
                 userPicImageView.setImageResource(R.drawable.img_akanksha);
             mStatusTextView.setTextColor(Color.GREEN);
         }
@@ -216,13 +218,13 @@ public class RaisedQueryFragment extends Fragment {
             mNameTextView.setPaintFlags(mNameTextView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             mDateTextView.setText(Functions.parseDateText(simple.format(new Date(query.getCreateTime()))));
             mStatusTextView.setText(query.getStatus());
-            if (query.getFromName().toLowerCase().contains("shivam"))
+            if (query.getToName().toLowerCase().contains("shivam"))
                 userPicImageView.setImageResource(R.drawable.img_shivam);
-            else if (query.getFromName().toLowerCase().contains("akhil"))
+            else if (query.getToName().toLowerCase().contains("akhil"))
                 userPicImageView.setImageResource(R.drawable.img_akhil);
-            else if (query.getFromName().toLowerCase().contains("shradha"))
+            else if (query.getToName().toLowerCase().contains("shradha"))
                 userPicImageView.setImageResource(R.drawable.img_shradha);
-            else if (query.getFromName().toLowerCase().contains("akanksha"))
+            else if (query.getToName().toLowerCase().contains("akanksha"))
                 userPicImageView.setImageResource(R.drawable.img_akanksha);
             mStatusTextView.setTextColor(Color.GREEN);
 

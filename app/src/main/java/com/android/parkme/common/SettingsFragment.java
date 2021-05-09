@@ -26,7 +26,7 @@ public class SettingsFragment extends Fragment {
     private static final String TAG = "SettingsFragment", TEMP_NUM = "tel:+919567485768";
     private static final int REQUEST_CODE = 5;
     private Button logoutButton;
-    private TextView contactAuthority, about, changePassword;
+    private TextView contactAuthority, about, changePassword, privacy;
     private SharedPreferences sharedpreferences;
 
     @Override
@@ -36,6 +36,7 @@ public class SettingsFragment extends Fragment {
         sharedpreferences = getActivity().getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
 
         contactAuthority = view.findViewById(R.id.textView4);
+        privacy = view.findViewById(R.id.textView2);
         about = view.findViewById(R.id.textView6);
         logoutButton = view.findViewById(R.id.logout_button);
         changePassword = view.findViewById(R.id.textView3);
@@ -54,6 +55,7 @@ public class SettingsFragment extends Fragment {
             Functions.exit(getActivity(), sharedpreferences, null);
             getActivity().finish();
         });
+        privacy.setOnClickListener(v -> Functions.setCurrentFragment(getActivity(), new PrivacyFragment()));
         about.setOnClickListener(v -> Functions.setCurrentFragment(getActivity(), new AboutFragment()));
         changePassword.setOnClickListener(v -> Functions.setCurrentFragment(getActivity(), new ChangePasswordFragment()));
         return view;

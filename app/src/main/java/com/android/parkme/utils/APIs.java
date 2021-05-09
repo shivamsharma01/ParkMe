@@ -7,6 +7,7 @@ public class APIs {
     public static final String doLoginPhone = "login-phone";
     public static final String raiseQuery = "raise-query";
     public static final String cancelQuery = "cancel-query";
+    public static final String resolveQuery = "resolve-query";
     public static final String sendChat = "send-chat";
     public static final String doQueryImage = "uploadFile";
     public static final String getQueryImage = "downloadFile/";

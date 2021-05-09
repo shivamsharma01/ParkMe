@@ -32,23 +32,27 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.Volley;
+import com.iarcuschin.simpleratingbar.SimpleRatingBar;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class QueryDetailsFragment extends Fragment {
-    private static final String TAG = "QueryDetailsFragment";
+public class ResolveQueryFragment extends Fragment {
+    private static final String TAG = "ResolveQueryFragment";
     RequestQueue queue = null;
-    private TextView queryNumber, dateCreateText, dateCloseText, messageText, vehicleNumber;
+    private TextView queryNumber, dateCreateText, messageText, vehicleNumber;
+    private SimpleRatingBar ratingbar;
     private ImageView vehicleNumberImage;
-    private Button cancelButton;
+    private Button resolveButton;
     private SharedPreferences sharedpreferences;
     private Query mQuery;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_query_details_resolve, container, false);
@@ -62,39 +66,56 @@ public class QueryDetailsFragment extends Fragment {
         queryNumber = getActivity().findViewById(R.id.query_number_qd);
         messageText = getActivity().findViewById(R.id.message_text_qd);
         dateCreateText = getActivity().findViewById(R.id.create_date_value_qd);
-        dateCloseText = getActivity().findViewById(R.id.close_date_value_qd);
         vehicleNumberImage = getActivity().findViewById(R.id.clicked_image_qd);
         vehicleNumber = getActivity().findViewById(R.id.vehicle_number_qd);
-        cancelButton = getActivity().findViewById(R.id.cancel_button);
+        resolveButton = getActivity().findViewById(R.id.cancel_button);
+        ratingbar = getActivity().findViewById(R.id.ratingBar);
+        ratingbar.setBorderColor(getResources().getColor(R.color.orange));
+        ratingbar.setFillColor(getResources().getColor(R.color.orange));
 
         queryNumber.setText(String.valueOf(getArguments().getInt(Globals.QID)));
+        ratingbar.setOnRatingBarChangeListener((x,y,z) -> {
+            Log.i(TAG, ""+ratingbar.getRating());
+            if (y <=2) {
+                ratingbar.setBorderColor(getResources().getColor(R.color.red));
+                ratingbar.setFillColor(getResources().getColor(R.color.red));
+            } else if (y <=4) {
+                ratingbar.setBorderColor(getResources().getColor(R.color.orange));
+                ratingbar.setFillColor(getResources().getColor(R.color.orange));
+            } else {
+                ratingbar.setBorderColor(getResources().getColor(R.color.golden_stars));
+                ratingbar.setFillColor(getResources().getColor(R.color.golden_stars));
+            }
+        });
+        resolveButton.setOnClickListener(v -> {
+            new AlertDialog.Builder(getActivity())
+                    .setTitle("Resolve Query")
+                    .setMessage("Do you really want to give "+(ratingbar.getRating()%1 == 0 ? new BigDecimal(ratingbar.getRating()).stripTrailingZeros() : ratingbar.getRating())+"/5 rating?")
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setPositiveButton(android.R.string.yes, (dialog, whichButton) -> resolveQuery())
+                    .setNegativeButton(android.R.string.no, null).show();
+        });
         new RetrieveQuery().execute(getArguments().getInt(Globals.QID));
-
-
-        cancelButton.setOnClickListener(v -> new AlertDialog.Builder(getActivity())
-                .setTitle("Cancel Query")
-                .setMessage("Do you really want to Cancel the raised query?")
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .setPositiveButton(android.R.string.yes, (dialog, whichButton) -> cancelQuery())
-                .setNegativeButton(android.R.string.no, null).show());
     }
 
-    private void cancelQuery() {
+    private void resolveQuery() {
         if (Functions.networkCheck(getActivity())) {
-            String url = getResources().getString(R.string.url).concat(APIs.cancelQuery);
-            Log.i(TAG, "Cancel Query " + url);
+            String url = getResources().getString(R.string.url).concat(APIs.resolveQuery);
+            Log.i(TAG, "Resolve Query " + url);
             JSONObject cancelQueryObject = new JSONObject();
             try {
                 cancelQueryObject.put(Globals.STATUS, Globals.QUERY_CANCEL_STATUS);
                 cancelQueryObject.put(Globals.QID, String.valueOf(getArguments().getInt(Globals.QID)));
                 cancelQueryObject.put(Globals.QUERY_RESOLVE_DATE, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(new Date()));
+                cancelQueryObject.put(Globals.RATING, ratingbar.getRating());
 
                 JsonRequest request = new JsonObjectRequest(Request.Method.POST, url, cancelQueryObject, response -> {
                     try {
                         Toast.makeText(getActivity(), response.getString(Globals.MESSAGE), Toast.LENGTH_SHORT);
                         mQuery.setStatus(Globals.QUERY_CANCEL_STATUS);
                         mQuery.setCloseTime(new Date().getTime());
-                        new CancelQuery().execute(mQuery);
+                        mQuery.setRating(ratingbar.getRating());
+                        new ResolveQuery().execute(mQuery);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -125,6 +146,17 @@ public class QueryDetailsFragment extends Fragment {
         }
     }
 
+    private void updateUI() {
+        messageText.setText(mQuery.getMsg());
+        vehicleNumber.setText(mQuery.getVid());
+        dateCreateText.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(mQuery.getCreateTime())));
+        Bitmap bitmap = Functions.loadResourceFromLocalStorage(getActivity(), mQuery.getQid());
+        if (bitmap == null)
+            Functions.getQidImage(getActivity(), mQuery.getQid(), vehicleNumberImage);
+        else
+            vehicleNumberImage.setImageBitmap(bitmap);
+    }
+
     private class RetrieveQuery extends AsyncTask<Integer, Void, Query> {
 
         @Override
@@ -140,25 +172,11 @@ public class QueryDetailsFragment extends Fragment {
         }
     }
 
-    private void updateUI() {
-        messageText.setText(mQuery.getMsg());
-        vehicleNumber.setText(mQuery.getVid());
-        dateCreateText.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(mQuery.getCreateTime())));
-        if (!mQuery.getStatus().toLowerCase().equals(Globals.NOTIFICATION_RAISE))
-            dateCloseText.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(mQuery.getCloseTime())));
-        Bitmap bitmap = Functions.loadResourceFromLocalStorage(getActivity(), mQuery.getQid());
-        if (bitmap == null)
-            Functions.getQidImage(getActivity(), mQuery.getQid(), vehicleNumberImage);
-        else
-            vehicleNumberImage.setImageBitmap(bitmap);
-    }
-
-    private class CancelQuery extends AsyncTask<Query, Void, Void> {
+    private class ResolveQuery extends AsyncTask<Query, Void, Void> {
 
         @Override
         protected Void doInBackground(Query... params) {
-            Log.i(TAG, params[0].getCloseTime()+" "+params[0].getStatus());
-            DatabaseClient.getInstance(getContext()).getAppDatabase().parkMeDao().updateCancelRequest(params[0].getStatus(), params[0].getCloseTime(), params[0].getQid());
+            DatabaseClient.getInstance(getContext()).getAppDatabase().parkMeDao().updateCloseRequest(params[0].getStatus(), params[0].getCloseTime(), params[0].getQid(), params[0].getRating());
             return null;
         }
 
