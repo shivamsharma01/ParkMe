@@ -1,6 +1,7 @@
 package com.android.parkme.query;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -31,6 +32,7 @@ import androidx.fragment.app.Fragment;
 import com.android.parkme.R;
 import com.android.parkme.database.DatabaseClient;
 import com.android.parkme.database.Query;
+import com.android.parkme.main.HomeFragment;
 import com.android.parkme.utils.APIs;
 import com.android.parkme.utils.DataPart;
 import com.android.parkme.utils.Functions;
@@ -178,46 +180,59 @@ public class RaiseQueryFragment extends Fragment {
 
     private void raiseQuery() {
         if (checkValidation()) {
-            if (Functions.networkCheck(getContext())) {
-                try {
-                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
-                    bArray = bos.toByteArray();
-                    String base64 = Base64.encodeToString(bArray, Base64.DEFAULT);
-                    String url = getResources().getString(R.string.url).concat(APIs.raiseQuery);
-                    Log.i(TAG, "Raising Query " + url);
-                    requestObject = new JSONObject();
-                    requestObject.put(Globals.QUERY_TYPE, queryTypeDropdown.getSelectedItem().toString());
-                    requestObject.put(Globals.STATUS, Globals.QUERY_DEFAULT_STATUS);
-                    requestObject.put(Globals.MESSAGE, messageText.getText().toString());
-                    requestObject.put(Globals.QUERY_CREATE_DATE, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(new Date()));
-                    requestObject.put(Globals.VEHICLE_REGISTRATION_NUMBER, vehicleNumber.getText().toString());
+            AlertDialog.Builder builder;
+            builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("Are you sure you want to Raise the Query?");
+            builder.setPositiveButton("Confirm", (dialog, which) -> {
+                if (Functions.networkCheck(getContext())) {
+                    try {
+                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
+                        bArray = bos.toByteArray();
+                        String base64 = Base64.encodeToString(bArray, Base64.DEFAULT);
+                        String url = getResources().getString(R.string.url).concat(APIs.raiseQuery);
+                        Log.i(TAG, "Raising Query " + url);
+                        requestObject = new JSONObject();
+                        requestObject.put(Globals.QUERY_TYPE, queryTypeDropdown.getSelectedItem().toString());
+                        requestObject.put(Globals.STATUS, Globals.QUERY_DEFAULT_STATUS);
+                        requestObject.put(Globals.MESSAGE, messageText.getText().toString());
+                        requestObject.put(Globals.QUERY_CREATE_DATE, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(new Date()));
+                        requestObject.put(Globals.VEHICLE_REGISTRATION_NUMBER, vehicleNumber.getText().toString());
 
-                    JsonRequest request = new JsonObjectRequest(Request.Method.POST, url, requestObject, response -> {
-                        responseObject = response;
-                        Log.i(TAG, "Query Raised Successfully");
-                        try {
-                            uploadBitmap(bitmap, responseObject.getString(Globals.QID));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        if (null != response)
-                            onSuccess();
-                    }, error ->
-                            Functions.showToast(getActivity(), "An error occurred")) {
-                        @Override
-                        public Map<String, String> getHeaders() {
-                            Map<String, String> params = new HashMap<>();
-                            params.put(Globals.SESSION_ID, sharedpreferences.getString(Globals.SESSION_KEY, ""));
-                            return params;
-                        }
-                    };
-                    queue.add(request);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            } else
-                Functions.showToast(getActivity(), "Please connect to the Internet");
+                        JsonRequest request = new JsonObjectRequest(Request.Method.POST, url, requestObject, response -> {
+                            responseObject = response;
+                            Log.i(TAG, "Query Raised Successfully");
+                            try {
+                                uploadBitmap(bitmap, responseObject.getString(Globals.QID));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            if (null != response){
+                                onSuccess();
+                                Toast.makeText(getActivity(), "Query Raised Successfully!", Toast.LENGTH_LONG).show();
+                            }
+                        }, error ->
+                                Functions.showToast(getActivity(), "An error occurred")) {
+                            @Override
+                            public Map<String, String> getHeaders() {
+                                Map<String, String> params = new HashMap<>();
+                                params.put(Globals.SESSION_ID, sharedpreferences.getString(Globals.SESSION_KEY, ""));
+                                return params;
+                            }
+                        };
+                        queue.add(request);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else
+                    Functions.showToast(getActivity(), "Please connect to the Internet");
+            });
+            builder.setNegativeButton("Cancel", (dialog, which) -> {
+                Toast.makeText(getActivity(), "Query not Raised!", Toast.LENGTH_LONG).show();
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+
         }
     }
 
@@ -328,22 +343,18 @@ public class RaiseQueryFragment extends Fragment {
     }
 
     private void finishTask() {
-        try {
-            Bundle bundle = new Bundle();
-            bundle.putInt(Globals.QID, Integer.parseInt(responseObject.getString(Globals.QID)));
-            bundle.putString(Globals.STATUS, Globals.QUERY_DEFAULT_STATUS);
-            bundle.putString(Globals.MESSAGE, requestObject.getString(Globals.MESSAGE));
-            bundle.putLong(Globals.QUERY_CREATE_DATE, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(requestObject.getString(Globals.QUERY_CREATE_DATE)).getTime());
-            bundle.putByteArray(Globals.VEHICLE_IMAGE_NUMBER, bArray);
-            bundle.putString(Globals.VEHICLE_REGISTRATION_NUMBER, requestObject.getString(Globals.VEHICLE_REGISTRATION_NUMBER));
-            QueryDetailsFragment querydetailsFragment = new QueryDetailsFragment();
-            querydetailsFragment.setArguments(bundle);
-            getActivity().runOnUiThread(() -> Functions.setCurrentFragment(getActivity(), querydetailsFragment));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        //            Bundle bundle = new Bundle();
+//            bundle.putInt(Globals.QID, Integer.parseInt(responseObject.getString(Globals.QID)));
+//            bundle.putString(Globals.STATUS, Globals.QUERY_DEFAULT_STATUS);
+//            bundle.putString(Globals.MESSAGE, requestObject.getString(Globals.MESSAGE));
+//            bundle.putLong(Globals.QUERY_CREATE_DATE, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(requestObject.getString(Globals.QUERY_CREATE_DATE)).getTime());
+//            bundle.putByteArray(Globals.VEHICLE_IMAGE_NUMBER, bArray);
+//            bundle.putString(Globals.VEHICLE_REGISTRATION_NUMBER, requestObject.getString(Globals.VEHICLE_REGISTRATION_NUMBER));
+//            QueryDetailsFragment querydetailsFragment = new QueryDetailsFragment();
+//            querydetailsFragment.setArguments(bundle);
+//            getActivity().runOnUiThread(() -> Functions.setCurrentFragment(getActivity(), querydetailsFragment));
+        HomeFragment homeFragment = new HomeFragment();
+        getActivity().runOnUiThread(() -> Functions.setCurrentFragment(getActivity(), homeFragment));
     }
 
     private class BitmapTask extends AsyncTask<Void, Void, Void> {
