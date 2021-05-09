@@ -72,15 +72,15 @@ public class HandleFirebaseMessage {
         notificationManager.notify(/*notification id*/1, notificationBuilder.build());
     }
 
-    public static void handleCancelQueryPushNotification(Context context, SharedPreferences sharedpreferences, Map<String, String> m) {
-        DatabaseClient.getInstance(context).getAppDatabase().parkMeDao().updateCancelRequest(m.get(Globals.NOTIFICATION_TYPE), Long.parseLong(m.get(Globals.CLOSE_TIME)), Integer.parseInt(m.get(Globals.QID)));
+    public static void handleCancelQueryPushNotification(Context context, Map<String, String> m) {
+        DatabaseClient.getInstance(context).getAppDatabase().parkMeDao().updateCancelRequest(Globals.QUERY_CANCEL_STATUS, Long.parseLong(m.get(Globals.CLOSE_TIME)), Integer.parseInt(m.get(Globals.QID)));
     }
 
-    public static void handleCloseQueryPushNotification(Context context, SharedPreferences sharedpreferences, Map<String, String> m) {
-        DatabaseClient.getInstance(context).getAppDatabase().parkMeDao().updateCloseRequest(m.get(Globals.NOTIFICATION_TYPE), Long.parseLong(m.get(Globals.CLOSE_TIME)), Integer.parseInt(m.get(Globals.QID)), Float.parseFloat(m.get(Globals.RATING)));
+    public static void handleCloseQueryPushNotification(Context context, Map<String, String> m) {
+        DatabaseClient.getInstance(context).getAppDatabase().parkMeDao().updateCloseRequest(Globals.QUERY_CLOSE_STATUS, Long.parseLong(m.get(Globals.CLOSE_TIME)), Integer.parseInt(m.get(Globals.QID)), Float.parseFloat(m.get(Globals.RATING)));
     }
 
-    public static void handleAnnouncementPushNotification(Context context, SharedPreferences sharedpreferences, Map<String, String> m) {
+    public static void handleAnnouncementPushNotification(Context context, Map<String, String> m) {
         DatabaseClient.getInstance(context).getAppDatabase().parkMeDao().insert(new Announcement(Long.parseLong(m.get(Globals.TIME).toString()), m.get(Globals.MESSAGE).toString()));
     }
 

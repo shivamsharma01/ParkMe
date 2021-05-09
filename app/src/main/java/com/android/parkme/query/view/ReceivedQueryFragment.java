@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,7 @@ import com.android.parkme.utils.Globals;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ReceivedQueryFragment extends Fragment {
@@ -111,7 +113,7 @@ public class ReceivedQueryFragment extends Fragment {
             mQuery = query;
             mNameTextView.setText(query.getFromName());
             mNameTextView.setPaintFlags(mNameTextView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-            mDateTextView.setText(Functions.parseDateText(simple.format(query.getCreateTime())));
+            mDateTextView.setText(Functions.parseDateText(simple.format(new Date(query.getCreateTime()))));
             mStatusTextView.setText(query.getStatus());
             if (query.getFromName().toLowerCase().contains("shivam"))
                 userPicImageView.setImageResource(R.drawable.img_shivam);

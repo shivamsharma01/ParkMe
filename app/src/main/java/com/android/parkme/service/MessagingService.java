@@ -24,13 +24,13 @@ public class MessagingService extends FirebaseMessagingService {
         if (Globals.NOTIFICATION_CHAT.equals(m.get(Globals.NOTIFICATION_TYPE)))
             HandleFirebaseMessage.handleChatNotification(getApplicationContext(), sharedPreferences, m, subject);
         else if (Globals.NOTIFICATION_TOPIC.equals(m.get(Globals.NOTIFICATION_TYPE)))
-            HandleFirebaseMessage.handleAnnouncementPushNotification(getApplicationContext(), sharedPreferences, m);
+            HandleFirebaseMessage.handleAnnouncementPushNotification(getApplicationContext(), m);
         else if (Globals.NOTIFICATION_RAISE.equals(m.get(Globals.NOTIFICATION_TYPE)))
             HandleFirebaseMessage.handleRaiseQueryPushNotification(getApplicationContext(), sharedPreferences, m);
         else if (Globals.NOTIFICATION_CLOSE.equals(m.get(Globals.NOTIFICATION_TYPE)))
-            HandleFirebaseMessage.handleCloseQueryPushNotification(getApplicationContext(), sharedPreferences, m);
+            HandleFirebaseMessage.handleCloseQueryPushNotification(getApplicationContext(), m);
         else if (Globals.NOTIFICATION_CANCEL.equals(m.get(Globals.NOTIFICATION_TYPE)))
-            HandleFirebaseMessage.handleCancelQueryPushNotification(getApplicationContext(), sharedPreferences, m);
+            HandleFirebaseMessage.handleCancelQueryPushNotification(getApplicationContext(), m);
         else
             Log.i(TAG, "message received.. but didn't match any criteria");
     }

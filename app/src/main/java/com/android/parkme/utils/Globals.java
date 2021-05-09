@@ -35,6 +35,7 @@ public class Globals {
 
     public static final String QUERY_DEFAULT_STATUS = "Unresolved";
     public static final String QUERY_CANCEL_STATUS = "Cancelled";
+    public static final String QUERY_CLOSE_STATUS = "Closed";
 
     public static final String FROM_USER_ID = "fromId";
     public static final String FROM_USER_NAME = "fromUser";
@@ -59,6 +60,12 @@ public class Globals {
 
     public static final int VIEW_TYPE_SENDER = 0;
     public static final int VIEW_TYPE_RECEIVER = 1;
+
+
+    public static final int VIEW_TYPE_UNRESOLVED = 0;
+    public static final int VIEW_TYPE_CANCELLED = 1;
+    public static final int VIEW_TYPE_CLOSED = 2;
+
 
     public static final String SAVE_LOCATION = "/Pictures";
 

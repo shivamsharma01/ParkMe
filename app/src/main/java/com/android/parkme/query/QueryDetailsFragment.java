@@ -103,11 +103,11 @@ public class QueryDetailsFragment extends Fragment {
                         Toast.makeText(getActivity(), response.getString(Globals.MESSAGE), Toast.LENGTH_SHORT);
                         mQuery.setStatus(Globals.QUERY_CANCEL_STATUS);
                         mQuery.setCloseTime(new Date().getTime());
+                        new CancelQuery().execute(mQuery);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
 
-                    new CancelQuery().execute(mQuery);
                 }, this::handleError) {
                     @Override
                     public Map<String, String> getHeaders() {
@@ -166,6 +166,7 @@ public class QueryDetailsFragment extends Fragment {
 
         @Override
         protected Void doInBackground(Query... params) {
+            Log.i(TAG, params[0].getCloseTime()+" "+params[0].getStatus());
             DatabaseClient.getInstance(getContext()).getAppDatabase().parkMeDao().updateCancelRequest(params[0].getStatus(), params[0].getCloseTime(), params[0].getQid());
             return null;
         }

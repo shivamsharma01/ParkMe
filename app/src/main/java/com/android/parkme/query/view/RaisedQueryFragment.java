@@ -14,14 +14,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.parkme.R;
-import com.android.parkme.chat.ChatFragment;
 import com.android.parkme.database.DatabaseClient;
 import com.android.parkme.database.Query;
 import com.android.parkme.query.QueryDetailsFragment;
@@ -32,6 +29,7 @@ import com.iarcuschin.simpleratingbar.SimpleRatingBar;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class RaisedQueryFragment extends Fragment {
@@ -60,7 +58,7 @@ public class RaisedQueryFragment extends Fragment {
         return view;
     }
 
-    class QueryAdapter extends RecyclerView.Adapter<QueryHolder> {
+    class QueryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         private List<Query> mQueries;
 
@@ -70,18 +68,36 @@ public class RaisedQueryFragment extends Fragment {
 
 
         @Override
-        public QueryHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(getActivity()).inflate(R.layout.list_item_query_view_raised, parent, false);
-            return new QueryHolder(view);
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            if (viewType == Globals.VIEW_TYPE_UNRESOLVED)
+                return new QueryUnresolvedHolder(LayoutInflater.from(getActivity()).inflate(R.layout.list_item_query_view_unresolved, parent, false));
+            else if(viewType == Globals.VIEW_TYPE_CANCELLED)
+                return new QueryCancelledHolder(LayoutInflater.from(getActivity()).inflate(R.layout.list_item_query_view_cancelled, parent, false));
+            else
+                return new QueryClosedHolder(LayoutInflater.from(getActivity()).inflate(R.layout.list_item_query_view_closed, parent, false));
         }
 
         @Override
-        public void onBindViewHolder(@NonNull QueryHolder holder, int position) {
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             if (position == 0) {
-                holder.v.setPadding(0, 200, 0, 0);
+                holder.itemView.setPadding(0, 200, 0, 0);
             }
-            Query query = mQueries.get(position);
-            holder.bind(query);
+            if (holder instanceof QueryUnresolvedHolder)
+                ((QueryUnresolvedHolder) holder).bind(mQueries.get(position));
+            else if (holder instanceof QueryCancelledHolder)
+                ((QueryCancelledHolder) holder).bind(mQueries.get(position));
+            else
+                ((QueryClosedHolder) holder).bind(mQueries.get(position));
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            if (mQueries.get(position).getStatus().toLowerCase().equals("unresolved"))
+                return Globals.VIEW_TYPE_UNRESOLVED;
+            else if (mQueries.get(position).getStatus().toLowerCase().equals("cancelled"))
+                return Globals.VIEW_TYPE_CANCELLED;
+            else
+                return Globals.VIEW_TYPE_CLOSED;
         }
 
         @Override
@@ -90,23 +106,20 @@ public class RaisedQueryFragment extends Fragment {
         }
     }
 
-    class QueryHolder extends RecyclerView.ViewHolder {
-
+    class QueryUnresolvedHolder extends RecyclerView.ViewHolder {
         private Query mQuery;
         private View v;
         private ImageView userPicImageView;
         private Button resolve, cancel;
         private TextView mNameTextView, mDateTextView, mStatusTextView;
-        private SimpleRatingBar ratingbar;
 
-        public QueryHolder(View itemView) {
+        public QueryUnresolvedHolder(View itemView) {
             super(itemView);
             v = itemView;
             mNameTextView = itemView.findViewById(R.id.query_name);
             mDateTextView = itemView.findViewById(R.id.query_date);
             mStatusTextView = itemView.findViewById(R.id.query_status);
             userPicImageView = itemView.findViewById(R.id.user_pic);
-            ratingbar = itemView.findViewById(R.id.ratingBar);
             resolve = itemView.findViewById(R.id.query_resolve);
             cancel = itemView.findViewById(R.id.query_cancel);
             resolve.setOnClickListener(e -> {
@@ -126,7 +139,7 @@ public class RaisedQueryFragment extends Fragment {
             mQuery = query;
             mNameTextView.setText(query.getToName());
             mNameTextView.setPaintFlags(mNameTextView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-            mDateTextView.setText(Functions.parseDateText(simple.format(query.getCreateTime())));
+            mDateTextView.setText(Functions.parseDateText(simple.format(new Date(query.getCreateTime()))));
             mStatusTextView.setText(query.getStatus());
             if (query.getFromName().toLowerCase().contains("shivam"))
                 userPicImageView.setImageResource(R.drawable.img_shivam);
@@ -136,47 +149,94 @@ public class RaisedQueryFragment extends Fragment {
                 userPicImageView.setImageResource(R.drawable.img_shradha);
             else if (query.getFromName().toLowerCase().contains("akanksha"))
                 userPicImageView.setImageResource(R.drawable.img_akanksha);
-            if ("closed".equals(query.getStatus().toLowerCase()) ||
-                    "cancelled".equals(query.getStatus().toLowerCase()))
-                mStatusTextView.setTextColor(Color.GREEN);
-            else
-                mStatusTextView.setTextColor(Color.RED);
-
-            if (query.getRating() < 0)
-                ratingbar.setVisibility(View.GONE);
-            else {
-                ratingbar.setIndicator(true);
-                SimpleRatingBar.AnimationBuilder builder = ratingbar.getAnimationBuilder()
-                        .setRatingTarget(query.getRating())
-                        .setRepeatCount(0)
-                        .setInterpolator(new android.view.animation.AccelerateInterpolator(0.1f));
-                if (query.getRating() == 5.0) {
-                    ratingbar.setBorderColor(getResources().getColor(R.color.golden_stars));
-                    ratingbar.setFillColor(getResources().getColor(R.color.golden_stars));
-                } else if (query.getRating() >= 3.0) {
-                    ratingbar.setBorderColor(getResources().getColor(R.color.orange));
-                    ratingbar.setFillColor(getResources().getColor(R.color.orange));
-                } else {
-                    ratingbar.setBorderColor(getResources().getColor(R.color.red));
-                    ratingbar.setFillColor(getResources().getColor(R.color.red));
-                }
-                builder.start();
-            }
+            mStatusTextView.setTextColor(Color.RED);
         }
 
-//        @Override
-//        public void onClick(View v) {
-//            FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
-//            Bundle bundle = new Bundle();
-//            bundle.putInt(Globals.QID, mQuery.getQid());
-//            bundle.putInt(Globals.TO_USER_ID, mQuery.getToId());
-//            bundle.putString(Globals.STATUS, mQuery.getStatus());
-//            ChatFragment chatFragment = new ChatFragment();
-//            chatFragment.setArguments(bundle);
-//            fragmentTransaction.replace(R.id.flFragment, chatFragment);
-//            fragmentTransaction.addToBackStack(null);
-//            fragmentTransaction.commit();
-//        }
+    }
+
+    class QueryCancelledHolder extends RecyclerView.ViewHolder {
+        private Query mQuery;
+        private View v;
+        private ImageView userPicImageView;
+        private TextView mNameTextView, mDateTextView, mStatusTextView;
+
+        public QueryCancelledHolder(View itemView) {
+            super(itemView);
+            v = itemView;
+            mNameTextView = itemView.findViewById(R.id.query_name);
+            mDateTextView = itemView.findViewById(R.id.query_date);
+            mStatusTextView = itemView.findViewById(R.id.query_status);
+            userPicImageView = itemView.findViewById(R.id.user_pic);
+        }
+
+        public void bind(Query query) {
+            mQuery = query;
+            mNameTextView.setText(query.getToName());
+            mNameTextView.setPaintFlags(mNameTextView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+            mDateTextView.setText(Functions.parseDateText(simple.format(new Date(query.getCreateTime()))));
+            mStatusTextView.setText(query.getStatus());
+            if (query.getFromName().toLowerCase().contains("shivam"))
+                userPicImageView.setImageResource(R.drawable.img_shivam);
+            else if (query.getFromName().toLowerCase().contains("akhil"))
+                userPicImageView.setImageResource(R.drawable.img_akhil);
+            else if (query.getFromName().toLowerCase().contains("shradha"))
+                userPicImageView.setImageResource(R.drawable.img_shradha);
+            else if (query.getFromName().toLowerCase().contains("akanksha"))
+                userPicImageView.setImageResource(R.drawable.img_akanksha);
+            mStatusTextView.setTextColor(Color.GREEN);
+        }
+    }
+
+    class QueryClosedHolder extends RecyclerView.ViewHolder {
+        private Query mQuery;
+        private View v;
+        private ImageView userPicImageView;
+        private TextView mNameTextView, mDateTextView, mStatusTextView;
+        private SimpleRatingBar ratingbar;
+
+        public QueryClosedHolder(View itemView) {
+            super(itemView);
+            v = itemView;
+            mNameTextView = itemView.findViewById(R.id.query_name);
+            mDateTextView = itemView.findViewById(R.id.query_date);
+            mStatusTextView = itemView.findViewById(R.id.query_status);
+            userPicImageView = itemView.findViewById(R.id.user_pic);
+            ratingbar = itemView.findViewById(R.id.ratingBar);
+        }
+
+        public void bind(Query query) {
+            mQuery = query;
+            mNameTextView.setText(query.getToName());
+            mNameTextView.setPaintFlags(mNameTextView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+            mDateTextView.setText(Functions.parseDateText(simple.format(new Date(query.getCreateTime()))));
+            mStatusTextView.setText(query.getStatus());
+            if (query.getFromName().toLowerCase().contains("shivam"))
+                userPicImageView.setImageResource(R.drawable.img_shivam);
+            else if (query.getFromName().toLowerCase().contains("akhil"))
+                userPicImageView.setImageResource(R.drawable.img_akhil);
+            else if (query.getFromName().toLowerCase().contains("shradha"))
+                userPicImageView.setImageResource(R.drawable.img_shradha);
+            else if (query.getFromName().toLowerCase().contains("akanksha"))
+                userPicImageView.setImageResource(R.drawable.img_akanksha);
+            mStatusTextView.setTextColor(Color.GREEN);
+
+            ratingbar.setIndicator(true);
+            SimpleRatingBar.AnimationBuilder builder = ratingbar.getAnimationBuilder()
+                    .setRatingTarget(query.getRating())
+                    .setRepeatCount(0)
+                    .setInterpolator(new android.view.animation.AccelerateInterpolator(0.1f));
+            if (query.getRating() == 5.0) {
+                ratingbar.setBorderColor(getResources().getColor(R.color.golden_stars));
+                ratingbar.setFillColor(getResources().getColor(R.color.golden_stars));
+            } else if (query.getRating() >= 3.0) {
+                ratingbar.setBorderColor(getResources().getColor(R.color.orange));
+                ratingbar.setFillColor(getResources().getColor(R.color.orange));
+            } else {
+                ratingbar.setBorderColor(getResources().getColor(R.color.red));
+                ratingbar.setFillColor(getResources().getColor(R.color.red));
+            }
+            builder.start();
+        }
 
     }
 

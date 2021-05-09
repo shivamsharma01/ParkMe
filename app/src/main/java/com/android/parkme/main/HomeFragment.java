@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -21,6 +22,8 @@ import com.android.parkme.R;
 import com.android.parkme.announcement.AnnouncementFragment;
 import com.android.parkme.common.PersonalDetailsFragment;
 import com.android.parkme.common.SettingsFragment;
+import com.android.parkme.database.DatabaseClient;
+import com.android.parkme.database.Query;
 import com.android.parkme.query.RaiseQueryFragment;
 import com.android.parkme.query.view.ViewQueriesFragment;
 import com.android.parkme.utils.APIs;
@@ -36,6 +39,7 @@ import com.android.volley.toolbox.Volley;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.Date;
 
 public class HomeFragment extends Fragment {
     private static final String TAG = "HomeFragment";
@@ -72,6 +76,7 @@ public class HomeFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+
         super.onViewCreated(view, savedInstanceState);
         if (sharedpreferences.getString(Globals.EMAIL, "").toLowerCase().contains("shivam"))
             profilePic.setImageResource(R.drawable.img_shivam);
@@ -81,6 +86,23 @@ public class HomeFragment extends Fragment {
             profilePic.setImageResource(R.drawable.img_shradha);
         else if (sharedpreferences.getString(Globals.EMAIL, "").toLowerCase().contains("akanksha"))
             profilePic.setImageResource(R.drawable.img_akanksha);
+    }
+
+    private class CancelQuery extends AsyncTask<Query, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Query... params) {
+            Log.i(TAG, params[0].getCloseTime()+" "+params[0].getStatus());
+            DatabaseClient.getInstance(getContext()).getAppDatabase().parkMeDao().updateCancelRequest(params[0].getStatus(), params[0].getCloseTime(), params[0].getQid());
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void unused) {
+            Log.i(TAG, "completed");
+            super.onPostExecute(unused);
+            // Functions.setCurrentFragment(getActivity(), new HomeFragment());
+        }
     }
 
 }
