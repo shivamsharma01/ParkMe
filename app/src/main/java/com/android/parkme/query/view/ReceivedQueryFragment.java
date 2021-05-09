@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -135,6 +134,7 @@ public class ReceivedQueryFragment extends Fragment {
             Bundle bundle = new Bundle();
             bundle.putInt(Globals.QID, mQuery.getQid());
             bundle.putInt(Globals.TO_USER_ID, mQuery.getFromId());
+            bundle.putString(Globals.STATUS, "Unresolved");
             ChatFragment chatFragment = new ChatFragment();
             chatFragment.setArguments(bundle);
             fragmentTransaction.replace(R.id.flFragment, chatFragment);

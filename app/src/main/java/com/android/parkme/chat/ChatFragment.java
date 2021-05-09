@@ -35,6 +35,7 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.Bidi;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -68,6 +69,8 @@ public class ChatFragment extends Fragment {
         mMessage = view.findViewById(R.id.edit_gchat_message);
         linearLayoutManager = new LinearLayoutManager(getActivity());
         mcChatRecyclerView.setLayoutManager(linearLayoutManager);
+        Log.i(TAG, ""+Functions.getScreenHeight());
+        Log.i(TAG, ""+Functions.getScreenWidth());
 
         // is This needed?
 //        mcChatRecyclerView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
@@ -186,10 +189,28 @@ public class ChatFragment extends Fragment {
 
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            if (viewType == Globals.VIEW_TYPE_SENDER)
-                return new ChatHolderRight(LayoutInflater.from(getActivity()).inflate(R.layout.list_item_chat_right, parent, false));
-            else
-                return new ChatHolderLeft(LayoutInflater.from(getActivity()).inflate(R.layout.list_item_chat_left, parent, false));
+
+            if (viewType == Globals.VIEW_TYPE_SENDER) {
+                View itemView = LayoutInflater.from(getActivity()).inflate(R.layout.list_item_chat_right, parent, false);
+                RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) (itemView.findViewById(R.id.cardView)).getLayoutParams();
+
+
+                layoutParams.leftMargin = (int)Math.floor(Functions.getScreenWidth() * 0.1);
+
+
+//                RelativeLayout.LayoutParams params = ((RelativeLayout.LayoutParams)itemView.findViewById())
+//                ViewGroup.LayoutParams layoutParams = itemView.getLayoutParams();
+
+                //layoutParams.width = (int)Math.floor(Functions.getScreenWidth() * 0.4);
+                itemView.setLayoutParams(layoutParams);
+                return new ChatHolderRight(itemView);
+            }else {
+                View itemView = LayoutInflater.from(getActivity()).inflate(R.layout.list_item_chat_left, parent, false);
+                ViewGroup.LayoutParams layoutParams = itemView.getLayoutParams();
+                layoutParams.width = (int)Math.floor(Functions.getScreenWidth() * 0.7);
+                itemView.setLayoutParams(layoutParams);
+                return new ChatHolderLeft(itemView);
+            }
         }
 
         @Override
@@ -222,6 +243,7 @@ public class ChatFragment extends Fragment {
         public ChatHolderRight(View itemView) {
             super(itemView);
             v = itemView;
+
             mMessage = itemView.findViewById(R.id.chat_message);
         }
 
