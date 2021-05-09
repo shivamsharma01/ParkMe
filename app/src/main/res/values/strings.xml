@@ -75,4 +75,29 @@
     <string name="login_using_phone">Login using Phone</string>
     <string name="enter_phone_number">Enter phone number</string>
     <string name="gen_error">An error Occurred</string>
+
+    <!-- String for Slots List -->
+    <string-array name="array_slots">
+        <item>Slot 1</item>
+        <item>Slot 2</item>
+        <item>Slot 3</item>
+        <item>Slot 4</item>
+        <item>Slot 5</item>
+        <item>Slot 6</item>
+        <item>Slot 7</item>
+        <item>Slot 8</item>
+    </string-array>
+
+    <!-- String for Slots Availability -->
+    <string-array name="array_slots_availability">
+        <item>Available</item>
+        <item>Occupied</item>
+        <item>Occupied</item>
+        <item>Available</item>
+        <item>Available</item>
+        <item>Available</item>
+        <item>Available</item>
+        <item>Occupied</item>
+    </string-array>
+
 </resources>

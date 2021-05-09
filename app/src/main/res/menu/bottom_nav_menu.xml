@@ -5,9 +5,9 @@
         android:icon="@drawable/ic_home_foreground"
         android:title="Home" />
     <item
-        android:id="@+id/history"
+        android:id="@+id/findSlots"
         android:icon="@drawable/ic_history_foreground"
-        android:title="History" />
+        android:title="Find Slots" />
     <item
         android:id="@+id/query"
         android:icon="@drawable/ic_query_foreground"
