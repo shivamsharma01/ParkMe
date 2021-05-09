@@ -1,6 +1,7 @@
 package com.android.parkme.query;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -29,6 +30,7 @@ import androidx.fragment.app.Fragment;
 import com.android.parkme.R;
 import com.android.parkme.database.DatabaseClient;
 import com.android.parkme.database.Query;
+import com.android.parkme.main.HomeFragment;
 import com.android.parkme.utils.APIs;
 import com.android.parkme.utils.DataPart;
 import com.android.parkme.utils.ErrorHandler;
@@ -131,7 +133,20 @@ public class RaiseQueryFragment extends Fragment {
                 CropImage.activity().start(getContext(), RaiseQueryFragment.this);
             }
         });
-        sendBtn.setOnClickListener(v -> raiseQuery());
+        sendBtn.setOnClickListener(v -> {
+                AlertDialog.Builder builder;
+        builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Are you sure you want to Raise the Query?");
+        builder.setPositiveButton("Confirm", (dialog, which) -> {
+                    raiseQuery();
+                });
+            builder.setNegativeButton("Cancel", (dialog, which) -> {
+                Toast.makeText(getActivity(), "Query not Raised!", Toast.LENGTH_LONG).show();
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        });
+
         resetBtn.setOnClickListener(v -> {
             String compareValue = "--Select Query Type--";
             int spinnerPosition = queryTypeAdaptor.getPosition(compareValue);
@@ -326,18 +341,6 @@ public class RaiseQueryFragment extends Fragment {
         vehicleNumber.setText(str);
     }
 
-    private void finishTask() {
-        try {
-            Bundle bundle = new Bundle();
-            bundle.putInt(Globals.QID, Integer.parseInt(responseObject.getString(Globals.QID)));
-            QueryDetailsFragment querydetailsFragment = new QueryDetailsFragment();
-            querydetailsFragment.setArguments(bundle);
-            getActivity().runOnUiThread(() -> Functions.setCurrentFragment(getActivity(), querydetailsFragment));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
     private class BitmapTask extends AsyncTask<Void, Void, Void> {
         private final Bitmap bitmapTmp;
 
@@ -362,7 +365,7 @@ public class RaiseQueryFragment extends Fragment {
         @Override
         protected Void doInBackground(Query... params) {
             DatabaseClient.getInstance(getContext()).getAppDatabase().parkMeDao().insert(params[0]);
-            finishTask();
+            getActivity().runOnUiThread(() -> Functions.setCurrentFragment(getActivity(), new HomeFragment()));
             return null;
         }
     }
