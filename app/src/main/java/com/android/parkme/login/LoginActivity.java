@@ -103,7 +103,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void handleError(VolleyError error) {
-        ErrorResponse errorResponse = ErrorHandler.parseAndGetErrorLogin(error);
+        ErrorResponse errorResponse = ErrorHandler.parseAndGetError(error);
         if (errorResponse.getStatusCode() == 0 || errorResponse.getStatusCode() == 5000)
             Toast.makeText(getApplicationContext(), errorResponse.getErrorMessage(), Toast.LENGTH_SHORT).show();
         else if (errorResponse.getStatusCode() < 6000)

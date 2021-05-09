@@ -6,9 +6,11 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,6 +24,7 @@ import com.android.parkme.R;
 import com.android.parkme.chat.ChatFragment;
 import com.android.parkme.database.DatabaseClient;
 import com.android.parkme.database.Query;
+import com.android.parkme.query.QueryDetailsFragment;
 import com.android.parkme.utils.Functions;
 import com.android.parkme.utils.Globals;
 import com.iarcuschin.simpleratingbar.SimpleRatingBar;
@@ -37,7 +40,7 @@ public class RaisedQueryFragment extends Fragment {
     private RecyclerView mcQueryRecyclerView;
     private QueryAdapter mAdapter;
     private SharedPreferences sharedpreferences;
-    private List<Query> mQueries = new ArrayList<>();
+    private List<Query> mQueries;
     private int id;
 
     @Override
@@ -49,17 +52,12 @@ public class RaisedQueryFragment extends Fragment {
         sharedpreferences = getActivity().getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
 
         mcQueryRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mQueries = new ArrayList<>();
         mAdapter = new QueryAdapter(mQueries);
         mcQueryRecyclerView.setAdapter(mAdapter);
-
-        return view;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
         id = sharedpreferences.getInt(Globals.ID, 0);
-        new RetrieveQuery().execute(id);
+        new RetrieveQueries().execute(id);
+        return view;
     }
 
     class QueryAdapter extends RecyclerView.Adapter<QueryHolder> {
@@ -92,23 +90,36 @@ public class RaisedQueryFragment extends Fragment {
         }
     }
 
-    class QueryHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class QueryHolder extends RecyclerView.ViewHolder {
 
         private Query mQuery;
         private View v;
         private ImageView userPicImageView;
+        private Button resolve, cancel;
         private TextView mNameTextView, mDateTextView, mStatusTextView;
         private SimpleRatingBar ratingbar;
 
         public QueryHolder(View itemView) {
             super(itemView);
             v = itemView;
-            itemView.setOnClickListener(this);
             mNameTextView = itemView.findViewById(R.id.query_name);
             mDateTextView = itemView.findViewById(R.id.query_date);
             mStatusTextView = itemView.findViewById(R.id.query_status);
             userPicImageView = itemView.findViewById(R.id.user_pic);
             ratingbar = itemView.findViewById(R.id.ratingBar);
+            resolve = itemView.findViewById(R.id.query_resolve);
+            cancel = itemView.findViewById(R.id.query_cancel);
+            resolve.setOnClickListener(e -> {
+                Log.i(TAG, "resolve");
+            });
+            cancel.setOnClickListener(e -> {
+                Log.i(TAG, "cancel");
+                Bundle bundle = new Bundle();
+                bundle.putInt(Globals.QID, mQuery.getQid());
+                QueryDetailsFragment querydetailsFragment = new QueryDetailsFragment();
+                querydetailsFragment.setArguments(bundle);
+                getActivity().runOnUiThread(() -> Functions.setCurrentFragment(getActivity(), querydetailsFragment));
+            });
         }
 
         public void bind(Query query) {
@@ -167,12 +178,9 @@ public class RaisedQueryFragment extends Fragment {
 //            fragmentTransaction.commit();
 //        }
 
-        @Override
-        public void onClick(View v) {}
-
     }
 
-    private class RetrieveQuery extends AsyncTask<Integer, Void, List<Query>> {
+    private class RetrieveQueries extends AsyncTask<Integer, Void, List<Query>> {
 
         @Override
         protected List<Query> doInBackground(Integer... params) {

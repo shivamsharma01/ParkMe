@@ -35,7 +35,7 @@ public class VolleyImageRequest extends Request<NetworkResponse> {
                                   Response.Listener<NetworkResponse> listener,
                                   Response.ErrorListener errorListener) {
         super(method, url, errorListener);
-        this.qid = qid;
+        this.qid = qid+".jpg";
         this.mListener = listener;
         this.mErrorListener = errorListener;
     }
@@ -44,7 +44,7 @@ public class VolleyImageRequest extends Request<NetworkResponse> {
     public Map<String, String> getHeaders() {
         if (mHeaders == null)
             mHeaders = new HashMap<>();
-        mHeaders.put("qid", qid);
+        mHeaders.put("filename", qid);
         return mHeaders;
     }
 

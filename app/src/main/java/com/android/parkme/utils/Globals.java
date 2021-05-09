@@ -48,7 +48,9 @@ public class Globals {
     public static final String NOTIFICATION_TOPIC = "announcement";
     public static final String CHAT_MESSAGE = "msg";
     public static final String TITLE = "title";
-    public static final String TIME = "time";
+    public static final String TIMEe = "time";
+    public static final String CREATE_TIME = "create_time";
+    public static final String CLOSE_TIME = "close_time";
     public static final String DATE = "date";
     public static final String NOTIFICATION_TYPE = "type";
 

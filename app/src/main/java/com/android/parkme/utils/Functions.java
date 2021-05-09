@@ -32,7 +32,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -116,32 +118,32 @@ public class Functions {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
 
-    public static Bitmap loadResourceFromLocalStorage(int qid) {
-        String path = Environment.getExternalStorageDirectory().toString() + "/Pictures";
-        File directory = new File(path);
-        File[] files = directory.listFiles();
-        boolean found = false;
-        for (int i = 0; i < files.length; i++) {
-            Log.d("Files", "FileName:" + files[i].getName());
-            if (files[i].getName().equals(qid + ".jpg")) {
-                return BitmapFactory.decodeFile(files[i].getPath());
-            }
-        }
-        return null;
+    public static Bitmap loadResourceFromLocalStorage(Context context, int qid) {
+        String name= qid +".jpg";
+        return BitmapFactory.decodeFile(context.getFilesDir().getPath() + File.separator + name);
     }
 
+    public static void saveImage(Context context, String qid, Bitmap bitmap) {
+        try {
+            String name= qid +".jpg";
+            FileOutputStream out = new FileOutputStream(context.getFilesDir().getPath() + File.separator + name);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+            out.flush();
+            out.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     public static void getQidImage(Context context, int qid, ImageView imageView) {
-        String mUrl = context.getResources().getString(R.string.url).concat(APIs.getQueryImage)+6;
+        String mUrl = context.getResources().getString(R.string.url).concat(APIs.getQueryImage)+qid+".jpg";
         DownloadVolleyRequest request = new DownloadVolleyRequest(Request.Method.GET, mUrl,
                 response -> {
                 try {
                     if (response!=null) {
                         String name= qid +".jpg";
-                        File myDir = new File(Environment.getExternalStorageDirectory().toString() + Globals.SAVE_LOCATION);
-                        if (!myDir.exists())
-                            myDir.mkdirs();
-                        File file = new File (myDir, name);
-                        FileOutputStream out = new FileOutputStream(file);
+                        FileOutputStream out = new FileOutputStream(context.getFilesDir().getPath() + File.separator + name);
                         Bitmap bitmap = BitmapFactory.decodeByteArray(response, 0, response.length);
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
                         imageView.setImageBitmap(bitmap);

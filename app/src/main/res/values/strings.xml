@@ -2,8 +2,8 @@
     <string name="app_name">ParkMe</string>
     <!-- Use 192.168.x.x when using device, 10.0.2.2 when using default emulator, 10.0.3.2 when using genymotion-->
 <!--    <string name="url">http://10.0.2.2:8083/parkme/</string>-->
-<!--            <string name="url">https://parkme-service.herokuapp.com/parkme/</string>-->
-        <string name="url">http://192.168.29.87:8083/parkme/</string>
+            <string name="url">https://parkme-service.herokuapp.com/parkme/</string>
+<!--        <string name="url">http://192.168.29.87:8083/parkme/</string>-->
     <string name="login_head"><u>Login</u></string>
     <string name="settings_head"><u>Account Settings</u></string>
     <string name="fpassword_head"><u>Forgot Password</u></string>
@@ -30,7 +30,8 @@
     <string name="query_type_hint">Select Query Type</string>
     <string name="message_heading">Message</string>
     <string name="message_hint">Enter your message</string>
-    <string name="date_heading">Date</string>
+    <string name="create_date_heading">Date Created</string>
+    <string name="close_date_heading">Date Closed</string>
     <string name="add_image_heading">Add an Image</string>
     <string name="vehicle_number_heading">Vehicle Number</string>
     <string name="query_send_button">Send</string>

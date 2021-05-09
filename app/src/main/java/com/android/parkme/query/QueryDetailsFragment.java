@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -19,6 +20,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.android.parkme.R;
+import com.android.parkme.database.DatabaseClient;
+import com.android.parkme.database.Query;
 import com.android.parkme.main.HomeFragment;
 import com.android.parkme.utils.APIs;
 import com.android.parkme.utils.DownloadVolleyRequest;
@@ -42,16 +45,17 @@ import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class QueryDetailsFragment extends Fragment {
     private static final String TAG = "QueryDetailsFragment";
     RequestQueue queue = null;
-    private TextView queryNumber, dateText, messageText, vehicleNumber;
+    private TextView queryNumber, dateCreateText, dateCloseText, messageText, vehicleNumber;
     private ImageView vehicleNumberImage;
     private Button cancelButton, finishButton;
     private SharedPreferences sharedpreferences;
-
+    private Query mQuery;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_query_details, container, false);
@@ -64,23 +68,16 @@ public class QueryDetailsFragment extends Fragment {
         sharedpreferences = getActivity().getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
         queryNumber = getActivity().findViewById(R.id.query_number_qd);
         messageText = getActivity().findViewById(R.id.message_text_qd);
-        dateText = getActivity().findViewById(R.id.date_value_qd);
+        dateCreateText = getActivity().findViewById(R.id.create_date_value_qd);
+        dateCloseText = getActivity().findViewById(R.id.close_date_value_qd);
         vehicleNumberImage = getActivity().findViewById(R.id.clicked_image_qd);
         vehicleNumber = getActivity().findViewById(R.id.vehicle_number_qd);
         cancelButton = getActivity().findViewById(R.id.cancel_button);
         finishButton = getActivity().findViewById(R.id.finish_button);
 
-
         queryNumber.setText(String.valueOf(getArguments().getInt(Globals.QID)));
-        messageText.setText(getArguments().getString(Globals.MESSAGE));
-        vehicleNumber.setText(getArguments().getString(Globals.VEHICLE_REGISTRATION_NUMBER));
+        new RetrieveQuery().execute(getArguments().getInt(Globals.QID));
 
-        dateText.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(getArguments().getLong(Globals.QUERY_CREATE_DATE))));
-
-        byte[] vehicleNumberImageBArray = getArguments().getByteArray(Globals.VEHICLE_IMAGE_NUMBER);
-        Bitmap vehicleNumberImageBitmap = BitmapFactory.decodeByteArray(vehicleNumberImageBArray, 0, vehicleNumberImageBArray.length);
-
-        vehicleNumberImage.setImageBitmap(vehicleNumberImageBitmap);
 
         cancelButton.setOnClickListener(v -> new AlertDialog.Builder(getActivity())
                 .setTitle("Cancel Query")
@@ -99,7 +96,16 @@ public class QueryDetailsFragment extends Fragment {
             try {
                 cancelQueryObject.put("status", Globals.QUERY_CANCEL_STATUS);
                 cancelQueryObject.put("qid", String.valueOf(getArguments().getInt(Globals.QID)));
-                JsonRequest request = new JsonObjectRequest(Request.Method.POST, url, cancelQueryObject, response -> Functions.setCurrentFragment(getActivity(), new HomeFragment()), this::handleError) {
+                cancelQueryObject.put("queryResolveDate", new Date());
+
+                JsonRequest request = new JsonObjectRequest(Request.Method.POST, url, cancelQueryObject, response -> {
+                    Toast.makeText(getActivity(), response.getString(Globals.MESSAGE), Toast.LENGTH_SHORT);
+                    mQuery.setStatus(Globals.QUERY_CANCEL_STATUS);
+                    mQuery.setCloseTime(cancelQueryObject.get);
+
+                    new CancelQuery().execute()
+                    Functions.setCurrentFragment(getActivity(), new HomeFragment());
+                }, this::handleError) {
                     @Override
                     public Map<String, String> getHeaders() {
                         Map<String, String> params = new HashMap<>();
@@ -116,7 +122,7 @@ public class QueryDetailsFragment extends Fragment {
     }
 
     private void handleError(VolleyError error) {
-        ErrorResponse errorResponse = ErrorHandler.parseAndGetErrorLogin(error);
+        ErrorResponse errorResponse = ErrorHandler.parseAndGetError(error);
         if (errorResponse.getStatusCode() == 0 || errorResponse.getStatusCode() == 5000)
             Toast.makeText(getActivity(), errorResponse.getErrorMessage(), Toast.LENGTH_SHORT).show();
         else {
@@ -125,4 +131,40 @@ public class QueryDetailsFragment extends Fragment {
         }
     }
 
+    private class RetrieveQuery extends AsyncTask<Integer, Void, Query> {
+
+        @Override
+        protected Query doInBackground(Integer... params) {
+            return DatabaseClient.getInstance(getContext()).getAppDatabase().parkMeDao().getQuery(params[0]);
+        }
+
+        @Override
+        protected void onPostExecute(Query query) {
+            super.onPostExecute(query);
+            mQuery = query;
+            updateUI();
+        }
+    }
+
+    private void updateUI() {
+        messageText.setText(mQuery.getMsg());
+        vehicleNumber.setText(mQuery.getVid());
+        dateCreateText.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(mQuery.getCreateTime())));
+        if (!mQuery.getStatus().toLowerCase().equals(Globals.NOTIFICATION_RAISE))
+            dateCloseText.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(mQuery.getCloseTime())));
+        Bitmap bitmap = Functions.loadResourceFromLocalStorage(getActivity(), mQuery.getQid());
+        if (bitmap == null)
+            Functions.getQidImage(getActivity(), mQuery.getQid(), vehicleNumberImage);
+        else
+            vehicleNumberImage.setImageBitmap(bitmap);
+    }
+
+    private class CancelQuery extends AsyncTask<Query, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Query... params) {
+            DatabaseClient.getInstance(getContext()).getAppDatabase().parkMeDao().updateCancelRequest(params[0].getStatus(), params[0].getCloseTime(), params[0].getQid());
+            return null;
+        }
+    }
 }

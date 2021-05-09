@@ -44,7 +44,7 @@ public class HandleFirebaseMessage {
                 Integer.parseInt(m.get(Globals.FROM_USER_ID)),
                 sharedpreferences.getString(Globals.NAME, ""),
                 sharedpreferences.getInt(Globals.ID, 0),
-                Long.parseLong(m.get(Globals.TIME)),
+                Long.parseLong(m.get(Globals.CREATE_TIME)),
                 0f,
                 m.get(Globals.CHAT_MESSAGE),
                 m.get(Globals.VEHICLE_REGISTRATION_NUMBER)

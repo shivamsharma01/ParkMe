@@ -4,10 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -33,20 +31,16 @@ import com.android.parkme.database.DatabaseClient;
 import com.android.parkme.database.Query;
 import com.android.parkme.utils.APIs;
 import com.android.parkme.utils.DataPart;
+import com.android.parkme.utils.ErrorHandler;
+import com.android.parkme.utils.ErrorResponse;
 import com.android.parkme.utils.Functions;
 import com.android.parkme.utils.Globals;
 import com.android.parkme.utils.VolleyImageRequest;
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
-import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.JsonRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textview.MaterialTextView;
@@ -58,11 +52,8 @@ import com.theartofdev.edmodo.cropper.CropImage;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -83,7 +74,7 @@ public class RaiseQueryFragment extends Fragment {
     private Bitmap bitmap;
     private byte[] bArray;
     private RequestQueue queue = null;
-    private SharedPreferences sharedpreferences;
+    private SharedPreferences sharedPreferences;
     private View view;
     private JSONObject requestObject, responseObject;
 
@@ -96,26 +87,27 @@ public class RaiseQueryFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_raise_query, container, false);
+        sharedPreferences = getActivity().getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
+        sharedPreferences.edit().putLong("dropDown", 0).commit();
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        queryTypeDropdown.setSelection((int)sharedpreferences.getLong("dropDown", 0));
+        queryTypeDropdown.setSelection((int) sharedPreferences.getLong("dropDown", 0));
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        sharedpreferences.edit().putLong("dropDown", queryTypeDropdown.getSelectedItemPosition()).commit();
+        sharedPreferences.edit().putLong("dropDown", queryTypeDropdown.getSelectedItemPosition()).commit();
     }
 
     @Override
     public void onStart() {
         super.onStart();
         queue = Volley.newRequestQueue(getActivity().getApplicationContext());
-        sharedpreferences = getActivity().getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
         queryTypeAdaptor = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1,
                 getResources().getStringArray(R.array.query_types_array));
         queryTypeAdaptor.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -201,14 +193,15 @@ public class RaiseQueryFragment extends Fragment {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        if (null != response)
-                            onSuccess();
-                    }, error ->
-                            Functions.showToast(getActivity(), "An error occurred")) {
+                    }, error -> {
+                            handleError(error);
+                            Functions.showToast(getActivity(), "An error occurred");
+                    })
+                    {
                         @Override
                         public Map<String, String> getHeaders() {
                             Map<String, String> params = new HashMap<>();
-                            params.put(Globals.SESSION_ID, sharedpreferences.getString(Globals.SESSION_KEY, ""));
+                            params.put(Globals.SESSION_ID, sharedPreferences.getString(Globals.SESSION_KEY, ""));
                             return params;
                         }
                     };
@@ -221,16 +214,21 @@ public class RaiseQueryFragment extends Fragment {
         }
     }
 
+    private void handleError(VolleyError error) {
+        ErrorResponse errorResponse = ErrorHandler.parseAndGetError(error);
+        Toast.makeText(getActivity(), errorResponse.getErrorMessage(), Toast.LENGTH_SHORT);
+    }
+
     private void onSuccess() {
         try {
             Query query = new Query(Integer.parseInt(responseObject.getString(Globals.QID)),
                     Globals.QUERY_DEFAULT_STATUS,
-                    sharedpreferences.getString(Globals.NAME, ""),
-                    sharedpreferences.getInt(Globals.ID, 0),
+                    sharedPreferences.getString(Globals.NAME, ""),
+                    sharedPreferences.getInt(Globals.ID, 0),
                     responseObject.getString(Globals.TO_USER_NAME),
                     responseObject.getInt(Globals.TO_USER_ID),
                     new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(requestObject.getString(Globals.QUERY_CREATE_DATE)).getTime(),
-                    (float) responseObject.getDouble(Globals.RATING),
+                    -1,
                     requestObject.getString(Globals.MESSAGE),
                     requestObject.getString(Globals.VEHICLE_REGISTRATION_NUMBER));
             new QuerySave().execute(query);
@@ -246,7 +244,9 @@ public class RaiseQueryFragment extends Fragment {
                 response -> {
                     try {
                         JSONObject obj = new JSONObject(new String(response.data));
-                        Toast.makeText(getActivity(), obj.getString("message"), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "Image uploaded", Toast.LENGTH_SHORT).show();
+                        Functions.saveImage(getActivity(), responseObject.getString(Globals.QID), bitmap);
+                        onSuccess();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -331,17 +331,10 @@ public class RaiseQueryFragment extends Fragment {
         try {
             Bundle bundle = new Bundle();
             bundle.putInt(Globals.QID, Integer.parseInt(responseObject.getString(Globals.QID)));
-            bundle.putString(Globals.STATUS, Globals.QUERY_DEFAULT_STATUS);
-            bundle.putString(Globals.MESSAGE, requestObject.getString(Globals.MESSAGE));
-            bundle.putLong(Globals.QUERY_CREATE_DATE, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(requestObject.getString(Globals.QUERY_CREATE_DATE)).getTime());
-            bundle.putByteArray(Globals.VEHICLE_IMAGE_NUMBER, bArray);
-            bundle.putString(Globals.VEHICLE_REGISTRATION_NUMBER, requestObject.getString(Globals.VEHICLE_REGISTRATION_NUMBER));
             QueryDetailsFragment querydetailsFragment = new QueryDetailsFragment();
             querydetailsFragment.setArguments(bundle);
             getActivity().runOnUiThread(() -> Functions.setCurrentFragment(getActivity(), querydetailsFragment));
         } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
             e.printStackTrace();
         }
     }

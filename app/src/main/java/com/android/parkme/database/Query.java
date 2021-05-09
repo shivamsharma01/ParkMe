@@ -35,8 +35,12 @@ public class Query {
     private String status;
 
     @NonNull
-    @ColumnInfo(name = "time")
-    private long time;
+    @ColumnInfo(name = "create_time")
+    private long createTime;
+
+    @NonNull
+    @ColumnInfo(name = "close_time")
+    private long closeTime;
 
     @NonNull
     @ColumnInfo(name = "rating")
@@ -54,15 +58,14 @@ public class Query {
     }
 
     @Ignore
-    public Query(int qid, String status, String fromName, int fromId, String toName, int toId, long time, float rating, String msg, String vid) {
+    public Query(int qid, String status, String fromName, int fromId, String toName, int toId, long createTime, String msg, String vid) {
         this.qid = qid;
         this.status = status;
         this.fromName = fromName;
         this.fromId = fromId;
         this.toName = toName;
         this.toId = toId;
-        this.time = time;
-        this.rating = rating;
+        this.createTime = createTime;
         this.msg = msg;
         this.vid = vid;
     }
@@ -84,6 +87,14 @@ public class Query {
         this.fromName = fromName;
     }
 
+    public int getFromId() {
+        return fromId;
+    }
+
+    public void setFromId(int fromId) {
+        this.fromId = fromId;
+    }
+
     @NonNull
     public String getToName() {
         return toName;
@@ -91,6 +102,14 @@ public class Query {
 
     public void setToName(@NonNull String toName) {
         this.toName = toName;
+    }
+
+    public int getToId() {
+        return toId;
+    }
+
+    public void setToId(int toId) {
+        this.toId = toId;
     }
 
     @NonNull
@@ -102,12 +121,20 @@ public class Query {
         this.status = status;
     }
 
-    public long getTime() {
-        return time;
+    public long getCreateTime() {
+        return createTime;
     }
 
-    public void setTime(long time) {
-        this.time = time;
+    public void setCreateTime(long createTime) {
+        this.createTime = createTime;
+    }
+
+    public long getCloseTime() {
+        return closeTime;
+    }
+
+    public void setCloseTime(long closeTime) {
+        this.closeTime = closeTime;
     }
 
     public float getRating() {
@@ -116,23 +143,6 @@ public class Query {
 
     public void setRating(float rating) {
         this.rating = rating;
-    }
-
-    public int getFromId() {
-        return fromId;
-    }
-
-    public void setFromId(int fromId) {
-        this.fromId = fromId;
-    }
-
-    @NonNull
-    public int getToId() {
-        return toId;
-    }
-
-    public void setToId(@NonNull int toId) {
-        this.toId = toId;
     }
 
     @NonNull

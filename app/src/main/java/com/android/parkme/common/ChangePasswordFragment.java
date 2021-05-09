@@ -116,7 +116,7 @@ public class ChangePasswordFragment extends Fragment {
     }
 
     private void handleError(VolleyError error) {
-        ErrorResponse errorResponse = ErrorHandler.parseAndGetErrorChangePassword(error);
+        ErrorResponse errorResponse = ErrorHandler.parseAndGetError(error);
         if (errorResponse.getStatusCode() < 6000 || errorResponse.getStatusCode() == 6004)
             Toast.makeText(getActivity(), errorResponse.getErrorMessage(), Toast.LENGTH_SHORT).show();
         else if (errorResponse.getStatusCode() == 6003) {
