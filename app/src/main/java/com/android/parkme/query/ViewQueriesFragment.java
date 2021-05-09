@@ -1,4 +1,4 @@
-package com.android.parkme.query.view;
+package com.android.parkme.query;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

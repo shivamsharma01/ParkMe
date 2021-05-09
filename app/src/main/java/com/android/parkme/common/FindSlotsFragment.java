@@ -47,7 +47,7 @@ public class FindSlotsFragment extends Fragment {
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(recyclerAdaptor);
 
-        
+
         return view;
     }
 

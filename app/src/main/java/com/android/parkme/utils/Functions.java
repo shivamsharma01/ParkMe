@@ -11,7 +11,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Environment;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -120,13 +119,13 @@ public class Functions {
     }
 
     public static Bitmap loadResourceFromLocalStorage(Context context, int qid) {
-        String name= qid +".jpg";
+        String name = qid + ".jpg";
         return BitmapFactory.decodeFile(context.getFilesDir().getPath() + File.separator + name);
     }
 
     public static void saveImage(Context context, String qid, Bitmap bitmap) {
         try {
-            String name= qid +".jpg";
+            String name = qid + ".jpg";
             FileOutputStream out = new FileOutputStream(context.getFilesDir().getPath() + File.separator + name);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
             out.flush();
@@ -137,25 +136,26 @@ public class Functions {
             e.printStackTrace();
         }
     }
+
     public static void getQidImage(Context context, int qid, ImageView imageView) {
-        String mUrl = context.getResources().getString(R.string.url).concat(APIs.getQueryImage)+qid+".jpg";
+        String mUrl = context.getResources().getString(R.string.url).concat(APIs.getQueryImage) + qid + ".jpg";
         DownloadVolleyRequest request = new DownloadVolleyRequest(Request.Method.GET, mUrl,
                 response -> {
-                try {
-                    if (response!=null) {
-                        String name= qid +".jpg";
-                        FileOutputStream out = new FileOutputStream(context.getFilesDir().getPath() + File.separator + name);
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(response, 0, response.length);
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
-                        imageView.setImageBitmap(bitmap);
-                        out.flush();
-                        out.close();
-                        Toast.makeText(context, "Download complete.", Toast.LENGTH_LONG).show();
+                    try {
+                        if (response != null) {
+                            String name = qid + ".jpg";
+                            FileOutputStream out = new FileOutputStream(context.getFilesDir().getPath() + File.separator + name);
+                            Bitmap bitmap = BitmapFactory.decodeByteArray(response, 0, response.length);
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+                            imageView.setImageBitmap(bitmap);
+                            out.flush();
+                            out.close();
+                            Toast.makeText(context, "Download complete.", Toast.LENGTH_LONG).show();
+                        }
+                    } catch (Exception e) {
+                        Log.d("KEY_ERROR", "UNABLE TO DOWNLOAD FILE");
+                        e.printStackTrace();
                     }
-                } catch (Exception e) {
-                    Log.d("KEY_ERROR", "UNABLE TO DOWNLOAD FILE");
-                    e.printStackTrace();
-                }
                 }, error -> {
             error.printStackTrace();
         }, null);

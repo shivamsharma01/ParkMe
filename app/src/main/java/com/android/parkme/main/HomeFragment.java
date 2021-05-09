@@ -2,19 +2,14 @@ package com.android.parkme.main;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
-import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -26,21 +21,9 @@ import com.android.parkme.common.SettingsFragment;
 import com.android.parkme.database.DatabaseClient;
 import com.android.parkme.database.Query;
 import com.android.parkme.query.RaiseQueryFragment;
-import com.android.parkme.query.view.ViewQueriesFragment;
-import com.android.parkme.utils.APIs;
-import com.android.parkme.utils.DownloadVolleyRequest;
+import com.android.parkme.query.ViewQueriesFragment;
 import com.android.parkme.utils.Functions;
 import com.android.parkme.utils.Globals;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HurlStack;
-import com.android.volley.toolbox.Volley;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.Date;
 
 public class HomeFragment extends Fragment {
     private static final String TAG = "HomeFragment";
@@ -94,7 +77,7 @@ public class HomeFragment extends Fragment {
 
         @Override
         protected Void doInBackground(Query... params) {
-            Log.i(TAG, params[0].getCloseTime()+" "+params[0].getStatus());
+            Log.i(TAG, params[0].getCloseTime() + " " + params[0].getStatus());
             DatabaseClient.getInstance(getContext()).getAppDatabase().parkMeDao().updateCancelRequest(params[0].getStatus(), params[0].getCloseTime(), params[0].getQid());
             return null;
         }

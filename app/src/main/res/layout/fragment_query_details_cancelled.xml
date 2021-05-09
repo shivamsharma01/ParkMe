@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="@dimen/box_inset_layout_padding"
-    tools:context=".query.ResolveQueryFragment">
+    tools:context=".query.CancelQueryFragment">
 
     <ScrollView
         android:layout_width="0dp"
@@ -117,6 +117,34 @@
                 app:layout_constraintTop_toBottomOf="@+id/create_date_heading_qd" />
 
             <TextView
+                android:id="@+id/close_date_heading_qd"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/close_date_heading"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/create_date_value_qd" />
+
+            <TextView
+                android:id="@+id/close_date_value_qd"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="4dp"
+                android:background="@layout/edittext_borders"
+                android:backgroundTint="@color/grey"
+                android:enabled="false"
+                android:gravity="center"
+                android:padding="5dp"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/close_date_heading_qd" />
+
+            <TextView
                 android:id="@+id/number_plate_image_heading_qd"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -126,7 +154,7 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/create_date_value_qd" />
+                app:layout_constraintTop_toBottomOf="@+id/close_date_value_qd" />
 
             <ImageView
                 android:id="@+id/clicked_image_qd"
@@ -163,36 +191,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/number_heading_qd" />
-
-
-            <com.iarcuschin.simpleratingbar.SimpleRatingBar
-                android:id="@+id/ratingBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="10dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/vehicle_number_qd"
-                app:srb_borderColor="@color/blue"
-                app:srb_fillColor="@color/white"
-                app:srb_numberOfStars="5"
-                app:srb_rating="3"
-                app:srb_starSize="40dp"
-                app:srb_stepSize="0.5" />
-
-            <Button
-                android:id="@+id/cancel_button"
-                android:layout_width="154dp"
-                android:layout_height="45dp"
-                android:layout_marginTop="20dp"
-                android:text="@string/query_Resolve_button"
-                android:textColor="@color/black"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ratingBar" />
-
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

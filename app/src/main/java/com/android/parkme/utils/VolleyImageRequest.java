@@ -1,8 +1,5 @@
 package com.android.parkme.utils;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
@@ -32,10 +29,10 @@ public class VolleyImageRequest extends Request<NetworkResponse> {
 
 
     public VolleyImageRequest(String qid, int method, String url,
-                                  Response.Listener<NetworkResponse> listener,
-                                  Response.ErrorListener errorListener) {
+                              Response.Listener<NetworkResponse> listener,
+                              Response.ErrorListener errorListener) {
         super(method, url, errorListener);
-        this.qid = qid+".jpg";
+        this.qid = qid + ".jpg";
         this.mListener = listener;
         this.mErrorListener = errorListener;
     }

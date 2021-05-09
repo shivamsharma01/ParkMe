@@ -1,44 +1,27 @@
 package com.android.parkme.announcement;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.parkme.R;
-import com.android.parkme.chat.ChatFragment;
 import com.android.parkme.database.Announcement;
 import com.android.parkme.database.DatabaseClient;
-import com.android.parkme.database.Query;
 import com.android.parkme.utils.Functions;
-import com.android.parkme.utils.Globals;
-import com.android.volley.RequestQueue;
-import com.iarcuschin.simpleratingbar.SimpleRatingBar;
 
-
-import java.nio.ByteBuffer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import recycler.coverflow.CoverFlowLayoutManger;
 import recycler.coverflow.RecyclerCoverFlow;
 
 public class AnnouncementFragment extends Fragment {
@@ -62,8 +45,9 @@ public class AnnouncementFragment extends Fragment {
         list = new ArrayList<>();
         announcementAdapter = new AnnouncementAdapter(list);
         mList.setAdapter(announcementAdapter);
-        mList.setOnItemSelectedListener(position -> ((TextView)view.findViewById(R.id.index)).setText((position+1)+"/"+mList.getLayoutManager().getItemCount()));
+        mList.setOnItemSelectedListener(position -> ((TextView) view.findViewById(R.id.index)).setText((position + 1) + "/" + mList.getLayoutManager().getItemCount()));
     }
+
     class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementHolder> {
 
         private List<Announcement> mAnnouncement;
@@ -108,11 +92,11 @@ public class AnnouncementFragment extends Fragment {
         }
 
         public void bind(Announcement announcement) {
-            mAnnouncement= announcement;
+            mAnnouncement = announcement;
             messageTextView.setText(announcement.getMessage());
             messageTextView.setPaintFlags(messageTextView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             mDateTextView.setText(Functions.parseDateText(simple.format(announcement.getTime())));
-            }
+        }
 
         @Override
         public void onClick(View v) {
@@ -120,6 +104,7 @@ public class AnnouncementFragment extends Fragment {
         }
 
     }
+
     private class AnnouncementTask extends AsyncTask<Void, Void, List<Announcement>> {
 
         @Override

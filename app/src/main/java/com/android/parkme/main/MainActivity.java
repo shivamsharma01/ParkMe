@@ -9,7 +9,7 @@ import androidx.fragment.app.FragmentManager;
 import com.android.parkme.R;
 import com.android.parkme.common.FindSlotsFragment;
 import com.android.parkme.common.PersonalDetailsFragment;
-import com.android.parkme.query.view.ViewQueriesFragment;
+import com.android.parkme.query.ViewQueriesFragment;
 import com.android.parkme.utils.Functions;
 import com.android.parkme.utils.Globals;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -46,7 +46,8 @@ public class MainActivity extends AppCompatActivity {
         Functions.setCurrentFragment(this, new HomeFragment());
 
         FirebaseMessaging.getInstance().subscribeToTopic(Globals.NOTIFICATION_TOPIC)
-                .addOnCompleteListener(task -> {});
+                .addOnCompleteListener(task -> {
+                });
     }
 
     @Override

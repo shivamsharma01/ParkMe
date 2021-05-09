@@ -11,12 +11,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/font_ral"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         android:text="This is secured using session id and token.\n Messages are only shared between the receiver and the sender."
         android:textSize="32sp"
-        app:layout_constraintTop_toTopOf="parent"
+        app:fontFamily="@font/font_ral"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:fontFamily="@font/font_ral"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

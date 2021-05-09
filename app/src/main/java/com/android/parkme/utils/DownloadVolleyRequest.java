@@ -10,21 +10,23 @@ import java.util.Map;
 
 public class DownloadVolleyRequest extends Request<byte[]> {
     private final Response.Listener<byte[]> mListener;
+    public Map<String, String> responseHeaders;
     private Map<String, String> mParams;
-    public Map<String, String> responseHeaders ;
 
-    public DownloadVolleyRequest(int method, String mUrl ,Response.Listener<byte[]> listener,
-                                    Response.ErrorListener errorListener, HashMap<String, String> params) {
+    public DownloadVolleyRequest(int method, String mUrl, Response.Listener<byte[]> listener,
+                                 Response.ErrorListener errorListener, HashMap<String, String> params) {
         super(method, mUrl, errorListener);
         setShouldCache(false);
         mListener = listener;
-        mParams=params;
+        mParams = params;
     }
 
     @Override
     protected Map<String, String> getParams() {
         return mParams;
-    };
+    }
+
+    ;
 
 
     @Override
@@ -35,6 +37,6 @@ public class DownloadVolleyRequest extends Request<byte[]> {
     @Override
     protected Response<byte[]> parseNetworkResponse(NetworkResponse response) {
         responseHeaders = response.headers;
-        return Response.success( response.data, HttpHeaderParser.parseCacheHeaders(response));
+        return Response.success(response.data, HttpHeaderParser.parseCacheHeaders(response));
     }
 }

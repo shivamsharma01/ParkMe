@@ -1,4 +1,4 @@
-package com.android.parkme.query.view;
+package com.android.parkme.query;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -19,11 +19,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.parkme.R;
-import com.android.parkme.chat.ChatFragment;
 import com.android.parkme.database.DatabaseClient;
 import com.android.parkme.database.Query;
 import com.android.parkme.query.CancelQueryFragment;
-import com.android.parkme.query.QueryDetailsFragment;
 import com.android.parkme.query.ResolveQueryFragment;
 import com.android.parkme.utils.Functions;
 import com.android.parkme.utils.Globals;
@@ -36,7 +34,7 @@ import java.util.Date;
 import java.util.List;
 
 public class RaisedQueryFragment extends Fragment {
-    private static final String TAG = "RaisedFragment";
+    private static final String TAG = "RaisedQueryFragment";
     private final DateFormat simple = new SimpleDateFormat("MMM dd");
     private RecyclerView mcQueryRecyclerView;
     private QueryAdapter mAdapter;
@@ -74,7 +72,7 @@ public class RaisedQueryFragment extends Fragment {
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             if (viewType == Globals.VIEW_TYPE_UNRESOLVED)
                 return new QueryUnresolvedHolder(LayoutInflater.from(getActivity()).inflate(R.layout.list_item_query_view_unresolved, parent, false));
-            else if(viewType == Globals.VIEW_TYPE_CANCELLED)
+            else if (viewType == Globals.VIEW_TYPE_CANCELLED)
                 return new QueryCancelledHolder(LayoutInflater.from(getActivity()).inflate(R.layout.list_item_query_view_cancelled, parent, false));
             else
                 return new QueryClosedHolder(LayoutInflater.from(getActivity()).inflate(R.layout.list_item_query_view_closed, parent, false));
@@ -126,7 +124,6 @@ public class RaisedQueryFragment extends Fragment {
             resolve = itemView.findViewById(R.id.query_resolve);
             cancel = itemView.findViewById(R.id.query_cancel);
             resolve.setOnClickListener(e -> {
-                Log.i(TAG, "resolve");
                 Bundle bundle = new Bundle();
                 bundle.putInt(Globals.QID, mQuery.getQid());
                 ResolveQueryFragment resolveQueryFragment = new ResolveQueryFragment();
@@ -162,7 +159,7 @@ public class RaisedQueryFragment extends Fragment {
 
     }
 
-    class QueryCancelledHolder extends RecyclerView.ViewHolder {
+    class QueryCancelledHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private Query mQuery;
         private View v;
         private ImageView userPicImageView;
@@ -171,6 +168,7 @@ public class RaisedQueryFragment extends Fragment {
         public QueryCancelledHolder(View itemView) {
             super(itemView);
             v = itemView;
+            itemView.setOnClickListener(this);
             mNameTextView = itemView.findViewById(R.id.query_name);
             mDateTextView = itemView.findViewById(R.id.query_date);
             mStatusTextView = itemView.findViewById(R.id.query_status);
@@ -193,9 +191,18 @@ public class RaisedQueryFragment extends Fragment {
                 userPicImageView.setImageResource(R.drawable.img_akanksha);
             mStatusTextView.setTextColor(Color.GREEN);
         }
+
+        @Override
+        public void onClick(View v) {
+            CancelledQueryFragment cancelledQueryFragment = new CancelledQueryFragment();
+            Bundle bundle = new Bundle();
+            bundle.putInt(Globals.QID, mQuery.getQid());
+            cancelledQueryFragment.setArguments(bundle);
+            Functions.setCurrentFragment(getActivity(), cancelledQueryFragment);
+        }
     }
 
-    class QueryClosedHolder extends RecyclerView.ViewHolder {
+    class QueryClosedHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private Query mQuery;
         private View v;
         private ImageView userPicImageView;
@@ -205,6 +212,7 @@ public class RaisedQueryFragment extends Fragment {
         public QueryClosedHolder(View itemView) {
             super(itemView);
             v = itemView;
+            itemView.setOnClickListener(this);
             mNameTextView = itemView.findViewById(R.id.query_name);
             mDateTextView = itemView.findViewById(R.id.query_date);
             mStatusTextView = itemView.findViewById(R.id.query_status);
@@ -246,8 +254,16 @@ public class RaisedQueryFragment extends Fragment {
             builder.start();
         }
 
-    }
+        @Override
+        public void onClick(View v) {
+            ResolvedQueryFragment resolvedQueryFragment = new ResolvedQueryFragment();
+            Bundle bundle = new Bundle();
+            bundle.putInt(Globals.QID, mQuery.getQid());
+            resolvedQueryFragment.setArguments(bundle);
+            Functions.setCurrentFragment(getActivity(), resolvedQueryFragment);
+        }
 
+    }
     private class RetrieveQueries extends AsyncTask<Integer, Void, List<Query>> {
 
         @Override
@@ -262,5 +278,4 @@ public class RaisedQueryFragment extends Fragment {
             mAdapter.notifyDataSetChanged();
         }
     }
-
 }

@@ -74,12 +74,12 @@ public class ResolveQueryFragment extends Fragment {
         ratingbar.setFillColor(getResources().getColor(R.color.orange));
 
         queryNumber.setText(String.valueOf(getArguments().getInt(Globals.QID)));
-        ratingbar.setOnRatingBarChangeListener((x,y,z) -> {
-            Log.i(TAG, ""+ratingbar.getRating());
-            if (y <=2) {
+        ratingbar.setOnRatingBarChangeListener((x, y, z) -> {
+            Log.i(TAG, "" + ratingbar.getRating());
+            if (y <= 2) {
                 ratingbar.setBorderColor(getResources().getColor(R.color.red));
                 ratingbar.setFillColor(getResources().getColor(R.color.red));
-            } else if (y <=4) {
+            } else if (y <= 4) {
                 ratingbar.setBorderColor(getResources().getColor(R.color.orange));
                 ratingbar.setFillColor(getResources().getColor(R.color.orange));
             } else {
@@ -90,7 +90,7 @@ public class ResolveQueryFragment extends Fragment {
         resolveButton.setOnClickListener(v -> {
             new AlertDialog.Builder(getActivity())
                     .setTitle("Resolve Query")
-                    .setMessage("Do you really want to give "+(ratingbar.getRating()%1 == 0 ? new BigDecimal(ratingbar.getRating()).stripTrailingZeros() : ratingbar.getRating())+"/5 rating?")
+                    .setMessage("Do you really want to give " + (ratingbar.getRating() % 1 == 0 ? new BigDecimal(ratingbar.getRating()).stripTrailingZeros() : ratingbar.getRating()) + "/5 rating?")
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setPositiveButton(android.R.string.yes, (dialog, whichButton) -> resolveQuery())
                     .setNegativeButton(android.R.string.no, null).show();
@@ -102,14 +102,14 @@ public class ResolveQueryFragment extends Fragment {
         if (Functions.networkCheck(getActivity())) {
             String url = getResources().getString(R.string.url).concat(APIs.resolveQuery);
             Log.i(TAG, "Resolve Query " + url);
-            JSONObject cancelQueryObject = new JSONObject();
+            JSONObject resolveQueryObject = new JSONObject();
             try {
-                cancelQueryObject.put(Globals.STATUS, Globals.QUERY_CANCEL_STATUS);
-                cancelQueryObject.put(Globals.QID, String.valueOf(getArguments().getInt(Globals.QID)));
-                cancelQueryObject.put(Globals.QUERY_RESOLVE_DATE, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(new Date()));
-                cancelQueryObject.put(Globals.RATING, ratingbar.getRating());
+                resolveQueryObject.put(Globals.STATUS, Globals.QUERY_CLOSE_STATUS);
+                resolveQueryObject.put(Globals.QID, String.valueOf(getArguments().getInt(Globals.QID)));
+                resolveQueryObject.put(Globals.QUERY_RESOLVE_DATE, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(new Date()));
+                resolveQueryObject.put(Globals.RATING, ratingbar.getRating());
 
-                JsonRequest request = new JsonObjectRequest(Request.Method.POST, url, cancelQueryObject, response -> {
+                JsonRequest request = new JsonObjectRequest(Request.Method.POST, url, resolveQueryObject, response -> {
                     try {
                         Toast.makeText(getActivity(), response.getString(Globals.MESSAGE), Toast.LENGTH_SHORT);
                         mQuery.setStatus(Globals.QUERY_CANCEL_STATUS);

@@ -134,12 +134,12 @@ public class RaiseQueryFragment extends Fragment {
             }
         });
         sendBtn.setOnClickListener(v -> {
-                AlertDialog.Builder builder;
-        builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Are you sure you want to Raise the Query?");
-        builder.setPositiveButton("Confirm", (dialog, which) -> {
-                    raiseQuery();
-                });
+            AlertDialog.Builder builder;
+            builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("Are you sure you want to Raise the Query?");
+            builder.setPositiveButton("Confirm", (dialog, which) -> {
+                raiseQuery();
+            });
             builder.setNegativeButton("Cancel", (dialog, which) -> {
                 Toast.makeText(getActivity(), "Query not Raised!", Toast.LENGTH_LONG).show();
             });
@@ -209,10 +209,9 @@ public class RaiseQueryFragment extends Fragment {
                             e.printStackTrace();
                         }
                     }, error -> {
-                            handleError(error);
-                            Functions.showToast(getActivity(), "An error occurred");
-                    })
-                    {
+                        handleError(error);
+                        Functions.showToast(getActivity(), "An error occurred");
+                    }) {
                         @Override
                         public Map<String, String> getHeaders() {
                             Map<String, String> params = new HashMap<>();
@@ -267,7 +266,7 @@ public class RaiseQueryFragment extends Fragment {
                 },
                 error -> {
                     Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_LONG).show();
-                    Log.e("GotError",""+error.getMessage());
+                    Log.e("GotError", "" + error.getMessage());
                 }) {
 
 
