@@ -111,7 +111,7 @@ public class ReceivedQueryFragment extends Fragment {
             mQuery = query;
             mNameTextView.setText(query.getFromName());
             mNameTextView.setPaintFlags(mNameTextView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-            mDateTextView.setText(Functions.parseDateText(simple.format(query.getTime())));
+            mDateTextView.setText(Functions.parseDateText(simple.format(query.getCreateTime())));
             mStatusTextView.setText(query.getStatus());
             if (query.getFromName().toLowerCase().contains("shivam"))
                 userPicImageView.setImageResource(R.drawable.img_shivam);

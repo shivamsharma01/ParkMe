@@ -23,8 +23,9 @@ public class Globals {
     public static final String STATUS = "status";
     public static final String MESSAGE = "message";
     public static final String QUERY_CREATE_DATE = "queryCreateDate";
+    public static final String QUERY_RESOLVE_DATE = "queryResolveDate";
+
     public static final String VEHICLE_REGISTRATION_NUMBER = "vehicleRegistrationNumber";
-    public static final String VEHICLE_IMAGE_NUMBER = "vehicleNumberImage";
 
     public static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 1;
 
@@ -48,7 +49,7 @@ public class Globals {
     public static final String NOTIFICATION_TOPIC = "announcement";
     public static final String CHAT_MESSAGE = "msg";
     public static final String TITLE = "title";
-    public static final String TIMEe = "time";
+    public static final String TIME = "time";
     public static final String CREATE_TIME = "create_time";
     public static final String CLOSE_TIME = "close_time";
     public static final String DATE = "date";

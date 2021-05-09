@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
-import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
@@ -17,17 +16,11 @@ import com.android.parkme.R;
 import com.android.parkme.database.Announcement;
 import com.android.parkme.database.Chat;
 import com.android.parkme.database.DatabaseClient;
-import com.android.parkme.database.ParkMeRoomDatabase;
 import com.android.parkme.database.Query;
 import com.android.parkme.main.MainActivity;
 import com.android.parkme.utils.Functions;
 import com.android.parkme.utils.Globals;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
-import org.json.JSONObject;
-
-import java.util.Date;
 import java.util.Map;
 
 import io.reactivex.rxjava3.subjects.BehaviorSubject;
@@ -36,21 +29,16 @@ public class HandleFirebaseMessage {
     private static final String TAG = "HandleFirebaseMessage";
 
     public static void handleRaiseQueryPushNotification(Context context, SharedPreferences sharedpreferences, Map<String, String> m) {
-        Query query = null;
 
-        query = new Query(Integer.parseInt(m.get(Globals.QID)),
+        saveQuery(context, new Query(Integer.parseInt(m.get(Globals.QID)),
                 m.get(Globals.STATUS),
                 m.get(Globals.FROM_USER_NAME),
                 Integer.parseInt(m.get(Globals.FROM_USER_ID)),
                 sharedpreferences.getString(Globals.NAME, ""),
                 sharedpreferences.getInt(Globals.ID, 0),
                 Long.parseLong(m.get(Globals.CREATE_TIME)),
-                0f,
                 m.get(Globals.CHAT_MESSAGE),
-                m.get(Globals.VEHICLE_REGISTRATION_NUMBER)
-        );
-
-        saveQuery(context, query);
+                m.get(Globals.VEHICLE_REGISTRATION_NUMBER)));
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -85,11 +73,11 @@ public class HandleFirebaseMessage {
     }
 
     public static void handleCancelQueryPushNotification(Context context, SharedPreferences sharedpreferences, Map<String, String> m) {
-        DatabaseClient.getInstance(context).getAppDatabase().parkMeDao().updateCancelRequest(m.get(Globals.NOTIFICATION_TYPE).toString(), Integer.parseInt(m.get(Globals.QID)));
+        DatabaseClient.getInstance(context).getAppDatabase().parkMeDao().updateCancelRequest(m.get(Globals.NOTIFICATION_TYPE), Long.parseLong(m.get(Globals.CLOSE_TIME)), Integer.parseInt(m.get(Globals.QID)));
     }
 
     public static void handleCloseQueryPushNotification(Context context, SharedPreferences sharedpreferences, Map<String, String> m) {
-        DatabaseClient.getInstance(context).getAppDatabase().parkMeDao().updateCloseRequest(m.get(Globals.NOTIFICATION_TYPE).toString(), Integer.parseInt(m.get(Globals.QID)), Float.parseFloat(m.get(Globals.RATING)));
+        DatabaseClient.getInstance(context).getAppDatabase().parkMeDao().updateCloseRequest(m.get(Globals.NOTIFICATION_TYPE), Long.parseLong(m.get(Globals.CLOSE_TIME)), Integer.parseInt(m.get(Globals.QID)), Float.parseFloat(m.get(Globals.RATING)));
     }
 
     public static void handleAnnouncementPushNotification(Context context, SharedPreferences sharedpreferences, Map<String, String> m) {

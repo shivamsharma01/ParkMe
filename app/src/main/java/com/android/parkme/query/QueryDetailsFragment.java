@@ -94,17 +94,20 @@ public class QueryDetailsFragment extends Fragment {
             Log.i(TAG, "Cancel Query " + url);
             JSONObject cancelQueryObject = new JSONObject();
             try {
-                cancelQueryObject.put("status", Globals.QUERY_CANCEL_STATUS);
-                cancelQueryObject.put("qid", String.valueOf(getArguments().getInt(Globals.QID)));
-                cancelQueryObject.put("queryResolveDate", new Date());
+                cancelQueryObject.put(Globals.STATUS, Globals.QUERY_CANCEL_STATUS);
+                cancelQueryObject.put(Globals.QID, String.valueOf(getArguments().getInt(Globals.QID)));
+                cancelQueryObject.put(Globals.QUERY_RESOLVE_DATE, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(new Date()));
 
                 JsonRequest request = new JsonObjectRequest(Request.Method.POST, url, cancelQueryObject, response -> {
-                    Toast.makeText(getActivity(), response.getString(Globals.MESSAGE), Toast.LENGTH_SHORT);
-                    mQuery.setStatus(Globals.QUERY_CANCEL_STATUS);
-                    mQuery.setCloseTime(cancelQueryObject.get);
+                    try {
+                        Toast.makeText(getActivity(), response.getString(Globals.MESSAGE), Toast.LENGTH_SHORT);
+                        mQuery.setStatus(Globals.QUERY_CANCEL_STATUS);
+                        mQuery.setCloseTime(new Date().getTime());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
 
-                    new CancelQuery().execute()
-                    Functions.setCurrentFragment(getActivity(), new HomeFragment());
+                    new CancelQuery().execute(mQuery);
                 }, this::handleError) {
                     @Override
                     public Map<String, String> getHeaders() {
@@ -165,6 +168,12 @@ public class QueryDetailsFragment extends Fragment {
         protected Void doInBackground(Query... params) {
             DatabaseClient.getInstance(getContext()).getAppDatabase().parkMeDao().updateCancelRequest(params[0].getStatus(), params[0].getCloseTime(), params[0].getQid());
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void unused) {
+            super.onPostExecute(unused);
+            Functions.setCurrentFragment(getActivity(), new HomeFragment());
         }
     }
 }
