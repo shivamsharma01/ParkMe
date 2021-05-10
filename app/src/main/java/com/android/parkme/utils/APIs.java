@@ -11,4 +11,6 @@ public class APIs {
     public static final String sendChat = "send-chat";
     public static final String doQueryImage = "uploadFile";
     public static final String getQueryImage = "downloadFile/";
+    public static final String getSlots = "getAllSlots";
+    public static final String updateSlot = "updateSlot";
 }

@@ -22,8 +22,6 @@ import com.android.parkme.R;
 import com.android.parkme.chat.ChatFragment;
 import com.android.parkme.database.DatabaseClient;
 import com.android.parkme.database.Query;
-import com.android.parkme.query.CancelQueryFragment;
-import com.android.parkme.query.ResolveQueryFragment;
 import com.android.parkme.utils.Functions;
 import com.android.parkme.utils.Globals;
 import com.iarcuschin.simpleratingbar.SimpleRatingBar;
@@ -284,6 +282,7 @@ public class RaisedQueryFragment extends Fragment {
         }
 
     }
+
     private class RetrieveQueries extends AsyncTask<Integer, Void, List<Query>> {
 
         @Override

@@ -5,48 +5,32 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.android.parkme.R;
 import com.android.parkme.chat.ChatFragment;
 import com.android.parkme.database.DatabaseClient;
 import com.android.parkme.database.Query;
-import com.android.parkme.main.HomeFragment;
-import com.android.parkme.utils.APIs;
-import com.android.parkme.utils.ErrorHandler;
-import com.android.parkme.utils.ErrorResponse;
 import com.android.parkme.utils.Functions;
 import com.android.parkme.utils.Globals;
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.Volley;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 public class CancelledQueryFragment extends Fragment {
     private static final String TAG = "CancelledQueryFragment";
     RequestQueue queue = null;
-    private TextView queryNumber, dateCreateText, dateClosedText, messageText, vehicleNumber;
     Button chatButton;
+    private TextView queryNumber, dateCreateText, dateClosedText, messageText, vehicleNumber;
     private ImageView vehicleNumberImage;
     private SharedPreferences sharedpreferences;
     private Query mQuery;
