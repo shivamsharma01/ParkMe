@@ -96,13 +96,14 @@ public class ChatFragment extends Fragment {
                 Toast.makeText(getActivity(), "Please connect to the Internet", Toast.LENGTH_SHORT).show();
             }
         });
+        mAdapter = new ChatAdapter(chats);
+        mcChatRecyclerView.setAdapter(mAdapter);
+        mcChatRecyclerView.setItemAnimator(null);
+        initialSetup();
         return view;
     }
 
     public void initialSetup() {
-        mAdapter = new ChatAdapter(chats);
-        mcChatRecyclerView.setAdapter(mAdapter);
-        mcChatRecyclerView.setItemAnimator(null);
         new GetChats().execute();
         observer = MessagingService.subject.subscribe(chat -> {
             if (((Chat) chat).getQid() == qid) {
@@ -121,7 +122,6 @@ public class ChatFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        initialSetup();
     }
 
     @Override

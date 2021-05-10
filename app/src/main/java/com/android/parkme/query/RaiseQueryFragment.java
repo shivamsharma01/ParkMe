@@ -245,6 +245,7 @@ public class RaiseQueryFragment extends Fragment {
                     requestObject.getString(Globals.MESSAGE),
                     requestObject.getString(Globals.VEHICLE_REGISTRATION_NUMBER));
             new QuerySave().execute(query);
+            Toast.makeText(getActivity(), "Query Raised Successfully!", Toast.LENGTH_SHORT).show();
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (ParseException e) {

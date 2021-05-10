@@ -68,7 +68,9 @@ public class ReceivedQueryFragment extends Fragment {
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             // for against both unresolved and cancelled look the same
             if (viewType == Globals.VIEW_TYPE_UNRESOLVED)
-                return new QueryUnresolvedHolder(LayoutInflater.from(getActivity()).inflate(R.layout.list_item_query_view_cancelled, parent, false));
+                return new QueryUnresolvedHolder(LayoutInflater.from(getActivity()).inflate(R.layout.list_item_query_view_unresolved, parent, false));
+            else if (viewType == Globals.VIEW_TYPE_CANCELLED)
+                return new QueryCancelledHolder(LayoutInflater.from(getActivity()).inflate(R.layout.list_item_query_view_cancelled, parent, false));
             else
                 return new QueryClosedHolder(LayoutInflater.from(getActivity()).inflate(R.layout.list_item_query_view_closed, parent, false));
         }
@@ -80,16 +82,20 @@ public class ReceivedQueryFragment extends Fragment {
             }
             if (holder instanceof QueryUnresolvedHolder)
                 ((QueryUnresolvedHolder) holder).bind(mQueries.get(position));
+            else if (holder instanceof QueryCancelledHolder)
+                ((QueryCancelledHolder) holder).bind(mQueries.get(position));
             else
                 ((QueryClosedHolder) holder).bind(mQueries.get(position));
         }
 
         @Override
         public int getItemViewType(int position) {
-            if (mQueries.get(position).getStatus().toLowerCase().equals("closed"))
-                return Globals.VIEW_TYPE_CLOSED;
-            else
+            if (mQueries.get(position).getStatus().toLowerCase().equals("unresolved"))
                 return Globals.VIEW_TYPE_UNRESOLVED;
+            else if (mQueries.get(position).getStatus().toLowerCase().equals("cancelled"))
+                return Globals.VIEW_TYPE_CANCELLED;
+            else
+                return Globals.VIEW_TYPE_CLOSED;
         }
 
         @Override
@@ -105,6 +111,54 @@ public class ReceivedQueryFragment extends Fragment {
         private TextView mNameTextView, mDateTextView, mStatusTextView;
 
         public QueryUnresolvedHolder(View itemView) {
+            super(itemView);
+            v = itemView;
+            itemView.setOnClickListener(this);
+            mNameTextView = itemView.findViewById(R.id.query_name);
+            mDateTextView = itemView.findViewById(R.id.query_date);
+            mStatusTextView = itemView.findViewById(R.id.query_status);
+            userPicImageView = itemView.findViewById(R.id.user_pic);
+        }
+
+        public void bind(Query query) {
+            mQuery = query;
+            mNameTextView.setText(query.getFromName());
+            mNameTextView.setPaintFlags(mNameTextView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+            mDateTextView.setText(Functions.parseDateText(simple.format(new Date(query.getCreateTime()))));
+            mStatusTextView.setText(query.getStatus());
+            if (query.getFromName().toLowerCase().contains("shivam"))
+                userPicImageView.setImageResource(R.drawable.img_shivam);
+            else if (query.getFromName().toLowerCase().contains("akhil"))
+                userPicImageView.setImageResource(R.drawable.img_akhil);
+            else if (query.getFromName().toLowerCase().contains("shradha"))
+                userPicImageView.setImageResource(R.drawable.img_shradha);
+            else if (query.getFromName().toLowerCase().contains("akanksha"))
+                userPicImageView.setImageResource(R.drawable.img_akanksha);
+            if (query.getStatus().toLowerCase().equals("cancelled"))
+                mStatusTextView.setTextColor(Color.GREEN);
+            else
+                mStatusTextView.setTextColor(Color.RED);
+        }
+
+        @Override
+        public void onClick(View v) {
+            UnresolvedQueryFragment unresolvedQueryFragment = new UnresolvedQueryFragment();
+            Bundle bundle = new Bundle();
+            bundle.putInt(Globals.QID, mQuery.getQid());
+            bundle.putString(Globals.STATUS, mQuery.getStatus());
+            bundle.putInt(Globals.TO_USER_ID, mQuery.getFromId());
+            unresolvedQueryFragment.setArguments(bundle);
+            Functions.setCurrentFragment(getActivity(), unresolvedQueryFragment);
+        }
+    }
+
+    class QueryCancelledHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private Query mQuery;
+        private View v;
+        private ImageView userPicImageView;
+        private TextView mNameTextView, mDateTextView, mStatusTextView;
+
+        public QueryCancelledHolder(View itemView) {
             super(itemView);
             v = itemView;
             itemView.setOnClickListener(this);
