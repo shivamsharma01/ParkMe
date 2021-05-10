@@ -191,14 +191,7 @@ public class ChatFragment extends Fragment {
                 View itemView = LayoutInflater.from(getActivity()).inflate(R.layout.list_item_chat_right, parent, false);
                 RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) (itemView.findViewById(R.id.cardView)).getLayoutParams();
 
-
                 layoutParams.leftMargin = (int) Math.floor(Functions.getScreenWidth() * 0.1);
-
-
-//                RelativeLayout.LayoutParams params = ((RelativeLayout.LayoutParams)itemView.findViewById())
-//                ViewGroup.LayoutParams layoutParams = itemView.getLayoutParams();
-
-                //layoutParams.width = (int)Math.floor(Functions.getScreenWidth() * 0.4);
                 itemView.setLayoutParams(layoutParams);
                 return new ChatHolderRight(itemView);
             } else {
@@ -281,18 +274,20 @@ public class ChatFragment extends Fragment {
         }
     }
 
-    private class SaveChat extends AsyncTask<Chat, Void, Void> {
+    private class SaveChat extends AsyncTask<Chat, Void, List<Chat>> {
 
         @Override
-        protected Void doInBackground(Chat... params) {
+        protected List<Chat> doInBackground(Chat... params) {
             DatabaseClient.getInstance(getActivity()).getAppDatabase().parkMeDao().insert(params[0]);
             return null;
         }
 
         @Override
-        protected void onPostExecute(Void voids) {
+        protected void onPostExecute(List<Chat> voids) {
             super.onPostExecute(voids);
-            updateRecyclerView();
+            for (Chat c: voids) {
+                updateRecyclerView();
+            }
         }
     }
 }
