@@ -230,7 +230,7 @@ public class RaiseQueryFragment extends Fragment {
 
     private void handleError(VolleyError error) {
         ErrorResponse errorResponse = ErrorHandler.parseAndGetError(error);
-        Toast.makeText(getActivity(), errorResponse.getErrorMessage(), Toast.LENGTH_SHORT);
+        Toast.makeText(getActivity(), errorResponse.getErrorMessage(), Toast.LENGTH_SHORT).show();
     }
 
     private void onSuccess() {

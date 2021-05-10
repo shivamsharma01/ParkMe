@@ -64,7 +64,7 @@ public class FindSlotsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_find_slots, container, false);
         recyclerView = view.findViewById(R.id.recyclerView);
-        pgsBar = (ProgressBar) view.findViewById(R.id.pBar);
+        pgsBar = view.findViewById(R.id.pBar);
 
         mslots = new ArrayList<>();
 
@@ -86,7 +86,7 @@ public class FindSlotsFragment extends Fragment {
         if (errorResponse.getStatusCode() <= 5000)
             Toast.makeText(getActivity(), errorResponse.getErrorMessage(), Toast.LENGTH_SHORT).show();
         else
-            Toast.makeText(getActivity(), "Error occured", Toast.LENGTH_SHORT);
+            Toast.makeText(getActivity(), "Error occured", Toast.LENGTH_SHORT).show();
     }
 
     public class RecyclerAdaptor extends RecyclerView.Adapter<ViewHolderClass> {
@@ -153,7 +153,7 @@ public class FindSlotsFragment extends Fragment {
                 slotAvailabilityTextView.setOnClickListener(view -> {
                     Log.i(TAG, ""+isBookedByMe);
                     if (isBookedByMe) {
-                        Toast.makeText(getActivity(), "Please release booked slot first", Toast.LENGTH_SHORT);
+                        Toast.makeText(getActivity(), "Please release booked slot first", Toast.LENGTH_SHORT).show();
                     } else {
                         AlertDialog.Builder builder;
                         builder = new AlertDialog.Builder(getActivity());
@@ -179,8 +179,9 @@ public class FindSlotsFragment extends Fragment {
 
     private void getAllRequest() {
         String url = getResources().getString(R.string.url).concat(APIs.getSlots);
-        StringRequest request = new StringRequest(Request.Method.GET, url, response -> {
+        StringRequest request = new StringRequest(Request.Method.POST, url, response -> {
             try {
+                Log.i(TAG, response);
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 JSONArray jsonArray = new JSONArray(response);
                 int sid, fromUser;
@@ -234,7 +235,7 @@ public class FindSlotsFragment extends Fragment {
                 isBookedByMe = true;
 
                 pgsBar.setVisibility(View.GONE);
-                Toast.makeText(getActivity(), response.getString("message"), Toast.LENGTH_LONG);
+                Toast.makeText(getActivity(), response.getString("message"), Toast.LENGTH_LONG).show();
                 final Runnable r = () -> finish();
                 new Handler().postDelayed(r, 2000);
             } catch (JSONException e) {

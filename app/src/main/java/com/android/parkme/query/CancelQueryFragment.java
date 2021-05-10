@@ -102,7 +102,7 @@ public class CancelQueryFragment extends Fragment {
 
                 JsonRequest request = new JsonObjectRequest(Request.Method.POST, url, cancelQueryObject, response -> {
                     try {
-                        Toast.makeText(getActivity(), response.getString(Globals.MESSAGE), Toast.LENGTH_SHORT);
+                        Toast.makeText(getActivity(), response.getString(Globals.MESSAGE), Toast.LENGTH_SHORT).show();
                         mQuery.setStatus(Globals.QUERY_CANCEL_STATUS);
                         mQuery.setCloseTime(new Date().getTime());
                         new CancelQuery().execute(mQuery);
