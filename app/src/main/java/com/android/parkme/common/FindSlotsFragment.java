@@ -46,9 +46,9 @@ import java.util.Map;
 
 public class FindSlotsFragment extends Fragment {
     private static final String TAG = "FindSlotsFragment";
-    private ProgressBar pgsBar;
     RecyclerView recyclerView;
     List<SlotInfo> mslots;
+    private ProgressBar pgsBar;
     private SharedPreferences sharedPreferences;
     private RequestQueue queue = null;
     private RecyclerAdaptor recyclerAdaptor;
@@ -87,6 +87,85 @@ public class FindSlotsFragment extends Fragment {
             Toast.makeText(getActivity(), errorResponse.getErrorMessage(), Toast.LENGTH_SHORT).show();
         else
             Toast.makeText(getActivity(), "Error occured", Toast.LENGTH_SHORT).show();
+    }
+
+    private void finish() {
+        Functions.setCurrentFragment(getActivity(), new HomeFragment());
+    }
+
+    private void getAllRequest() {
+        String url = getResources().getString(R.string.url).concat(APIs.getSlots);
+        StringRequest request = new StringRequest(Request.Method.POST, url, response -> {
+            try {
+                Log.i(TAG, response);
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                JSONArray jsonArray = new JSONArray(response);
+                int sid, fromUser;
+                String availability;
+                long slotStart, slotEnd;
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    sid = jsonArray.getJSONObject(i).getInt("id");
+                    fromUser = jsonArray.getJSONObject(i).getInt("fromUser");
+                    availability = jsonArray.getJSONObject(i).getString("slotAvailability");
+                    slotStart = jsonArray.getJSONObject(i).getLong("slotStartTime");
+                    slotEnd = jsonArray.getJSONObject(i).getLong("slotReleaseTime");
+                    mslots.add(new SlotInfo(sid, fromUser, availability, slotStart, slotEnd));
+                    if (id == jsonArray.getJSONObject(i).getInt("fromUser")) {
+                        Log.i(TAG, "from user " + fromUser);
+                        isBookedByMe = true;
+                    }
+                }
+                recyclerAdaptor.notifyDataSetChanged();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }, this::handleError) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> params = new HashMap<>();
+                params.put(Globals.SESSION_ID, sharedPreferences.getString(Globals.SESSION_KEY, ""));
+                return params;
+            }
+        };
+        queue.add(request);
+    }
+
+    private void updateRequest(int slotNumber, String status) {
+        pgsBar.setVisibility(View.VISIBLE);
+        JSONObject requestObject = new JSONObject();
+        try {
+            requestObject.put("id", slotNumber);
+            requestObject.put("fromUser", id);
+            requestObject.put("status", status);
+            if (status == "BOOK")
+                requestObject.put("slotStartTime", new Date().getTime());
+            else
+                requestObject.put("slotReleaseTime", new Date().getTime());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String url = getResources().getString(R.string.url).concat(APIs.updateSlot);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, requestObject, response -> {
+            try {
+                isBookedByMe = true;
+
+                pgsBar.setVisibility(View.GONE);
+                Toast.makeText(getActivity(), response.getString("message"), Toast.LENGTH_LONG).show();
+                final Runnable r = () -> finish();
+                new Handler().postDelayed(r, 2000);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }, this::handleError) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> params = new HashMap<>();
+                params.put(Globals.SESSION_ID, sharedPreferences.getString(Globals.SESSION_KEY, ""));
+                return params;
+            }
+        };
+        queue.add(request);
     }
 
     public class RecyclerAdaptor extends RecyclerView.Adapter<ViewHolderClass> {
@@ -151,7 +230,7 @@ public class FindSlotsFragment extends Fragment {
                 slotAvailabilityTextView.setTextColor(ContextCompat.getColor(getActivity(), R.color.blue));
                 slotAvailabilityTextView.setEnabled(true);
                 slotAvailabilityTextView.setOnClickListener(view -> {
-                    Log.i(TAG, ""+isBookedByMe);
+                    Log.i(TAG, "" + isBookedByMe);
                     if (isBookedByMe) {
                         Toast.makeText(getActivity(), "Please release booked slot first", Toast.LENGTH_SHORT).show();
                     } else {
@@ -170,86 +249,6 @@ public class FindSlotsFragment extends Fragment {
                 });
             }
         }
-    }
-
-    private void finish() {
-        Functions.setCurrentFragment(getActivity(), new HomeFragment());
-    }
-
-
-    private void getAllRequest() {
-        String url = getResources().getString(R.string.url).concat(APIs.getSlots);
-        StringRequest request = new StringRequest(Request.Method.POST, url, response -> {
-            try {
-                Log.i(TAG, response);
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                JSONArray jsonArray = new JSONArray(response);
-                int sid, fromUser;
-                String availability;
-                long slotStart, slotEnd;
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    sid = jsonArray.getJSONObject(i).getInt("id");
-                    fromUser = jsonArray.getJSONObject(i).getInt("fromUser");
-                    availability = jsonArray.getJSONObject(i).getString("slotAvailability");
-                    slotStart = jsonArray.getJSONObject(i).getLong("slotStartTime");
-                    slotEnd = jsonArray.getJSONObject(i).getLong("slotReleaseTime");
-                    mslots.add(new SlotInfo(sid, fromUser, availability, slotStart, slotEnd));
-                    if (id == jsonArray.getJSONObject(i).getInt("fromUser")) {
-                        Log.i(TAG, "from user "+fromUser);
-                        isBookedByMe = true;
-                    }
-                }
-                recyclerAdaptor.notifyDataSetChanged();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-        }, this::handleError) {
-            @Override
-            public Map<String, String> getHeaders() {
-                Map<String, String> params = new HashMap<>();
-                params.put(Globals.SESSION_ID, sharedPreferences.getString(Globals.SESSION_KEY, ""));
-                return params;
-            }
-        };
-        queue.add(request);
-    }
-
-    private void updateRequest(int slotNumber, String status) {
-        pgsBar.setVisibility(View.VISIBLE);
-        JSONObject requestObject = new JSONObject();
-        try {
-            requestObject.put("id", slotNumber);
-            requestObject.put("fromUser", id);
-            requestObject.put("status", status);
-            if (status == "BOOK")
-                requestObject.put("slotStartTime", new Date().getTime());
-            else
-                requestObject.put("slotReleaseTime", new Date().getTime());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        String url = getResources().getString(R.string.url).concat(APIs.updateSlot);
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, requestObject, response -> {
-            try {
-                isBookedByMe = true;
-
-                pgsBar.setVisibility(View.GONE);
-                Toast.makeText(getActivity(), response.getString("message"), Toast.LENGTH_LONG).show();
-                final Runnable r = () -> finish();
-                new Handler().postDelayed(r, 2000);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }, this::handleError) {
-            @Override
-            public Map<String, String> getHeaders() {
-                Map<String, String> params = new HashMap<>();
-                params.put(Globals.SESSION_ID, sharedPreferences.getString(Globals.SESSION_KEY, ""));
-                return params;
-            }
-        };
-        queue.add(request);
     }
 
 }
