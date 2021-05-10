@@ -68,7 +68,7 @@ public class ReceivedQueryFragment extends Fragment {
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             // for against both unresolved and cancelled look the same
             if (viewType == Globals.VIEW_TYPE_UNRESOLVED)
-                return new QueryUnresolvedHolder(LayoutInflater.from(getActivity()).inflate(R.layout.list_item_query_view_unresolved, parent, false));
+                return new QueryUnresolvedHolder(LayoutInflater.from(getActivity()).inflate(R.layout.list_item_query_view_cancelled, parent, false));
             else if (viewType == Globals.VIEW_TYPE_CANCELLED)
                 return new QueryCancelledHolder(LayoutInflater.from(getActivity()).inflate(R.layout.list_item_query_view_cancelled, parent, false));
             else

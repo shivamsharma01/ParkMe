@@ -35,13 +35,14 @@ public class AnnouncementFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_announcement, container, false);
+        new AnnouncementTask().execute();
         return view;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        mList = (RecyclerCoverFlow) view.findViewById(R.id.list);
+        mList = view.findViewById(R.id.list);
         list = new ArrayList<>();
         announcementAdapter = new AnnouncementAdapter(list);
         mList.setAdapter(announcementAdapter);
