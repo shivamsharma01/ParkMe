@@ -49,7 +49,7 @@ public class ResolvedQueryFragment extends Fragment {
         sharedpreferences = getActivity().getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
         queryNumber = getActivity().findViewById(R.id.query_number_qd);
         messageText = getActivity().findViewById(R.id.message_text_qd);
-        dateCreateText = getActivity().findViewById(R.id.close_date_value_qd);
+        dateCreateText = getActivity().findViewById(R.id.create_date_value_qd);
         dateClosedText = getActivity().findViewById(R.id.close_date_value_qd);
         vehicleNumberImage = getActivity().findViewById(R.id.clicked_image_qd);
         vehicleNumber = getActivity().findViewById(R.id.vehicle_number_qd);

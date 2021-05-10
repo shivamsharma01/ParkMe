@@ -66,13 +66,12 @@ public class ChatFragment extends Fragment {
         RelativeLayout rl = view.findViewById(R.id.layout_gchat_chatbox);
         sendMessageButton = view.findViewById(R.id.button_gchat_send);
         mMessage = view.findViewById(R.id.edit_gchat_message);
-        linearLayoutManager = new LinearLayoutManager(getActivity());
-        mcChatRecyclerView.setLayoutManager(linearLayoutManager);
 
-//         is This needed?
-        mcChatRecyclerView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
-                updateRecyclerView();
-        });
+//
+////         is This needed?
+//        mcChatRecyclerView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+//                updateRecyclerView();
+//        });
 
         sharedpreferences = getActivity().getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
         userId = sharedpreferences.getInt(Globals.ID, 0);
@@ -82,40 +81,48 @@ public class ChatFragment extends Fragment {
         if (!Globals.QUERY_DEFAULT_STATUS.equals(getArguments().getString(Globals.STATUS)))
             rl.setVisibility(View.INVISIBLE);
         sendMessageButton.setOnClickListener(view1 -> {
-            if (Functions.networkCheck(getContext())) {
                 String message = mMessage.getText().toString().trim();
                 if (!message.equals("")) {
                     Chat chat = new Chat(qid, userId, toId, new Date().getTime(), message);
                     mMessage.getText().clear();
                     chats.add(chat);
-                    mAdapter.notifyItemChanged(chats.size()-1);
+                    getActivity().runOnUiThread(() -> {
+                        updateUI();
+                    });
                     pushChat(chat);
                 }
-            } else {
-                Toast.makeText(getActivity(), "Please connect to the Internet", Toast.LENGTH_SHORT).show();
-            }
         });
-        mAdapter = new ChatAdapter(chats);
-        mcChatRecyclerView.setAdapter(mAdapter);
+
+        new GetChats().execute();
         mcChatRecyclerView.setItemAnimator(null);
+
+        LinearLayoutManager manager = new LinearLayoutManager(getActivity());
+
+        mcChatRecyclerView.setLayoutManager(manager);
+        mcChatRecyclerView.setAdapter(mAdapter);
+        manager.setStackFromEnd(true);
+        manager.setReverseLayout(true);
+
+        mAdapter = new ChatAdapter(chats);
+        mcChatRecyclerView.scrollToPosition(0);
         initialSetup();
         return view;
     }
 
+    public void updateUI() {
+        mAdapter.notifyDataSetChanged();
+        mcChatRecyclerView.scrollToPosition(0);
+    }
     public void initialSetup() {
-        new GetChats().execute();
+
         observer = MessagingService.subject.subscribe(chat -> {
             if (((Chat) chat).getQid() == qid) {
-                chats.add((Chat) chat);
-                getActivity().runOnUiThread(() -> mAdapter.notifyItemChanged(chats.size()-1));
+                getActivity().runOnUiThread(() -> {
+                    chats.add((Chat) chat);
+                    updateUI();
+                });
             }
         }, e -> handleRxJavaError(e));
-    }
-
-    private synchronized void updateRecyclerView() {
-        int newSize = chats.size() - 1;
-        mAdapter.notifyItemInserted(newSize);
-        mcChatRecyclerView.scrollToPosition(newSize);
     }
 
     @Override
@@ -268,27 +275,23 @@ public class ChatFragment extends Fragment {
         @Override
         protected void onPostExecute(List<Chat> chatsRetrieved) {
             super.onPostExecute(chatsRetrieved);
-            for (Chat chat: chatsRetrieved) {
-                chats.add(chat);
-                mAdapter.notifyItemInserted(chats.size()-1);
-            }
-
+            chats.addAll(chatsRetrieved);
             mAdapter.notifyDataSetChanged();
+            updateUI();
         }
     }
 
-    private class SaveChat extends AsyncTask<Chat, Void, List<Chat>> {
+    private class SaveChat extends AsyncTask<Chat, Void, Void> {
 
         @Override
-        protected List<Chat> doInBackground(Chat... params) {
+        protected Void doInBackground(Chat... params) {
             DatabaseClient.getInstance(getActivity()).getAppDatabase().parkMeDao().insert(params[0]);
             return null;
         }
 
         @Override
-        protected void onPostExecute(List<Chat> voids) {
+        protected void onPostExecute(Void voids) {
             super.onPostExecute(voids);
-                updateRecyclerView();
         }
     }
 }
