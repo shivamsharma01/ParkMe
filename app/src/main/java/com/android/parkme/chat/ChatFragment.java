@@ -69,11 +69,11 @@ public class ChatFragment extends Fragment {
         linearLayoutManager = new LinearLayoutManager(getActivity());
         mcChatRecyclerView.setLayoutManager(linearLayoutManager);
 
-        // is This needed?
-//        mcChatRecyclerView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
-//            if (chats != null)
-//                updateRecyclerView();
-//        });
+//         is This needed?
+        mcChatRecyclerView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+            if (chats != null)
+                updateRecyclerView();
+        });
 
         sharedpreferences = getActivity().getSharedPreferences(Globals.PREFERENCES, Context.MODE_PRIVATE);
         userId = sharedpreferences.getInt(Globals.ID, 0);
