@@ -71,7 +71,6 @@ public class ChatFragment extends Fragment {
 
 //         is This needed?
         mcChatRecyclerView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
-            if (chats != null)
                 updateRecyclerView();
         });
 
@@ -89,7 +88,7 @@ public class ChatFragment extends Fragment {
                     Chat chat = new Chat(qid, userId, toId, new Date().getTime(), message);
                     mMessage.getText().clear();
                     chats.add(chat);
-                    updateRecyclerView();
+                    mAdapter.notifyItemChanged(chats.size()-1);
                     pushChat(chat);
                 }
             } else {
@@ -108,7 +107,7 @@ public class ChatFragment extends Fragment {
         observer = MessagingService.subject.subscribe(chat -> {
             if (((Chat) chat).getQid() == qid) {
                 chats.add((Chat) chat);
-                getActivity().runOnUiThread(() -> updateRecyclerView());
+                getActivity().runOnUiThread(() -> mAdapter.notifyItemChanged(chats.size()-1));
             }
         }, e -> handleRxJavaError(e));
     }
@@ -267,9 +266,13 @@ public class ChatFragment extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(List<Chat> chats) {
-            super.onPostExecute(chats);
-            ChatFragment.this.chats.addAll(chats);
+        protected void onPostExecute(List<Chat> chatsRetrieved) {
+            super.onPostExecute(chatsRetrieved);
+            for (Chat chat: chatsRetrieved) {
+                chats.add(chat);
+                mAdapter.notifyItemInserted(chats.size()-1);
+            }
+
             mAdapter.notifyDataSetChanged();
         }
     }
@@ -285,9 +288,7 @@ public class ChatFragment extends Fragment {
         @Override
         protected void onPostExecute(List<Chat> voids) {
             super.onPostExecute(voids);
-            for (Chat c: voids) {
                 updateRecyclerView();
-            }
         }
     }
 }

@@ -46,7 +46,7 @@ public class AnnouncementFragment extends Fragment {
         list = new ArrayList<>();
         announcementAdapter = new AnnouncementAdapter(list);
         mList.setAdapter(announcementAdapter);
-        mList.setOnItemSelectedListener(position -> ((TextView) view.findViewById(R.id.index)).setText((position + 1) + "/" + mList.getLayoutManager().getItemCount()));
+        // mList.setOnItemSelectedListener(position -> ((TextView) view.findViewById(R.id.index)).setText((position + 1) + "/" + mList.getLayoutManager().getItemCount()));
     }
 
     class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementHolder> {
