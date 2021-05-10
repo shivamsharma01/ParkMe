@@ -18,6 +18,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.android.parkme.R;
+import com.android.parkme.chat.ChatFragment;
 import com.android.parkme.database.DatabaseClient;
 import com.android.parkme.database.Query;
 import com.android.parkme.main.HomeFragment;
@@ -49,7 +50,7 @@ public class ResolveQueryFragment extends Fragment {
     private TextView queryNumber, dateCreateText, messageText, vehicleNumber;
     private SimpleRatingBar ratingbar;
     private ImageView vehicleNumberImage;
-    private Button resolveButton;
+    private Button resolveButton, chatButton;
     private SharedPreferences sharedpreferences;
     private Query mQuery;
 
@@ -72,6 +73,7 @@ public class ResolveQueryFragment extends Fragment {
         ratingbar = getActivity().findViewById(R.id.ratingBar);
         ratingbar.setBorderColor(getResources().getColor(R.color.orange));
         ratingbar.setFillColor(getResources().getColor(R.color.orange));
+        chatButton = getActivity().findViewById(R.id.chat_button);
 
         queryNumber.setText(String.valueOf(getArguments().getInt(Globals.QID)));
         ratingbar.setOnRatingBarChangeListener((x, y, z) -> {
@@ -94,6 +96,17 @@ public class ResolveQueryFragment extends Fragment {
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setPositiveButton(android.R.string.yes, (dialog, whichButton) -> resolveQuery())
                     .setNegativeButton(android.R.string.no, null).show();
+        });
+
+
+        chatButton.setOnClickListener(e -> {
+            Bundle bundle = new Bundle();
+            ChatFragment chatFragment = new ChatFragment();
+            bundle.putInt(Globals.QID, mQuery.getQid());
+            bundle.putString(Globals.STATUS, getArguments().getString(Globals.STATUS));
+            bundle.putInt(Globals.TO_USER_ID, getArguments().getInt(Globals.TO_USER_ID));
+            chatFragment.setArguments(bundle);
+            getActivity().runOnUiThread(() -> Functions.setCurrentFragment(getActivity(), chatFragment));
         });
         new RetrieveQuery().execute(getArguments().getInt(Globals.QID));
     }

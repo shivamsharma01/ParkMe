@@ -18,6 +18,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.android.parkme.R;
+import com.android.parkme.chat.ChatFragment;
 import com.android.parkme.database.DatabaseClient;
 import com.android.parkme.database.Query;
 import com.android.parkme.main.HomeFragment;
@@ -46,7 +47,7 @@ public class CancelQueryFragment extends Fragment {
     RequestQueue queue = null;
     private TextView queryNumber, dateCreateText, messageText, vehicleNumber;
     private ImageView vehicleNumberImage;
-    private Button cancelButton;
+    private Button cancelButton, chatButton;
     private SharedPreferences sharedpreferences;
     private Query mQuery;
 
@@ -66,10 +67,20 @@ public class CancelQueryFragment extends Fragment {
         vehicleNumberImage = getActivity().findViewById(R.id.clicked_image_qd);
         vehicleNumber = getActivity().findViewById(R.id.vehicle_number_qd);
         cancelButton = getActivity().findViewById(R.id.cancel_button);
+        chatButton = getActivity().findViewById(R.id.chat_button);
 
         queryNumber.setText(String.valueOf(getArguments().getInt(Globals.QID)));
         new RetrieveQuery().execute(getArguments().getInt(Globals.QID));
 
+        chatButton.setOnClickListener(e -> {
+            Bundle bundle = new Bundle();
+            ChatFragment chatFragment = new ChatFragment();
+            bundle.putInt(Globals.QID, mQuery.getQid());
+            bundle.putString(Globals.STATUS, getArguments().getString(Globals.STATUS));
+            bundle.putInt(Globals.TO_USER_ID, getArguments().getInt(Globals.TO_USER_ID));
+            chatFragment.setArguments(bundle);
+            getActivity().runOnUiThread(() -> Functions.setCurrentFragment(getActivity(), chatFragment));
+        });
 
         cancelButton.setOnClickListener(v -> new AlertDialog.Builder(getActivity())
                 .setTitle("Cancel Query")

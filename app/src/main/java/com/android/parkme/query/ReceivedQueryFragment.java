@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.parkme.R;
+import com.android.parkme.chat.ChatFragment;
 import com.android.parkme.database.DatabaseClient;
 import com.android.parkme.database.Query;
 import com.android.parkme.utils.Functions;
@@ -139,6 +140,8 @@ public class ReceivedQueryFragment extends Fragment {
             CancelledQueryFragment cancelledQueryFragment = new CancelledQueryFragment();
             Bundle bundle = new Bundle();
             bundle.putInt(Globals.QID, mQuery.getQid());
+            bundle.putString(Globals.STATUS, mQuery.getStatus());
+            bundle.putInt(Globals.TO_USER_ID, mQuery.getFromId());
             cancelledQueryFragment.setArguments(bundle);
             Functions.setCurrentFragment(getActivity(), cancelledQueryFragment);
         }
@@ -202,6 +205,8 @@ public class ReceivedQueryFragment extends Fragment {
             ResolvedQueryFragment resolvedQueryFragment = new ResolvedQueryFragment();
             Bundle bundle = new Bundle();
             bundle.putInt(Globals.QID, mQuery.getQid());
+            bundle.putString(Globals.STATUS, mQuery.getStatus());
+            bundle.putInt(Globals.TO_USER_ID, mQuery.getFromId());
             resolvedQueryFragment.setArguments(bundle);
             Functions.setCurrentFragment(getActivity(), resolvedQueryFragment);
         }

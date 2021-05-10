@@ -8,12 +8,14 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
 import com.android.parkme.R;
+import com.android.parkme.chat.ChatFragment;
 import com.android.parkme.database.DatabaseClient;
 import com.android.parkme.database.Query;
 import com.android.parkme.utils.Functions;
@@ -31,6 +33,7 @@ public class ResolvedQueryFragment extends Fragment {
     private TextView queryNumber, dateCreateText, dateClosedText, messageText, vehicleNumber;
     private SimpleRatingBar ratingbar;
     private ImageView vehicleNumberImage;
+    private Button chatButton;
     private SharedPreferences sharedpreferences;
     private Query mQuery;
 
@@ -52,6 +55,17 @@ public class ResolvedQueryFragment extends Fragment {
         vehicleNumber = getActivity().findViewById(R.id.vehicle_number_qd);
         ratingbar = getActivity().findViewById(R.id.ratingBar);
         queryNumber.setText(String.valueOf(getArguments().getInt(Globals.QID)));
+        chatButton = getActivity().findViewById(R.id.chat_button);
+
+        chatButton.setOnClickListener(e -> {
+            Bundle bundle = new Bundle();
+            ChatFragment chatFragment = new ChatFragment();
+            bundle.putInt(Globals.QID, mQuery.getQid());
+            bundle.putString(Globals.STATUS, getArguments().getString(Globals.STATUS));
+            bundle.putInt(Globals.TO_USER_ID, getArguments().getInt(Globals.TO_USER_ID));
+            chatFragment.setArguments(bundle);
+            getActivity().runOnUiThread(() -> Functions.setCurrentFragment(getActivity(), chatFragment));
+        });
         new RetrieveQuery().execute(getArguments().getInt(Globals.QID));
     }
 

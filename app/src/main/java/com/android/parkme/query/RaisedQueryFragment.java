@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.parkme.R;
+import com.android.parkme.chat.ChatFragment;
 import com.android.parkme.database.DatabaseClient;
 import com.android.parkme.database.Query;
 import com.android.parkme.query.CancelQueryFragment;
@@ -111,7 +112,7 @@ public class RaisedQueryFragment extends Fragment {
         private Query mQuery;
         private View v;
         private ImageView userPicImageView;
-        private Button resolve, cancel;
+        private Button resolve, cancel, chatButton;
         private TextView mNameTextView, mDateTextView, mStatusTextView;
 
         public QueryUnresolvedHolder(View itemView) {
@@ -123,20 +124,35 @@ public class RaisedQueryFragment extends Fragment {
             userPicImageView = itemView.findViewById(R.id.user_pic);
             resolve = itemView.findViewById(R.id.query_resolve);
             cancel = itemView.findViewById(R.id.query_cancel);
+            chatButton = itemView.findViewById(R.id.chat_button);
+
             resolve.setOnClickListener(e -> {
                 Bundle bundle = new Bundle();
-                bundle.putInt(Globals.QID, mQuery.getQid());
                 ResolveQueryFragment resolveQueryFragment = new ResolveQueryFragment();
+                bundle.putInt(Globals.QID, mQuery.getQid());
+                bundle.putString(Globals.STATUS, mQuery.getStatus());
+                bundle.putInt(Globals.TO_USER_ID, mQuery.getToId());
                 resolveQueryFragment.setArguments(bundle);
                 getActivity().runOnUiThread(() -> Functions.setCurrentFragment(getActivity(), resolveQueryFragment));
             });
             cancel.setOnClickListener(e -> {
                 Log.i(TAG, "cancel");
                 Bundle bundle = new Bundle();
-                bundle.putInt(Globals.QID, mQuery.getQid());
                 CancelQueryFragment cancelQueryFragment = new CancelQueryFragment();
+                bundle.putInt(Globals.QID, mQuery.getQid());
+                bundle.putString(Globals.STATUS, mQuery.getStatus());
+                bundle.putInt(Globals.TO_USER_ID, mQuery.getToId());
                 cancelQueryFragment.setArguments(bundle);
                 getActivity().runOnUiThread(() -> Functions.setCurrentFragment(getActivity(), cancelQueryFragment));
+            });
+            chatButton.setOnClickListener(e -> {
+                Bundle bundle = new Bundle();
+                ChatFragment chatFragment = new ChatFragment();
+                bundle.putInt(Globals.QID, mQuery.getQid());
+                bundle.putString(Globals.STATUS, mQuery.getStatus());
+                bundle.putInt(Globals.TO_USER_ID, mQuery.getToId());
+                chatFragment.setArguments(bundle);
+                getActivity().runOnUiThread(() -> Functions.setCurrentFragment(getActivity(), chatFragment));
             });
         }
 
@@ -197,6 +213,8 @@ public class RaisedQueryFragment extends Fragment {
             CancelledQueryFragment cancelledQueryFragment = new CancelledQueryFragment();
             Bundle bundle = new Bundle();
             bundle.putInt(Globals.QID, mQuery.getQid());
+            bundle.putString(Globals.STATUS, mQuery.getStatus());
+            bundle.putInt(Globals.TO_USER_ID, mQuery.getToId());
             cancelledQueryFragment.setArguments(bundle);
             Functions.setCurrentFragment(getActivity(), cancelledQueryFragment);
         }
@@ -259,6 +277,8 @@ public class RaisedQueryFragment extends Fragment {
             ResolvedQueryFragment resolvedQueryFragment = new ResolvedQueryFragment();
             Bundle bundle = new Bundle();
             bundle.putInt(Globals.QID, mQuery.getQid());
+            bundle.putString(Globals.STATUS, mQuery.getStatus());
+            bundle.putInt(Globals.TO_USER_ID, mQuery.getToId());
             resolvedQueryFragment.setArguments(bundle);
             Functions.setCurrentFragment(getActivity(), resolvedQueryFragment);
         }

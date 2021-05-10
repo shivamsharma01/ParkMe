@@ -68,8 +68,6 @@ public class ChatFragment extends Fragment {
         mMessage = view.findViewById(R.id.edit_gchat_message);
         linearLayoutManager = new LinearLayoutManager(getActivity());
         mcChatRecyclerView.setLayoutManager(linearLayoutManager);
-        Log.i(TAG, "" + Functions.getScreenHeight());
-        Log.i(TAG, "" + Functions.getScreenWidth());
 
         // is This needed?
 //        mcChatRecyclerView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
