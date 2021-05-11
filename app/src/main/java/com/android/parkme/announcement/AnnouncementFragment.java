@@ -39,13 +39,13 @@ public class AnnouncementFragment extends Fragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        mList = (RecyclerCoverFlow) view.findViewById(R.id.list);
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mList = view.findViewById(R.id.list);
         list = new ArrayList<>();
         announcementAdapter = new AnnouncementAdapter(list);
         mList.setAdapter(announcementAdapter);
-        mList.setOnItemSelectedListener(position -> ((TextView) view.findViewById(R.id.index)).setText((position + 1) + "/" + mList.getLayoutManager().getItemCount()));
+        new AnnouncementTask().execute();
     }
 
     class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementHolder> {

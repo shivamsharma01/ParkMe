@@ -39,7 +39,7 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_centerHorizontal="true"
-            android:src="@drawable/img_akhil" />
+            android:src="@drawable/ic_announcement" />
 
         <TextView
             android:id="@+id/query_date"

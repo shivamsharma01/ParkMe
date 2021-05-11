@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentManager;
 import com.android.parkme.R;
 import com.android.parkme.common.FindSlotsFragment;
 import com.android.parkme.common.PersonalDetailsFragment;
+import com.android.parkme.query.RaiseQueryFragment;
 import com.android.parkme.query.ViewQueriesFragment;
 import com.android.parkme.utils.Functions;
 import com.android.parkme.utils.Globals;
@@ -29,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
             switch (item.getItemId()) {
                 case R.id.profile:
                     Functions.setCurrentFragment(this, new PersonalDetailsFragment());
+                    break;
+                case R.id.query: Functions.setCurrentFragment(this, new RaiseQueryFragment());
                     break;
                 case R.id.home:
                     Functions.setCurrentFragment(this, new HomeFragment());
